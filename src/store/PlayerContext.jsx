@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { trackById } from '../data/catalog.js'
+import { getTrack, keepTracks } from '../data/tracks.js'
 import { useLibrary } from './LibraryContext.jsx'
 import { load, save } from './storage.js'
 import { toast } from './toast.js'
@@ -42,7 +42,7 @@ export function PlayerProvider({ children }) {
     audioRef.current = a
   }
 
-  const validIds = (ids) => (Array.isArray(ids) ? ids.filter((id) => trackById[id]) : [])
+  const validIds = (ids) => (Array.isArray(ids) ? ids.filter((id) => getTrack(id)) : [])
 
   const [queue, setQueue] = useState(() => validIds(saved?.queue))
   const [original, setOriginal] = useState(() => validIds(saved?.original))
@@ -59,7 +59,7 @@ export function PlayerProvider({ children }) {
   const [volumeSupported] = useState(detectVolumeSupport)
   const [webAudioActive, setWebAudioActive] = useState(false)
 
-  const current = queue[index] ? trackById[queue[index]] : null
+  const current = queue[index] ? getTrack(queue[index]) : null
 
   // ---- refs mirror state for event handlers ---------------------------------
   const st = useRef({})
@@ -149,7 +149,7 @@ export function PlayerProvider({ children }) {
 
   const loadTrack = useCallback((id, autoplay, startAt = 0) => {
     const a = audioRef.current
-    const t = trackById[id]
+    const t = getTrack(id)
     if (!t) return
     if (loadedId.current !== id) {
       loadedId.current = id
@@ -376,6 +376,7 @@ export function PlayerProvider({ children }) {
   }, [next])
 
   useEffect(() => { persist() }, [queue, original, index, shuffle, repeat, volume, context, persist])
+  useEffect(() => { keepTracks(original.length ? original : queue) }, [queue, original])
   useEffect(() => {
     const h = () => persist()
     window.addEventListener('pagehide', h)

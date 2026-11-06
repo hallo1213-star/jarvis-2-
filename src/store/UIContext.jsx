@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 import { Heart, ListPlus, ListEnd, ListStart, Disc3, UserRound, Trash2, Plus, Check, Share2 } from 'lucide-react'
-import { trackById } from '../data/catalog.js'
+import { getTrack, artistPath, albumPath } from '../data/tracks.js'
 import { useLibrary } from './LibraryContext.jsx'
 import { usePlayer } from './PlayerContext.jsx'
 import { useRouter } from '../router.jsx'
@@ -21,14 +21,14 @@ export function UIProvider({ children }) {
   const openAddToPlaylist = useCallback((trackId) => setAdding(trackId), [])
   const openCreatePlaylist = useCallback((trackIds = [], go = true) => setCreating({ trackIds, go }), [])
 
-  const t = menu ? trackById[menu.trackId] : null
+  const t = menu ? getTrack(menu.trackId) : null
   const fav = t ? lib.isFavorite(t.id) : false
 
   const close = () => setMenu(null)
   const act = (fn) => () => { fn(); close() }
 
   const share = async (track) => {
-    const url = `${window.location.origin}${window.location.pathname}#/album/${track.albumId}`
+    const url = track.permalink || `${window.location.origin}${window.location.pathname}#${albumPath(track) || artistPath(track)}`
     const data = { title: `${track.title} – ${track.artist}`, text: `Hör „${track.title}“ von ${track.artist} auf AURIX`, url }
     try {
       if (navigator.share) await navigator.share(data)
@@ -55,7 +55,7 @@ export function UIProvider({ children }) {
               <Cover src={t.cover} size={56} />
               <div className="menu-track-meta">
                 <strong>{t.title}</strong>
-                <span>{t.artist} · {t.album}</span>
+                <span>{t.artist} · {t.source === 'audius' ? 'via Audius' : t.album}</span>
               </div>
             </div>
             <div className="menu-list">
@@ -69,8 +69,8 @@ export function UIProvider({ children }) {
               <button onClick={act(() => setAdding(t.id))}><ListPlus size={22} />Zu Playlist hinzufügen</button>
               <button onClick={act(() => player.addNext(t.id))}><ListStart size={22} />Als Nächstes spielen</button>
               <button onClick={act(() => player.addToQueue(t.id))}><ListEnd size={22} />Zur Warteschlange</button>
-              <button onClick={act(() => { player.setFullOpen(false); navigate(`/album/${t.albumId}`) })}><Disc3 size={22} />Zum Album</button>
-              <button onClick={act(() => { player.setFullOpen(false); navigate(`/artist/${t.artistId}`) })}><UserRound size={22} />Zum Künstler</button>
+              {albumPath(t) && <button onClick={act(() => { player.setFullOpen(false); navigate(albumPath(t)) })}><Disc3 size={22} />Zum Album</button>}
+              <button onClick={act(() => { player.setFullOpen(false); navigate(artistPath(t)) })}><UserRound size={22} />Zum Künstler</button>
               <button onClick={act(() => share(t))}><Share2 size={22} />Teilen</button>
               {menu.playlistId && (
                 <button className="danger" onClick={act(() => {

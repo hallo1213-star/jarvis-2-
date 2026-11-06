@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { ChevronLeft, X } from 'lucide-react'
 import { useRouter } from '../router.jsx'
-import { trackById } from '../data/catalog.js'
+import { getTrack } from '../data/tracks.js'
 
 export const fmtTime = (s) => {
   if (!Number.isFinite(s) || s < 0) s = 0
@@ -12,7 +12,7 @@ export const fmtTime = (s) => {
 }
 
 export const fmtTotal = (ids) => {
-  const total = ids.reduce((sum, id) => sum + (trackById[id]?.duration || 0), 0)
+  const total = ids.reduce((sum, id) => sum + (getTrack(id)?.duration || 0), 0)
   const m = Math.round(total / 60)
   return m < 60 ? `${m} Min.` : `${Math.floor(m / 60)} Std. ${m % 60} Min.`
 }
@@ -64,7 +64,7 @@ export function Cover({ src, alt = '', size, round, className = '', mosaic }) {
 }
 
 export const playlistMosaic = (p) => {
-  const covers = [...new Set(p.trackIds.map((id) => trackById[id]?.cover).filter(Boolean))]
+  const covers = [...new Set(p.trackIds.map((id) => getTrack(id)?.cover).filter(Boolean))]
   return covers.length >= 4 ? covers : covers.slice(0, 1)
 }
 

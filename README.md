@@ -17,6 +17,10 @@ Premium-Musik-Streaming als Progressive Web App. Mobile-first, optimiert für Sa
 
 ## Musik & Rechte
 
+**Audius-Katalog (live):** Trends, Genres, Suche und Künstlerseiten kommen über die offizielle, kostenlose Audius-API (`api.audius.co`, kein Schlüssel nötig). Audius ist eine offene Plattform, auf der Künstler ihre Songs selbst hochladen und zum freien Streamen freigeben – die Rechte bleiben bei den Künstlern. AURIX spielt nur frei streambare Titel (keine kostenpflichtigen/gesperrten) und zeigt die Quelle („via Audius“) an. Genutzte Titel werden lokal gemerkt, damit Favoriten und Playlists erhalten bleiben.
+
+**AURIX Originals:**
+
 Der Demo-Katalog (12 Titel, 6 EPs) besteht ausschließlich aus **AURIX Originals**: Jeder Titel wird von `scripts/generate_music.py` mit Oszillatoren, Rauschen und Mathematik komplett neu komponiert und synthetisiert – keine Samples, keine fremden Aufnahmen, keine externen Streaming-Links. Musik und Cover-Art werden unter **CC0 1.0** (Public Domain) bereitgestellt. Künstler- und Albumnamen sind Projektnamen dieses Katalogs.
 
 ## Auf dem iPhone nutzen

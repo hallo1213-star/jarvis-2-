@@ -99,7 +99,10 @@ export default function Settings() {
 
       <Section title="Musik & Rechte">
         <div className="settings-card">
-          <p className="ok-line"><ShieldCheck size={18} /> {TRACKS.length} Demo-Titel · {LICENSE.name}</p>
+          <p className="ok-line"><ShieldCheck size={18} /> Audius-Katalog</p>
+          <p className="muted small-text">Trends, Genres, Suche und Künstlerseiten kommen live von Audius (audius.co), einer offenen Musikplattform. Künstler laden ihre Songs dort selbst hoch und geben sie zum freien Streamen frei; die Rechte bleiben bei den Künstlern. AURIX spielt nur frei streambare Titel über die offizielle Audius-Schnittstelle ab.</p>
+          <a className="link-btn" href="https://audius.co" target="_blank" rel="noreferrer">audius.co öffnen</a>
+          <p className="ok-line"><ShieldCheck size={18} /> {TRACKS.length} AURIX Originals · {LICENSE.name}</p>
           <p className="muted small-text">{LICENSE.note} Künstler und Releases des Demo-Katalogs sind Projektnamen der AURIX Originals.</p>
           <a className="link-btn" href={LICENSE.url} target="_blank" rel="noreferrer">Lizenztext ansehen</a>
         </div>

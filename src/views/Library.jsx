@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Heart, History, Plus, ListMusic, ChevronRight, Shuffle, Play, Trash2, UserRound, Disc3 } from 'lucide-react'
-import { ALBUMS, ARTISTS, albumById, artistById, trackById } from '../data/catalog.js'
+import { ALBUMS, ARTISTS, albumById, artistById } from '../data/catalog.js'
+import { getTrack } from '../data/tracks.js'
 import { useLibrary } from '../store/LibraryContext.jsx'
 import { usePlayer } from '../store/PlayerContext.jsx'
 import { useUI } from '../store/UIContext.jsx'
@@ -13,8 +14,9 @@ export default function Library() {
   const ui = useUI()
   const [tab, setTab] = useState('playlists')
   // Albums/artists in your library = followed artists + albums of anything you saved or played
-  const savedAlbumIds = [...new Set([...lib.favorites, ...lib.recent.map((r) => r.id)].map((id) => trackById[id]?.albumId).filter(Boolean))]
+  const savedAlbumIds = [...new Set([...lib.favorites, ...lib.recent.map((r) => r.id)].map((id) => getTrack(id)?.albumId).filter(Boolean))]
   const artistIds = [...new Set([...lib.followed, ...savedAlbumIds.map((a) => albumById[a].artistId)])]
+    .filter((id) => artistById[id] || lib.remoteArtists[id])
 
   return (
     <div className="page">
@@ -61,11 +63,12 @@ export default function Library() {
         artistIds.length ? (
           <div className="list">
             {artistIds.map((id) => {
-              const a = artistById[id]
+              const remote = !artistById[id]
+              const a = remote ? lib.remoteArtists[id] : artistById[id]
               return (
-                <Link key={id} to={`/artist/${id}`} className="list-row">
-                  <Cover src={a.cover} size={56} round />
-                  <span className="list-meta"><strong>{a.name}</strong><span>{lib.followed.includes(id) ? 'Gefolgt · ' : ''}{a.genre}</span></span>
+                <Link key={id} to={remote ? `/audius/artist/${id.replace('au-user:', '')}` : `/artist/${id}`} className="list-row">
+                  <Cover src={remote ? a.picture : a.cover} size={56} round />
+                  <span className="list-meta"><strong>{a.name}</strong><span>{lib.followed.includes(id) ? 'Gefolgt · ' : ''}{remote ? 'Audius' : a.genre}</span></span>
                   <ChevronRight size={18} className="muted" />
                 </Link>
               )
@@ -122,12 +125,13 @@ export { CollectionHeader }
 export function Favorites() {
   const lib = useLibrary()
   const ids = lib.favorites
+  const favCovers = [...new Set(ids.map((id) => getTrack(id)?.cover).filter(Boolean))]
   return (
     <div className="page">
       <PageHeader title="" back="/library" />
       <CollectionHeader kind="Sammlung" title="Favoriten" subtitle={`${plural(ids.length, 'Song', 'Songs')} · ${fmtTotal(ids)}`}
-        mosaic={[...new Set(ids.map((id) => trackById[id].cover))].length >= 4 ? [...new Set(ids.map((id) => trackById[id].cover))] : null}
-        cover={ids[0] ? trackById[ids[0]].cover : null} ids={ids} context={{ key: 'favorites', label: 'Favoriten', to: '/favorites' }} />
+        mosaic={favCovers.length >= 4 ? favCovers : null}
+        cover={favCovers[0] || null} ids={ids} context={{ key: 'favorites', label: 'Favoriten', to: '/favorites' }} />
       {ids.length ? <TrackList ids={ids} context={{ key: 'favorites', label: 'Favoriten', to: '/favorites' }} /> : (
         <EmptyState icon={Heart} title="Noch keine Favoriten" text="Tippe bei einem Song auf das Herz – er wird hier gespeichert und bleibt auch nach dem Schließen erhalten."
           action={<Link to="/discover" className="btn primary">Musik entdecken</Link>} />

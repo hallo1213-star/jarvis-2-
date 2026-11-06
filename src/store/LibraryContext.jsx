@@ -1,11 +1,12 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { trackById, artistById } from '../data/catalog.js'
+import { artistById } from '../data/catalog.js'
+import { getTrack, keepTracks } from '../data/tracks.js'
 import { load, save, clearAll } from './storage.js'
 
 const LibraryContext = createContext(null)
 
 const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4)
-const validTrack = (id) => Boolean(trackById[id])
+const validTrack = (id) => Boolean(getTrack(id))
 
 function initialPlaylists() {
   const stored = load('playlists', null)
@@ -31,15 +32,17 @@ export function LibraryProvider({ children }) {
   const [favorites, setFavorites] = useState(() => load('favorites', []).filter(validTrack))
   const [playlists, setPlaylists] = useState(initialPlaylists)
   const [recent, setRecent] = useState(() => load('recent', []).filter((r) => r && validTrack(r.id)))
-  const [followed, setFollowed] = useState(() => load('followed', []).filter((id) => artistById[id]))
+  const [remoteArtists, setRemoteArtists] = useState(() => load('remoteArtists', {}))
+  const [followed, setFollowed] = useState(() => load('followed', []).filter((id) => artistById[id] || load('remoteArtists', {})[id]))
   const [playCounts, setPlayCounts] = useState(() => load('playCounts', {}))
   const [searches, setSearches] = useState(() => load('searches', []))
   const [profile, setProfile] = useState(() => ({ name: '', ...load('profile', {}) }))
 
-  useEffect(() => { save('favorites', favorites) }, [favorites])
-  useEffect(() => { save('playlists', playlists) }, [playlists])
-  useEffect(() => { save('recent', recent) }, [recent])
+  useEffect(() => { save('favorites', favorites); keepTracks(favorites) }, [favorites])
+  useEffect(() => { save('playlists', playlists); keepTracks(playlists.flatMap((p) => p.trackIds)) }, [playlists])
+  useEffect(() => { save('recent', recent); keepTracks(recent.map((r) => r.id)) }, [recent])
   useEffect(() => { save('followed', followed) }, [followed])
+  useEffect(() => { save('remoteArtists', remoteArtists) }, [remoteArtists])
   useEffect(() => { save('playCounts', playCounts) }, [playCounts])
   useEffect(() => { save('searches', searches) }, [searches])
   useEffect(() => { save('profile', profile) }, [profile])
@@ -109,7 +112,9 @@ export function LibraryProvider({ children }) {
 
   const clearRecent = useCallback(() => setRecent([]), [])
 
-  const toggleFollow = useCallback((artistId) => {
+  // artistId: catalog id, or "au-user:<id>" for Audius artists (meta = {name, picture, handle})
+  const toggleFollow = useCallback((artistId, meta) => {
+    if (meta) setRemoteArtists((m) => ({ ...m, [artistId]: meta }))
     setFollowed((f) => (f.includes(artistId) ? f.filter((x) => x !== artistId) : [artistId, ...f]))
   }, [])
 
@@ -130,13 +135,13 @@ export function LibraryProvider({ children }) {
     playlists, createPlaylist, updatePlaylist, renamePlaylist, deletePlaylist,
     addToPlaylist, removeFromPlaylist, moveInPlaylist,
     recent, markPlayed, clearRecent, playCounts,
-    followed, toggleFollow,
+    followed, toggleFollow, remoteArtists,
     searches, addSearch, clearSearches,
     profile, setProfile,
     resetAll,
   }), [favorites, isFavorite, toggleFavorite, playlists, createPlaylist, updatePlaylist, renamePlaylist,
     deletePlaylist, addToPlaylist, removeFromPlaylist, moveInPlaylist, recent, markPlayed, clearRecent,
-    playCounts, followed, toggleFollow, searches, addSearch, clearSearches, profile, resetAll])
+    playCounts, followed, toggleFollow, remoteArtists, searches, addSearch, clearSearches, profile, resetAll])
 
   return <LibraryContext.Provider value={value}>{children}</LibraryContext.Provider>
 }

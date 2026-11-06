@@ -14,11 +14,12 @@ import Library, { Favorites, Playlists, Recent } from './views/Library.jsx'
 import PlaylistDetail from './views/PlaylistDetail.jsx'
 import { AlbumPage, ArtistPage, MoodPage, MoodsPage } from './views/Collections.jsx'
 import Settings from './views/Settings.jsx'
+import { AudiusArtistPage, GenrePage, TrendingPage } from './views/Audius.jsx'
 import NotFound from './views/NotFound.jsx'
 
 const TABS = [
   { to: '/', label: 'Start', icon: House, match: (p) => p === '/' || p.startsWith('/album') || p.startsWith('/artist') },
-  { to: '/discover', label: 'Entdecken', icon: Compass, match: (p) => p.startsWith('/discover') || p.startsWith('/mood') },
+  { to: '/discover', label: 'Entdecken', icon: Compass, match: (p) => p.startsWith('/discover') || p.startsWith('/mood') || p.startsWith('/audius') },
   { to: '/search', label: 'Suche', icon: SearchIcon, match: (p) => p.startsWith('/search') },
   { to: '/library', label: 'Bibliothek', icon: LibraryIcon, match: (p) => ['/library', '/favorites', '/playlists', '/playlist', '/recent'].some((x) => p.startsWith(x)) },
 ]
@@ -40,6 +41,11 @@ function View() {
     case 'artist': return <ArtistPage id={b} />
     case 'album': return <AlbumPage id={b} />
     case 'settings': return <Settings />
+    case 'audius':
+      if (b === 'trending') return <TrendingPage />
+      if (b === 'genre' && parts[2]) return <GenrePage genre={parts[2]} />
+      if (b === 'artist' && parts[2]) return <AudiusArtistPage id={parts[2]} />
+      return <NotFound />
     default: return <NotFound />
   }
 }

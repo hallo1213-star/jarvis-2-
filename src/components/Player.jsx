@@ -3,7 +3,7 @@ import {
   Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Repeat1, ChevronDown, Heart, ListMusic,
   Volume, Volume1, Volume2, VolumeX, MoreHorizontal, Maximize2, X, Loader2, ListPlus,
 } from 'lucide-react'
-import { trackById } from '../data/catalog.js'
+import { getTrack, artistPath } from '../data/tracks.js'
 import { usePlayer, useProgress } from '../store/PlayerContext.jsx'
 import { useLibrary } from '../store/LibraryContext.jsx'
 import { useUI } from '../store/UIContext.jsx'
@@ -76,6 +76,23 @@ function LineProgress() {
           onCommit={(v) => { seek(v); setDrag(null) }} label="Wiedergabeposition" />
       </div>
       <span className="time">{fmtTime(duration)}</span>
+    </div>
+  )
+}
+
+// Full-player progress for tracks without pre-computed waveform data (streamed tracks)
+function FullProgress() {
+  const { currentTime, duration, buffered } = useProgress()
+  const { seek } = usePlayer()
+  const [drag, setDrag] = useState(null)
+  const shown = drag ?? currentTime
+  return (
+    <div className="waveform-block full-progress" style={{ '--buf': duration ? (buffered / duration) * 100 + '%' : '0%' }}>
+      <Slider value={shown} max={duration || 1} onChange={setDrag} onCommit={(v) => { seek(v); setDrag(null) }} label="Wiedergabeposition" />
+      <div className="time-row">
+        <span>{fmtTime(shown)}</span>
+        <span>-{fmtTime(Math.max(0, (duration || 0) - shown))}</span>
+      </div>
     </div>
   )
 }
@@ -192,7 +209,8 @@ function QueueSheet({ open, onClose }) {
       <p className="queue-label">Als Nächstes {p.shuffle && <em>· Zufall</em>} {p.repeat === 'all' && <em>· Wiederholen</em>}</p>
       {upcoming.length === 0 && <p className="muted small-text">Keine weiteren Titel. {p.repeat === 'all' ? 'Die Warteschlange beginnt von vorn.' : ''}</p>}
       {upcoming.map(({ id, i }) => {
-        const t = trackById[id]
+        const t = getTrack(id)
+        if (!t) return null
         return (
           <div className="queue-row" key={id + i}>
             <button className="queue-play" onClick={() => p.playFromQueue(i)}>
@@ -324,7 +342,7 @@ export function FullPlayer() {
             }}
           >
             <div key={t.id} className={`fp-art ${p.isPlaying ? 'playing' : 'paused'} enter-${dir}`}>
-              <Cover src={t.cover} alt={`${t.album} Cover`} />
+              <Cover src={t.coverLarge || t.cover} alt={`${t.title} Cover`} />
               <div className="fp-art-shine" />
             </div>
           </div>
@@ -332,12 +350,13 @@ export function FullPlayer() {
           <div className="fp-info">
             <div className="fp-titles" key={t.id}>
               <h2>{t.title}</h2>
-              <button className="link-btn artist" onClick={() => goto(`/artist/${t.artistId}`)}>{t.artist}</button>
+              <button className="link-btn artist" onClick={() => goto(artistPath(t))}>{t.artist}</button>
+              {t.source === 'audius' && <span className="source-badge">via Audius</span>}
             </div>
             <FavButton id={t.id} size={26} />
           </div>
 
-          <Waveform track={t} />
+          {t.peaks ? <Waveform track={t} /> : <FullProgress />}
 
           <div className="fp-controls">
             <button className={`icon-btn ghost toggle ${p.shuffle ? 'on' : ''}`} onClick={p.toggleShuffle} aria-label="Zufallswiedergabe" aria-pressed={p.shuffle}><Shuffle size={22} /></button>

@@ -465,6 +465,10 @@ h1, h2, h3, p { margin: 0; }
 .waveform { position: relative; height: 54px; cursor: pointer; touch-action: none; }
 .waveform canvas { display: block; }
 .waveform.scrubbing { transform: scaleY(1.08); }
+.full-progress { padding-top: 12px; }
+.full-progress .slider { width: 100%; }
+.full-progress .slider-track { height: 6px; }
+.source-badge { display: inline-block; margin-left: 10px; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: var(--violet-3); background: rgba(139, 92, 246, 0.16); border: 1px solid rgba(167, 139, 250, 0.3); vertical-align: middle; }
 .time-row { display: flex; justify-content: space-between; font-size: 12px; font-variant-numeric: tabular-nums; color: rgba(255, 255, 255, 0.6); margin-top: 6px; }
 .fp-controls { display: flex; align-items: center; justify-content: space-between; margin: 6px -6px 14px; }
 .play-main {
@@ -524,6 +528,20 @@ h1, h2, h3, p { margin: 0; }
 .queue-meta strong { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .queue-meta span { color: var(--text-2); font-size: 13px; }
 .queue-row.current strong { color: var(--violet-3); }
+
+/* ------------------------------------------------------------ audius --- */
+.loading-row { display: flex; align-items: center; gap: 10px; padding: 18px 0; color: var(--text-2); font-size: 15px; }
+.load-error { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 16px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); color: var(--text-2); font-size: 14px; }
+.load-error svg { color: var(--violet-3); }
+.audius-credit { display: flex; align-items: center; gap: 6px; margin-top: 18px; font-size: 12px; color: var(--text-3); line-height: 1.4; }
+.audius-credit svg { flex: none; color: var(--violet-2); }
+.audius-credit a { color: var(--text-2); text-decoration: underline; }
+.card.skeleton .cover { background: linear-gradient(90deg, var(--surface) 0%, var(--surface-2) 50%, var(--surface) 100%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+.card.skeleton i { display: block; height: 12px; border-radius: 6px; background: var(--surface-2); width: 80%; }
+.card.skeleton i + i { width: 55%; margin-top: 4px; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+.collection-actions.left { justify-content: flex-start; margin: 4px 0 14px; }
+.filter-row.flush { margin-top: 0; margin-bottom: 14px; }
 
 /* -------------------------------------------------------------- toast ---- */
 .toasts { position: fixed; left: 0; right: 0; top: calc(var(--safe-top) + 10px); z-index: 100; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }

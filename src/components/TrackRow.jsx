@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { Heart, MoreHorizontal, Play, ChevronUp, ChevronDown } from 'lucide-react'
-import { trackById } from '../data/catalog.js'
+import { getTrack } from '../data/tracks.js'
 import { usePlayer } from '../store/PlayerContext.jsx'
 import { useLibrary } from '../store/LibraryContext.jsx'
 import { useUI } from '../store/UIContext.jsx'
@@ -8,7 +8,7 @@ import { toast } from '../store/toast.js'
 import { Cover, Equalizer, fmtTime } from './ui.jsx'
 
 function TrackRowInner({ id, ids, context, index, showCover = true, numbered, playlistId, onMove, count }) {
-  const t = trackById[id]
+  const t = getTrack(id)
   const player = usePlayer()
   const lib = useLibrary()
   const ui = useUI()

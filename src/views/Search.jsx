@@ -6,6 +6,7 @@ import { useRouter } from '../router.jsx'
 import { EmptyState, Section, Shelf } from '../components/ui.jsx'
 import { AlbumCard, ArtistCard, MoodCard, PlaylistCard } from '../components/Cards.jsx'
 import { TrackList } from '../components/TrackRow.jsx'
+import { AudiusSearch, GenreChips } from './Audius.jsx'
 
 const FILTERS = [['all', 'Alle'], ['tracks', 'Songs'], ['artists', 'Künstler'], ['albums', 'Alben'], ['playlists', 'Playlists']]
 
@@ -55,7 +56,7 @@ export default function Search() {
           ref={input}
           type="search"
           value={q}
-          placeholder="Songs, Künstler, Alben, Stimmungen"
+          placeholder="Was willst du hören?"
           onChange={(e) => setQ(e.target.value)}
           enterKeyHint="search"
           autoCorrect="off"
@@ -77,6 +78,9 @@ export default function Search() {
               </div>
             </Section>
           )}
+          <Section title="Genres">
+            <GenreChips />
+          </Section>
           <Section title="Stöbern nach Stimmung">
             <div className="mood-grid">{MOODS.map((m) => <MoodCard key={m.id} mood={m} />)}</div>
           </Section>
@@ -90,13 +94,13 @@ export default function Search() {
               <button key={k} role="tab" aria-selected={filter === k} className={`chip ${filter === k ? 'on' : ''}`} onClick={() => setFilter(k)}>{label}</button>
             ))}
           </div>
-          {total === 0 && <EmptyState icon={SearchX} title="Keine Treffer" text={`Für „${q}“ wurde nichts gefunden. Versuch es mit einem Künstler, Genre oder einer Stimmung wie „Chill“.`} />}
-          {show('tracks') && res.tracks.length > 0 && <Section title="Songs"><TrackList ids={res.tracks.map((t) => t.id)} context={ctx} /></Section>}
+          {(filter === 'all' || filter === 'tracks' || filter === 'artists') && <AudiusSearch query={q} filter={filter} />}
+          {show('tracks') && res.tracks.length > 0 && <Section title="AURIX Originals"><TrackList ids={res.tracks.map((t) => t.id)} context={ctx} /></Section>}
           {show('artists') && res.artists.length > 0 && <Section title="Künstler"><Shelf>{res.artists.map((a) => <ArtistCard key={a.id} artist={a} />)}</Shelf></Section>}
           {show('albums') && res.albums.length > 0 && <Section title="Alben"><Shelf>{res.albums.map((a) => <AlbumCard key={a.id} album={a} />)}</Shelf></Section>}
           {show('playlists') && playlists.length > 0 && <Section title="Deine Playlists"><Shelf>{playlists.map((p) => <PlaylistCard key={p.id} playlist={p} />)}</Shelf></Section>}
-          {filter !== 'all' && total > 0 && !((filter === 'tracks' && res.tracks.length) || (filter === 'artists' && res.artists.length) || (filter === 'albums' && res.albums.length) || (filter === 'playlists' && playlists.length)) && (
-            <EmptyState icon={SearchX} title="Nichts in dieser Kategorie" text="Wähle „Alle“, um sämtliche Treffer zu sehen." />
+          {((filter === 'albums' && !res.albums.length) || (filter === 'playlists' && !playlists.length)) && (
+            <EmptyState icon={SearchX} title="Nichts in dieser Kategorie" text={`Keine ${filter === 'albums' ? 'Alben' : 'Playlists'} für „${q}“.`} />
           )}
         </>
       )}

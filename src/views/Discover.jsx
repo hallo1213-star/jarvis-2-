@@ -7,6 +7,7 @@ import { Link } from '../router.jsx'
 import { Cover, PageHeader, Section, Shelf } from '../components/ui.jsx'
 import { AlbumCard, ArtistCard, MoodCard } from '../components/Cards.jsx'
 import { TrackList } from '../components/TrackRow.jsx'
+import { AudiusCredit, GenreChips, TrendingShelf } from './Audius.jsx'
 
 export default function Discover() {
   const { playCounts } = useLibrary()
@@ -19,7 +20,7 @@ export default function Discover() {
 
   return (
     <div className="page">
-      <PageHeader title="Entdecken" subtitle="Der komplette AURIX-Katalog – frei hörbar, ohne Limits." />
+      <PageHeader title="Entdecken" subtitle="Trends, Genres und die AURIX Originals – frei hörbar, ohne Limits." />
 
       <div className="hero-carousel">
         {ALBUMS.map((a) => (
@@ -35,10 +36,21 @@ export default function Discover() {
       </div>
 
       <button className="btn primary wide shuffle-all" onClick={() => player.playQueue(allIds, 0, { key: 'catalog', label: 'Gesamter Katalog', to: '/discover' }, { shuffle: true, randomStart: true })}>
-        <Shuffle size={18} /> Gesamten Katalog mischen
+        <Shuffle size={18} /> AURIX Originals mischen
       </button>
 
-      <Section title="Stimmungen">
+      <TrendingShelf title="Trending diese Woche" />
+
+      <Section title="Genres">
+        <GenreChips />
+      </Section>
+
+      <TrendingShelf title="Pop" genre="Pop" />
+      <TrendingShelf title="House" genre="House" />
+      <TrendingShelf title="R&B / Soul" genre="R&B/Soul" />
+      <AudiusCredit />
+
+      <Section title="Stimmungen (AURIX Originals)">
         <div className="mood-grid">{MOODS.map((m) => <MoodCard key={m.id} mood={m} />)}</div>
       </Section>
 
@@ -50,7 +62,7 @@ export default function Discover() {
         <Shelf>{ALBUMS.map((a) => <AlbumCard key={a.id} album={a} />)}</Shelf>
       </Section>
 
-      <Section title="Genres">
+      <Section title="Genres der AURIX Originals">
         <div className="chip-cloud">
           {genres.map((g) => <Link key={g} to={`/search?q=${encodeURIComponent(g.split(' ')[0])}`} className="chip">{g}</Link>)}
         </div>

@@ -1,12 +1,14 @@
 import { useMemo } from 'react'
 import { Search, Plus, Settings, Sparkles } from 'lucide-react'
-import { ALBUMS, ARTISTS, MOODS, TRACKS, trackById } from '../data/catalog.js'
+import { ALBUMS, ARTISTS, MOODS, TRACKS } from '../data/catalog.js'
+import { getTrack } from '../data/tracks.js'
 import { useLibrary } from '../store/LibraryContext.jsx'
 import { usePlayer } from '../store/PlayerContext.jsx'
 import { useUI } from '../store/UIContext.jsx'
 import { Link, useRouter } from '../router.jsx'
 import { Cover, Equalizer, Logo, Section, Shelf } from '../components/ui.jsx'
 import { AlbumCard, ArtistCard, MoodCard, PlaylistCard, TrackCard } from '../components/Cards.jsx'
+import { TrendingShelf } from './Audius.jsx'
 
 export function greeting(date = new Date()) {
   const h = date.getHours()
@@ -25,7 +27,7 @@ export function useRecommendations(limit = 8) {
     const artistScore = {}
     const seeds = [...favorites, ...recent.slice(0, 10).map((r) => r.id)]
     seeds.forEach((id) => {
-      const t = trackById[id]
+      const t = getTrack(id)
       if (!t) return
       t.moods.forEach((m) => { moodScore[m] = (moodScore[m] || 0) + 1 })
       artistScore[t.artistId] = (artistScore[t.artistId] || 0) + 1
@@ -71,12 +73,12 @@ export default function Home() {
 
       <div className="greeting">
         <h1>{greeting()}{name ? `, ${name}` : ''}</h1>
-        <p>Music without limits. Alles freigeschaltet – ohne Abo, ohne Werbung.</p>
+        <p>Millionen Songs, alles freigeschaltet – ohne Abo, ohne Werbung.</p>
       </div>
 
       <button className="search-launch" onClick={() => navigate('/search')}>
         <Search size={20} />
-        <span>Songs, Künstler, Alben, Stimmungen</span>
+        <span>Was willst du hören?</span>
       </button>
 
       <section className="section">
@@ -85,7 +87,8 @@ export default function Home() {
         </div>
         <div className="quick-grid">
           {quick.map((id) => {
-            const t = trackById[id]
+            const t = getTrack(id)
+            if (!t) return null
             const active = player.current?.id === id
             return (
               <button key={id} className={`quick-tile ${active ? 'active' : ''}`}
@@ -108,11 +111,17 @@ export default function Home() {
         <Cover src={featured.cover} className="hero-cover" />
       </Link>
 
-      <Section title="Für dich empfohlen">
+      <TrendingShelf title="Trending weltweit" />
+
+      <TrendingShelf title="Hip-Hop & Rap" genre="Hip-Hop/Rap" />
+
+      <Section title="Für dich empfohlen · AURIX Originals">
         <Shelf>
           {recs.map((t) => <TrackCard key={t.id} track={t} ids={recIds} context={{ key: 'home:recs', label: 'Für dich empfohlen', to: '/' }} />)}
         </Shelf>
       </Section>
+
+      <TrendingShelf title="Electronic" genre="Electronic" />
 
       <Section title="Neue Veröffentlichungen" action={<Link to="/discover" className="see-all">Entdecken</Link>}>
         <Shelf>{newReleases.map((a) => <AlbumCard key={a.id} album={a} />)}</Shelf>
@@ -122,7 +131,9 @@ export default function Home() {
         <Shelf>{MOODS.map((m) => <MoodCard key={m.id} mood={m} />)}</Shelf>
       </Section>
 
-      <Section title="Beliebte Künstler">
+      <TrendingShelf title="Lo-Fi zum Entspannen" genre="Lo-Fi" />
+
+      <Section title="AURIX-Künstler">
         <Shelf>{ARTISTS.map((a) => <ArtistCard key={a.id} artist={a} />)}</Shelf>
       </Section>
 
