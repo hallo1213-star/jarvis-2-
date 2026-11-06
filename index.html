@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>AURIX – Music without limits</title>
+    <meta name="description" content="AURIX – Premium Musik-Streaming. Music without limits." />
+    <meta name="theme-color" content="#050507" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="AURIX" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <link rel="apple-touch-startup-image" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1320x2868.png" />
+    <link rel="apple-touch-startup-image" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1206x2622.png" />
+    <link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1290x2796.png" />
+    <link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1179x2556.png" />
+    <link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1284x2778.png" />
+    <link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1170x2532.png" />
+    <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1125x2436.png" />
+    <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1242x2688.png" />
+    <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash/splash-828x1792.png" />
+    <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1242x2208.png" />
+    <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash/splash-750x1334.png" />
+    <link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash/splash-640x1136.png" />
+    <link rel="apple-touch-startup-image" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash/splash-2048x2732.png" />
+    <link rel="apple-touch-startup-image" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash/splash-1668x2388.png" />
+    <link rel="apple-touch-startup-image" media="(device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash/splash-1640x2360.png" />
+    <link rel="apple-touch-startup-image" media="(device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash/splash-1488x2266.png" />
+    <style>
+      html, body { background: #050507; margin: 0; }
+      #boot { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; background: radial-gradient(120% 80% at 50% 38%, #1d1430 0%, #07070b 55%, #000 100%); transition: opacity .6s ease, visibility .6s; }
+      #boot.done { opacity: 0; visibility: hidden; }
+      #boot .b-wrap { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+      #boot svg { width: 92px; height: 92px; animation: bootPulse 1.6s ease-in-out infinite; }
+      #boot .b-word { font: 700 26px/1 -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Inter, Helvetica, Arial, sans-serif; letter-spacing: .42em; padding-left: .42em; background: linear-gradient(90deg, #fff, #a9abba); -webkit-background-clip: text; background-clip: text; color: transparent; }
+      #boot .b-bars { display: flex; gap: 4px; height: 18px; align-items: flex-end; }
+      #boot .b-bars i { width: 3px; border-radius: 2px; background: linear-gradient(#c4b5fd, #7c3aed); animation: bootBar 1s ease-in-out infinite; }
+      #boot .b-bars i:nth-child(2) { animation-delay: -.2s } #boot .b-bars i:nth-child(3) { animation-delay: -.45s } #boot .b-bars i:nth-child(4) { animation-delay: -.7s } #boot .b-bars i:nth-child(5) { animation-delay: -.3s }
+      @keyframes bootPulse { 0%,100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(139,92,246,0)); } 50% { transform: scale(1.05); filter: drop-shadow(0 0 22px rgba(139,92,246,.55)); } }
+      @keyframes bootBar { 0%,100% { height: 4px } 50% { height: 18px } }
+      @media (prefers-reduced-motion: reduce) { #boot svg, #boot .b-bars i { animation: none; height: 10px } }
+    </style>
+  </head>
+  <body>
+    <div id="boot" aria-hidden="true">
+      <div class="b-wrap">
+        <svg viewBox="0 0 64 64"><defs><linearGradient id="bs" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#c4c6d2"/><stop offset="1" stop-color="#8e90a0"/></linearGradient></defs><circle cx="32" cy="32" r="26" fill="none" stroke="#8b5cf6" stroke-opacity=".35" stroke-width="6"/><circle cx="32" cy="32" r="26" fill="none" stroke="url(#bs)" stroke-width="3"/><path d="M14 42 L20.5 42 L32 16 L43.5 42 L50 42" fill="none" stroke="url(#bs)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M27 34 L37 34" stroke="#a47bff" stroke-width="3.6" stroke-linecap="round"/></svg>
+        <div class="b-word">AURIX</div>
+        <div class="b-bars"><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+    <div id="root"></div>
+    <noscript>AURIX benötigt JavaScript.</noscript>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
