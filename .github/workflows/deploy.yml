@@ -2,7 +2,7 @@ name: Deploy AURIX to GitHub Pages
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, claude/gallant-noether-9o623a]
   workflow_dispatch:
 
 permissions:
