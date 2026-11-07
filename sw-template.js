@@ -60,6 +60,8 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return
   const url = new URL(request.url)
   if (url.origin !== self.location.origin) return
+  // NOVA Drive (/navi/) is a separate app – never serve it from the AURIX shell cache
+  if (url.pathname.includes('/navi/')) return
 
   // Audio: cached → serve ranges locally; otherwise stream from network and cache for offline use
   if (url.pathname.includes('/audio/') && url.pathname.endsWith('.mp3')) {

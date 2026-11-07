@@ -11,7 +11,18 @@ function aurixServiceWorker() {
     apply: 'build',
     configResolved(cfg) { outDir = cfg.build.outDir },
     writeBundle(_, bundle) {
-      const assets = Object.keys(bundle).filter((f) => /\.(js|css)$/.test(f))
+      // Only precache what the AURIX entry needs (NOVA Drive chunks like TensorFlow stay out)
+      const seen = new Set()
+      const visit = (f) => {
+        const c = bundle[f]
+        if (!c || seen.has(f)) return
+        seen.add(f)
+        if (c.type !== 'chunk') return
+        c.viteMetadata?.importedCss?.forEach((css) => seen.add(css))
+        ;[...c.imports, ...c.dynamicImports].forEach(visit)
+      }
+      Object.values(bundle).filter((c) => c.type === 'chunk' && c.isEntry && c.name === 'main').forEach((c) => visit(c.fileName))
+      const assets = [...seen].filter((f) => /\.(js|css)$/.test(f))
       const list = (dir) => readdirSync(join(outDir, dir)).map((f) => `${dir}/${f}`)
       const precache = ['./', 'index.html', 'manifest.webmanifest', 'favicon.svg',
         ...list('icons'), ...list('covers'), ...assets]
@@ -29,6 +40,11 @@ function aurixServiceWorker() {
 export default defineConfig({
   base: './',
   plugins: [react(), aurixServiceWorker()],
-  build: { target: ['es2020', 'safari15'], assetsInlineLimit: 0 },
+  build: {
+    target: ['es2020', 'safari15'],
+    assetsInlineLimit: 0,
+    // Two apps in one build: AURIX (music, /) and NOVA Drive (navigation, /navi/)
+    rollupOptions: { input: { main: 'index.html', navi: 'navi/index.html' } },
+  },
   server: { host: true },
 })

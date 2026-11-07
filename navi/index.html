@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+    <title>NOVA Drive</title>
+    <meta name="description" content="NOVA Drive – Navi mit KI an Bord und Kamera-Erkennung der Autos vor dir." />
+    <meta name="theme-color" content="#05070d" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="NOVA Drive" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <link rel="apple-touch-icon" href="./icon-180.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      html, body { background: #05070d; margin: 0; height: 100%; }
+      #boot { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; background: radial-gradient(90% 60% at 50% 40%, #1a1450 0%, #05070d 70%); color: #e8ecff; font: 800 22px/1 Inter, system-ui, sans-serif; letter-spacing: .3em; transition: opacity .5s, visibility .5s; }
+      #boot.done { opacity: 0; visibility: hidden; }
+    </style>
+  </head>
+  <body>
+    <div id="boot">NOVA</div>
+    <div id="root"></div>
+    <script type="module" src="/src-navi/main.jsx"></script>
+  </body>
+</html>

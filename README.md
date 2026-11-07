@@ -63,3 +63,36 @@ src/
 scripts/       Musik-, Icon- und Cover-Generatoren
 sw-template.js Service Worker (wird beim Build mit Precache-Liste erzeugt)
 ```
+
+---
+
+# NOVA Drive – Navi mit KI an Bord
+
+Zweite App in diesem Repo, erreichbar unter **`/navi/`** (z. B. `https://<name>.github.io/<repo>/navi/`). Kein Standard-Navi: dunkles Neon-Cockpit, 3D-Fahransicht, KI-Beifahrer und Kamera-Erkennung der Autos vor dir.
+
+## Funktionen
+
+- **3D-Navigation:** neonfarbene Karte mit 3D-Gebäuden, leuchtende Route mit Farbverlauf, Kamera folgt Fahrtrichtung und zoomt je nach Tempo, 2D/3D-Umschalter
+- **Zielführung:** Ortssuche mit Entfernungen, Ziel per langem Druck auf die Karte, alternative Routen, Abbiegehinweise mit „Danach“-Vorschau, Ankunftszeit, deutsche Sprachansagen, automatische Neuberechnung beim Verfahren
+- **Tacho & Tempolimit:** Geschwindigkeit aus GPS, Tempolimit aus OpenStreetMap, Warnung beim Zu-schnell-Fahren
+- **NOVA (KI):** Chat und Sprache (Mikrofon) – rede über alles. NOVA kann selbst Ziele suchen und die Navigation starten („Bring mich zur nächsten Tankstelle“), kennt Tempo, Route und die Autos vor dir und nutzt die Websuche für aktuelle Infos. Antworten werden vorgelesen.
+- **Autos vor dir:** Kamera-Symbol antippen, Handy mit der Rückkamera nach vorne in die Halterung. Die KI erkennt PKW, LKW, Busse, Motorräder, Fahrräder und Personen live auf dem Gerät (TensorFlow.js), schätzt Abstand und Annäherung, zeigt sie auf Radar und Karte und warnt bei zu wenig Abstand („halber Tacho“) mit Ton und rotem Rand. Vollbild = AR-Modus mit Abbiegepfeil.
+- **Demo-Fahrt:** fährt die Route virtuell ab – ideal zum Ausprobieren am Schreibtisch
+
+## KI einrichten
+
+NOVA nutzt Claude von Anthropic. Einen API-Schlüssel gibt es unter console.anthropic.com → in der App auf ⚙️ → eintragen. Der Schlüssel bleibt im Browser (LocalStorage) und wird nur an `api.anthropic.com` geschickt. Für eine öffentliche Version solltest du statt eines Schlüssels im Browser einen kleinen eigenen Server (Proxy) verwenden.
+
+## Hinweise
+
+- Kamera-Abstände sind Schätzungen (aus der Größe des erkannten Fahrzeugs) – Unterstützung, kein Sicherheitssystem. Echtzeitdaten anderer Autos (Car-to-Car) sind für Apps nicht frei verfügbar, deshalb die Kamera-Lösung.
+- Kostenlose Dienste ohne Schlüssel: Karten OpenFreeMap/OpenStreetMap (Rückfall: CARTO), Routing OSRM-Demo-Server, Suche Photon, Tempolimits Overpass. Der OSRM-Demo-Server ist für Tests gedacht; für viele Nutzer einen eigenen Routing-Server oder Anbieter nutzen.
+- Kamera, GPS und Mikrofon brauchen HTTPS (GitHub Pages passt).
+
+```
+navi/index.html     Einstieg NOVA Drive
+src-navi/
+  App.jsx           Oberfläche, Zielführung, Demo-Fahrt, Warnungen
+  components/       MapView (MapLibre), CarVision (Kamera + Objekterkennung), Radar, Icons
+  lib/              ai.js (Claude), services.js (Routing/Suche/Tempolimit), geo.js, voice.js
+```
