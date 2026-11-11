@@ -63,6 +63,24 @@ export class Figure {
       add(this.head, new THREE.SphereGeometry(0.022, 6, 6).scale(0.5, 1, 0.8), mats.haut, s * 0.108, 0.1, 0);
     }
     add(this.head, new THREE.ConeGeometry(0.016, 0.04, 6).rotateX(Math.PI / 2), mats.haut, 0, 0.085, 0.118);
+    // Accessoires (für benannte Einwohner): lange Haare, Weihnachtsmütze, Basecap
+    if (look.langeHaare) {
+      add(this.head, new THREE.BoxGeometry(0.25, 0.3, 0.07), mats.haare, 0, -0.02, -0.085);
+      for (const sx of [-1, 1]) add(this.head, new THREE.BoxGeometry(0.05, 0.22, 0.12), mats.haare, sx * 0.112, 0.0, -0.02);
+      add(this.head, new THREE.BoxGeometry(0.21, 0.045, 0.04), mats.haare, 0, 0.19, 0.095); // Pony
+    }
+    if (look.hut === 'weihnacht') {
+      const rot = M(0xc8102e, 0.7), weiss = M(0xf4f4f0, 0.95);
+      add(this.head, new THREE.TorusGeometry(0.118, 0.032, 8, 20).rotateX(Math.PI / 2), weiss, 0, 0.2, -0.005);
+      const cone = add(this.head, new THREE.ConeGeometry(0.115, 0.3, 14).translate(0, 0.15, 0), rot, 0, 0.21, -0.01);
+      cone.rotation.set(-0.55, 0, 0.25);
+      add(this.head, new THREE.SphereGeometry(0.04, 8, 8), weiss, 0.07, 0.42, -0.16);
+    }
+    if (look.hut === 'cap') {
+      const cm = M(look.capFarbe || 0x161616, 0.7);
+      add(this.head, new THREE.SphereGeometry(0.124, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.5).scale(1, 0.85, 1.05), cm, 0, 0.165, -0.008);
+      add(this.head, new THREE.CylinderGeometry(0.12, 0.12, 0.012, 16, 1, false, -Math.PI / 2, Math.PI).scale(1, 1, 1.25), cm, 0, 0.17, 0.07);
+    }
 
     this.arms = []; this.legs = [];
     for (const s of [-1, 1]) {
@@ -83,6 +101,8 @@ export class Figure {
     this.action = 'idle'; this.actionT = 0;
   }
 
+  // Aufhellung (z. B. am Abend im Schatten): Grundfarbe leicht selbstleuchtend
+  setFill(k) { for (const m of this.meshes) { const mat = m.userData.orig || m.material; if (mat.emissive) { mat.emissive.copy(mat.color); mat.emissiveIntensity = k; } } }
   setHolo(mat) { this.holo = mat; for (const m of this.meshes) { m.userData.orig = m.userData.orig || m.material; m.material = mat; m.castShadow = false; } }
   setNormal() { for (const m of this.meshes) { if (m.userData.orig) m.material = m.userData.orig; m.castShadow = true; } this.holo = null; }
 

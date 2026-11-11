@@ -1,0 +1,155 @@
+{
+  "folge": 2,
+  "titel": "Bevor der Tag endet",
+  "licht": "abend",
+  "_hinweis": "Folge 2 – noch Tag 1, kurz vor Sonnenuntergang. Michelle eröffnet einen Dönerladen, Dean wird Einwohner Nr. 2, 40.000 € Einzahlung, Militärstation (20.000 €) mit nur einer Rakete.",
+  "stimme": { "modell": "de_DE-thorsten-high", "tempo": 1.05, "lebendigkeit": 0.72, "rhythmus": 0.85, "tonhoehe_halbtoene": 1.0 },
+  "aussprache": { "Follower": "Follohuer", "Michelle": "Mischell", "Michelles": "Mischells", "Dean": "Dien" },
+  "musik": { "stil": "dunkel-hoffnungsvoll", "tonart": "d-moll", "bpm": 84 },
+
+  "szenen": [
+    {
+      "id": "s1_abend", "name": "Bevor der Tag endet", "vorlauf": 0.8, "nachlauf": 0.35,
+      "sprecher": "*Bevor* *der* *Tag* *endet*, | ist in unserer Stadt noch *einiges* passiert.",
+      "shots": [
+        { "typ": "pfad", "anteil": 1.0, "fov": [44, 48], "wackeln": 0.25,
+          "keys": [
+            { "pos": [400, 420, 440], "ziel": [0, 0, 0] },
+            { "pos": [190, 240, 210], "ziel": [0, 0, 0] },
+            { "pos": [75, 55, 70], "ziel": [10, 2, 5] }
+          ] }
+      ],
+      "effekte": [
+        { "typ": "titel", "zeit": 0.15, "dauer": 2.6, "text": "BEVOR DER TAG ENDET", "unter": "FOLGE 2 · DIE LETZTEN 7 TAGE" }
+      ],
+      "toene": [ { "typ": "boom", "zeit": 0.05 }, { "typ": "wind_swell", "zeit": 0.0 }, { "typ": "whoosh", "ende": -0.25 } ]
+    },
+    {
+      "id": "s2_kommentar", "name": "Michelles Kommentar", "uebergang": "blitz", "vorlauf": 0.3, "nachlauf": 0.35,
+      "sprecher": "*Michelle* hat kommentiert: |0.35| Darf ich einen *Dönerladen* eröffnen?",
+      "shots": [
+        { "typ": "orbit", "anteil": 1.0, "ziel": "figur+0,1.3,0", "radius": [6.5, 5.4], "hoehe": [1.3, 1.0], "winkel": [160, 128], "fov": [34, 30], "wackeln": 0.2 }
+      ],
+      "figur": [ { "zeit": 0.0, "aktion": "umsehen", "richtung": 180 } ],
+      "effekte": [
+        { "typ": "spieler_label", "zeit": 0.0, "dauer": 99 },
+        { "typ": "kommentare", "zeit": 0.3, "dauer": 4.0, "liste": [
+          { "name": "Michelle", "anzeige": "{~Michelle~} · Freund*innen", "text": "Darf ich ein dönerladen eröffnen", "avatar": "folgen/assets/michelle.jpg", "likes": 1 }
+        ] }
+      ],
+      "toene": [ { "typ": "whoosh_down", "zeit": 0.0 }, { "typ": "blip", "zeit": 0.35 } ]
+    },
+    {
+      "id": "s3_doener", "name": "Michelles Döner", "uebergang": "schnitt", "vorlauf": 0.25, "nachlauf": 0.5,
+      "sprecher": "Na *klar*! |0.35| Willkommen in der Stadt, *Michelle*! | Hier ist dein eigener Laden: |0.35| *Michelles* *Döner*!",
+      "shots": [
+        { "typ": "pfad", "anteil": 1.0, "fov": [44, 38], "wackeln": 0.2, "ease": "inOutCubic",
+          "keys": [
+            { "pos": [24, 14, -22], "ziel": [62, 3, 0] },
+            { "pos": [36, 6, -12], "ziel": [60, 3, 0] },
+            { "pos": [49, 1.8, -14.5], "ziel": [55, 2.3, -5.8] }
+          ] }
+      ],
+      "effekte": [
+        { "typ": "bau", "zeit": 0.1, "dauer": 3.2, "platz": "B2", "gebaeude": "doener", "name": "MICHELLES DÖNER", "form": "halle" },
+        { "typ": "werte", "zeit": 2.4, "gebaeude": 1, "entwicklung_prozent": 6 },
+        { "typ": "bewohner", "wort": "Willkommen", "offset": -0.1, "name": "Michelle", "nr": 1, "pos": [55.0, -5.8], "richtung": -90, "avatar": "folgen/assets/michelle.jpg",
+          "look": { "jacke": "0x1a1a1c", "kragen": "0x111111", "hose": "0x1b1b22", "haut": "0xefc6a8", "haare": "0x16100c", "schuhe": "0xe6e6e6", "langeHaare": true, "hut": "weihnacht", "rucksack": "0x1a1a1c", "gurt": "0x1a1a1c" } },
+        { "typ": "callout", "wort": "Michelles", "offset": -0.1, "dauer": 2.4, "anker": [57, 7.5, 0], "titel": "MICHELLES DÖNER", "unter": "ERSTER LADEN DER STADT" }
+      ],
+      "toene": [ { "typ": "build", "zeit": 0.1 }, { "typ": "riser", "zeit": 0.3, "dauer": 1.4 }, { "typ": "boom", "zeit": 1.7 }, { "typ": "spawn", "wort": "Willkommen", "offset": -0.1 }, { "typ": "shimmer", "wort": "Michelles" } ]
+    },
+    {
+      "id": "s4_dean", "name": "Dean", "uebergang": "schnitt", "vorlauf": 0.3, "nachlauf": 0.45,
+      "sprecher": "Und wir haben einen neuen *Follower*: |0.35| *Dean*! |0.35| Willkommen, Dean. | Du bist jetzt offiziell Einwohner Nummer *zwei*.",
+      "shots": [
+        { "typ": "pfad", "anteil": 1.0, "fov": [40, 34], "wackeln": 0.2,
+          "keys": [
+            { "pos": [-5.5, 2.6, 26.5], "ziel": [2.5, 1.3, 18.5] },
+            { "pos": [-2.6, 1.9, 22.6], "ziel": [2.5, 1.4, 18.5] }
+          ] }
+      ],
+      "effekte": [
+        { "typ": "follower_karte", "wort": "Follower", "offset": -0.1, "dauer": 2.9, "name": "Dean", "avatar": "folgen/assets/dean.jpg", "text": "NEUER FOLLOWER", "unter": "EINWOHNER #2" },
+        { "typ": "bewohner", "wort": "Willkommen", "offset": -0.25, "name": "Dean", "nr": 2, "pos": [2.5, 18.5], "richtung": -50, "avatar": "folgen/assets/dean.jpg",
+          "look": { "jacke": "0x7d7f84", "kragen": "0x2a2a2a", "hose": "0x16161a", "haut": "0xe8c0a0", "haare": "0x1a1410", "schuhe": "0xf0f0f0", "hut": "cap", "capFarbe": "0x121212", "rucksack": "0x2a2a2a", "gurt": "0x2a2a2a" } }
+      ],
+      "toene": [ { "typ": "shimmer", "wort": "Follower", "offset": -0.1 }, { "typ": "spawn", "wort": "Willkommen", "offset": -0.25 }, { "typ": "blip", "wort": "zwei" } ]
+    },
+    {
+      "id": "s5_geschenk", "name": "Mein Geschenk", "uebergang": "blitz", "vorlauf": 0.3, "nachlauf": 0.45,
+      "sprecher": "Und jetzt mein *Geschenk* an euch: |0.35| Ich lege *vierzigtausend* *Euro* in die Stadtkasse. | Damit haben wir *fünfzigtausend* *Euro*!",
+      "shots": [
+        { "typ": "orbit", "anteil": 1.0, "ziel": [0, 0, 0], "radius": [150, 115], "hoehe": [90, 62], "winkel": [15, 60], "fov": [42, 40], "wackeln": 0.15 }
+      ],
+      "effekte": [
+        { "typ": "geld", "wort": "vierzigtausend", "offset": 0.1, "betrag": 40000, "text": "GESCHENK" },
+        { "typ": "werte", "wort": "vierzigtausend", "offset": 0.2, "dauer": 1.6, "stadtkasse": 50000 }
+      ],
+      "toene": [ { "typ": "whoosh", "zeit": 0.0 }, { "typ": "kasse", "wort": "vierzigtausend", "offset": 0.1 } ]
+    },
+    {
+      "id": "s6_militaer", "name": "Militärstation", "uebergang": "schnitt", "vorlauf": 0.3, "nachlauf": 0.5,
+      "sprecher": "Davon kaufe ich eine *Militärstation*, | für *zwanzigtausend* *Euro*. |0.45| Leider reicht es nur für !eine! !Rakete!. |0.45| Aber immerhin: | Wir sind nicht mehr *wehrlos*.",
+      "shots": [
+        { "typ": "orbit", "anteil": 1.0, "ziel": [-74, 4, 0], "radius": [80, 60], "hoehe": [44, 24], "winkel": [55, 112], "fov": [44, 40], "wackeln": 0.2 },
+        { "typ": "pfad", "ab_wort": "Leider", "offset": -0.25, "anteil": 1.0, "fov": [42, 36], "wackeln": 0.25,
+          "keys": [
+            { "pos": [-52, 3.0, 17], "ziel": [-66, 3.2, 7.5] },
+            { "pos": [-56.5, 2.6, 13.5], "ziel": [-66, 3.6, 7.5] }
+          ] },
+        { "typ": "pfad", "ab_wort": "Aber", "offset": -0.2, "anteil": 1.0, "fov": [44, 46], "wackeln": 0.2,
+          "keys": [
+            { "pos": [-40, 10, 22], "ziel": [-74, 4, 0] },
+            { "pos": [-30, 26, 40], "ziel": [-74, 2, -4] }
+          ] }
+      ],
+      "effekte": [
+        { "typ": "bau", "zeit": 0.2, "dauer": 3.4, "platz": "B1", "gebaeude": "militaer", "name": "MILITÄRSTATION", "form": "halle" },
+        { "typ": "geld", "wort": "zwanzigtausend", "offset": 0.1, "betrag": -20000, "text": "MILITÄRSTATION" },
+        { "typ": "werte", "wort": "zwanzigtausend", "offset": 0.2, "dauer": 1.6, "stadtkasse": 30000, "gebaeude": 2, "entwicklung_prozent": 15, "entwicklung_stufe": "SIEDLUNG" },
+        { "typ": "callout", "wort": "Rakete", "offset": -0.3, "dauer": 2.6, "anker": [-65, 4.5, 8], "titel": "RAKETEN: 1 / 4", "unter": "MEHR WAR NICHT DRIN …", "farbe": "#ff5050" }
+      ],
+      "toene": [ { "typ": "build", "zeit": 0.2 }, { "typ": "boom", "zeit": 2.0 }, { "typ": "kasse_minus", "wort": "zwanzigtausend", "offset": 0.1 }, { "typ": "impact", "wort": "Rakete", "offset": -0.2 }, { "typ": "whoosh", "wort": "Aber", "offset": -0.3 } ]
+    },
+    {
+      "id": "s7_ende", "name": "Ende", "uebergang": "schnitt", "vorlauf": 0.35, "nachlauf": 2.3,
+      "sprecher": "In der Kasse bleiben *dreißigtausend* *Euro*. |0.35| Was sollen wir als *Nächstes* bauen? | Schreibt es in die *Kommentare*! |0.3| Und jeder neue *Follower* wird ein neuer *Einwohner*!",
+      "shots": [
+        { "typ": "pfad", "anteil": 1.0, "fov": [40, 46], "wackeln": 0.12, "ease": "inOutSine",
+          "keys": [
+            { "pos": "figur+-2.6,1.7,-3.6", "ziel": "figur+0,1.4,0" },
+            { "pos": "figur+-14,12,-18", "ziel": "figur+0,1,0" },
+            { "pos": [-160, 260, -300], "ziel": [0, 0, 0] },
+            { "pos": [-260, 620, -470], "ziel": [0, 0, 20] }
+          ] }
+      ],
+      "figur": [ { "zeit": 0.0, "aktion": "winken", "richtung": 180 } ],
+      "effekte": [
+        { "typ": "frage", "wort": "Was", "dauer": 2.4, "text": "WAS BAUEN WIR ALS NÄCHSTES?" },
+        { "typ": "endkarte", "wort": "Schreibt", "offset": -0.2, "kasse": true },
+        { "typ": "kommentar_cta", "wort": "Kommentare", "offset": -0.3 }
+      ],
+      "toene": [ { "typ": "whoosh_up", "zeit": 0.0 }, { "typ": "boom", "wort": "Schreibt", "offset": -0.2 }, { "typ": "blip", "wort": "Kommentare" }, { "typ": "shimmer", "wort": "Einwohner", "offset": -0.1 }, { "typ": "final_hit", "ende": -1.9 } ]
+    }
+  ],
+
+  "ergebnis": {
+    "tag": 1,
+    "verbleibende_tage": 7,
+    "einwohner": 2,
+    "stadtkasse": 30000,
+    "entwicklung_prozent": 15,
+    "entwicklung_stufe": "SIEDLUNG",
+    "neue_gebaeude": [
+      { "typ": "doener", "platz": "B2", "name": "MICHELLES DÖNER", "status": "fertig" },
+      { "typ": "militaer", "platz": "B1", "name": "MILITÄRSTATION", "status": "fertig", "raketen": 1 }
+    ],
+    "neue_bewohner": [
+      { "name": "Michelle", "nr": 1, "pos": [55.0, -5.8], "richtung": -90, "avatar": "folgen/assets/michelle.jpg", "rolle": "Besitzerin von Michelles Döner",
+        "look": { "jacke": "0x1a1a1c", "kragen": "0x111111", "hose": "0x1b1b22", "haut": "0xefc6a8", "haare": "0x16100c", "schuhe": "0xe6e6e6", "langeHaare": true, "hut": "weihnacht", "rucksack": "0x1a1a1c", "gurt": "0x1a1a1c" } },
+      { "name": "Dean", "nr": 2, "pos": [2.5, 18.5], "richtung": -50, "avatar": "folgen/assets/dean.jpg",
+        "look": { "jacke": "0x7d7f84", "kragen": "0x2a2a2a", "hose": "0x16161a", "haut": "0xe8c0a0", "haare": "0x1a1410", "schuhe": "0xf0f0f0", "hut": "cap", "capFarbe": "0x121212", "rucksack": "0x2a2a2a", "gurt": "0x2a2a2a" } }
+    ]
+  }
+}

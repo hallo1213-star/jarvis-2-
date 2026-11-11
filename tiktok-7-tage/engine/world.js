@@ -29,6 +29,7 @@ export const U = {
   sunDir: { value: new THREE.Vector3(-1, 0.36, -0.42).normalize() },
   blockMap: { value: null },
   alarm: { value: 0 },
+  litThr: { value: 0.972 },
 };
 
 function blockType(i, j) {
@@ -57,7 +58,7 @@ float fbm(vec2 p){ float a=0.5, s=0.0; for(int i=0;i<5;i++){ s+=a*vnoise(p); p=p
 
 function patchStandard(mat, { vertexDecl = '', vertexBody = '', fragDecl = '', colorBody = '', roughBody = '', emisBody = '' }) {
   mat.onBeforeCompile = (sh) => {
-    Object.assign(sh.uniforms, { uTime: U.time, uSkyTop: U.skyTop, uSkyHor: U.skyHor, uSunCol: U.sunCol, uSunDir: U.sunDir, uBlockMap: U.blockMap, uAlarm: U.alarm });
+    Object.assign(sh.uniforms, { uLitThr: U.litThr, uTime: U.time, uSkyTop: U.skyTop, uSkyHor: U.skyHor, uSunCol: U.sunCol, uSunDir: U.sunDir, uBlockMap: U.blockMap, uAlarm: U.alarm });
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', `#include <common>\nvarying vec3 vWP; varying vec3 vWN;\n${vertexDecl}`)
       .replace('#include <begin_vertex>', `#include <begin_vertex>
@@ -71,7 +72,7 @@ function patchStandard(mat, { vertexDecl = '', vertexBody = '', fragDecl = '', c
         ${vertexBody}`);
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', `#include <common>
-        uniform float uTime; uniform float uAlarm; uniform vec3 uSkyTop; uniform vec3 uSkyHor; uniform vec3 uSunCol; uniform vec3 uSunDir;
+        uniform float uLitThr; uniform float uTime; uniform float uAlarm; uniform vec3 uSkyTop; uniform vec3 uSkyHor; uniform vec3 uSunCol; uniform vec3 uSunDir;
         uniform sampler2D uBlockMap;
         varying vec3 vWP; varying vec3 vWN;
         ${NOISE}
@@ -139,7 +140,7 @@ function buildingMaterial() {
           float refl = (bKind < 0.5 ? 1.0 : 0.55) * (0.06 + 0.6*fres) * mix(0.75 + 0.5*h21(vec2(cu*1.3, fl+bId)), 1.0, lod);
           vec3 ge = sky * refl;
           float lit = (1.0 - lod*0.7);
-          if (hh > 0.972) {
+          if (hh > uLitThr) {
             float fl2 = hh > 0.994 ? step(0.4, fract(sin(floor(uTime*11.0) + cu*7.0)*43758.5)) : 1.0;
             ge += vec3(1.0, 0.6, 0.3) * 0.85 * fl2 * (0.5 + 0.5*fract(hh*91.0)) * lit;
           } else if (hh < 0.035) { gcol = mix(vec3(0.0), gcol, lod); ge *= mix(0.15, 1.0, lod); }
@@ -348,7 +349,8 @@ export function textTexture(lines, { w = 1024, h = 256, bg = 'rgba(0,0,0,0)', co
   g.textAlign = align; g.textBaseline = 'middle'; g.fillStyle = color; g.font = font;
   if (glow) { g.shadowColor = color; g.shadowBlur = glow; }
   const arr = Array.isArray(lines) ? lines : [lines];
-  arr.forEach((l, i) => g.fillText(l, align === 'center' ? w / 2 : 30, h * (i + 1) / (arr.length + 1)));
+  arr.forEach((l, i) => { const mw = g.measureText(l).width; const sx = Math.min(1, (w - 60) / mw);
+    g.save(); g.translate(align === 'center' ? w / 2 : 30, h * (i + 1) / (arr.length + 1)); g.scale(sx, 1); g.fillText(l, 0, 0); g.restore(); });
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
 }
 
@@ -527,7 +529,15 @@ function makeLotDecor(root, lots, fenceMat) {
 }
 
 // ================================================================ Welt aufbauen
-export function buildWorld(scene, { seed = 7071 } = {}) {
+// Lichtstimmungen pro Folge ("licht" im Drehbuch): standard = goldene Stunde, abend = kurz vor Sonnenuntergang
+export const LICHT = {
+  standard: { sunDir: [-1, 0.36, -0.42], sunCol: 0xffbf88, skyTop: 0x22385c, skyHor: 0xe39a66, fog: 0x8a7066, hemiSky: 0x9cb6de, hemiI: 1.35, sunI: 3.8, lit: 0.972, laternen: false, exposure: 1.2 },
+  abend: { sunDir: [-1, 0.2, -0.3], sunCol: 0xff9a5c, skyTop: 0x1a2a4c, skyHor: 0xe0784e, fog: 0x7a5a58, hemiSky: 0x8096c8, hemiI: 1.15, sunI: 3.4, lit: 0.93, laternen: true, exposure: 1.25 },
+};
+
+export function buildWorld(scene, { seed = 7071, licht = 'standard' } = {}) {
+  const L = LICHT[licht] || LICHT.standard;
+  U.sunDir.value.set(...L.sunDir).normalize(); U.sunCol.value.set(L.sunCol); U.skyTop.value.set(L.skyTop); U.skyHor.value.set(L.skyHor); U.litThr.value = L.lit;
   const rng = makeRng(seed);
   // Blocktyp-Karte für den Boden-Shader
   const data = new Uint8Array(32 * 32 * 4);
@@ -539,11 +549,11 @@ export function buildWorld(scene, { seed = 7071 } = {}) {
   U.blockMap.value = bm;
 
   scene.add(makeSky());
-  scene.fog = new THREE.FogExp2(0x8a7066, 0.00095);
+  scene.fog = new THREE.FogExp2(L.fog, 0.00095);
 
   // Licht
-  const hemi = new THREE.HemisphereLight(0x9cb6de, 0x3a2c22, 1.35); scene.add(hemi);
-  const sun = new THREE.DirectionalLight(0xffc596, 3.8);
+  const hemi = new THREE.HemisphereLight(L.hemiSky, 0x3a2c22, L.hemiI); scene.add(hemi);
+  const sun = new THREE.DirectionalLight(L.sunCol, L.sunI);
   sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.6;
   scene.add(sun); scene.add(sun.target);
 
@@ -712,6 +722,12 @@ export function buildWorld(scene, { seed = 7071 } = {}) {
   const carMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.35, metalness: 0.45 });
   const treeMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9, flatShading: true });
   scene.add(instanced(lampGeometry(), propMat, lamps.map((l) => ({ ...l, y: SLAB }))));
+  if (L.laternen) {  // Straßenlaternen leuchten am Abend
+    const glowMat = new THREE.MeshStandardMaterial({ color: 0x111111, emissive: 0xffc27a, emissiveIntensity: 3.2 });
+    scene.add(instanced(new THREE.BoxGeometry(0.5, 0.06, 0.24).translate(1.65, 7.28, 0), glowMat, lamps.map((l) => ({ ...l, y: SLAB })), { shadow: false }));
+    const poolMat = new THREE.MeshBasicMaterial({ color: 0xffb060, transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, depthWrite: false });
+    scene.add(instanced(new THREE.CircleGeometry(4.5, 20).rotateX(-Math.PI / 2).translate(1.65, 0.05, 0), poolMat, lamps.map((l) => ({ ...l, y: SLAB })), { shadow: false, receive: false }));
+  }
   scene.add(instanced(treeGeometry(), treeMat, trees, { colorFn: (p) => p.c }));
   scene.add(instanced(carGeometry(), carMat, carsF.map((c) => ({ ...c, y: 0 })), { colorFn: (p) => p.c }));
   scene.add(instanced(benchGeometry(), propMat, benches));
@@ -732,7 +748,7 @@ export function buildWorld(scene, { seed = 7071 } = {}) {
 
   const tmpV = new THREE.Vector3(); const ray = new THREE.Vector3();
   return {
-    sun, hemi, plaza, dust, market,
+    sun, hemi, plaza, dust, market, exposure: L.exposure,
     setLotFree(name, frei) { for (const o of lotObjs[name] || []) o.visible = frei; },
     lotPos(name) { const [i, j] = BAUPLAETZE[name]; return new THREE.Vector3(i * P, SLAB, j * P); },
     update(t, camera) {

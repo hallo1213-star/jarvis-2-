@@ -12,7 +12,7 @@ echo "== Folge $PAD: Rendern";            node pipeline/render.js "$NR" "$@"
 echo "== Folge $PAD: Zusammenführen"
 mkdir -p ausgabe
 ffmpeg -y -loglevel error -i "build/folge-$PAD/video_stumm.mp4" -i "build/folge-$PAD/mix.wav" \
-  -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -ar 48000 -shortest -movflags +faststart \
+  -map 0:v -map 1:a -c:v libx264 -preset slow -crf 20 -maxrate 14M -bufsize 28M -profile:v high -level 4.1 -pix_fmt yuv420p -c:a aac -b:a 192k -ar 48000 -shortest -movflags +faststart \
   -metadata title="Die letzten 7 Tage – Folge $NR" "ausgabe/folge-$PAD.mp4"
 cp "build/folge-$PAD/untertitel.srt" "ausgabe/folge-$PAD.srt"
 echo "Fertig: ausgabe/folge-$PAD.mp4"

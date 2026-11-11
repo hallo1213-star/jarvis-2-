@@ -52,6 +52,13 @@ function icon(g, kind, x, y, s, color) {
   g.restore();
 }
 
+function avatar(g, img, x, y, r, ring = '#fff') {
+  g.save(); g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.closePath();
+  if (img) { g.save(); g.clip(); const s = Math.max((2 * r) / img.width, (2 * r) / img.height); g.drawImage(img, x - img.width * s / 2, y - img.height * s / 2, img.width * s, img.height * s); g.restore(); }
+  else { g.fillStyle = '#888'; g.fill(); }
+  g.lineWidth = Math.max(3, r * 0.08); g.strokeStyle = ring; g.stroke(); g.restore();
+}
+
 export class HUD {
   constructor(layout) { this.layout = layout; this.minimap = null; }
 
@@ -81,7 +88,10 @@ export class HUD {
     if (S.titel) this.drawTitle(g, t, S.titel, S.hudOn !== null && t >= S.hudOn);
     if (S.alarm) this.drawAlarm(g, t, S.alarm);
     if (S.hinweis) this.drawHint(g, t, S.hinweis);
-    if (S.kommentare) this.drawComments(g, t, S.kommentare);
+    if (S.kommentare) this.drawComments(g, t, S.kommentare, S);
+    if (S.namen && !S.endkarte) this.drawNameTags(g, t, S);
+    if (S.geld && S.hudOn !== null && t >= S.hudOn) for (const e of S.geld) this.drawMoney(g, t, e);
+    if (S.follower) this.drawFollower(g, t, S.follower, S);
     if (S.frage) this.drawQuestion(g, t, S.frage);
     if (S.endkarte) this.drawEndcard(g, t, S.endkarte, S);
     if (S.cta) this.drawCTA(g, t, S.cta);
@@ -267,7 +277,10 @@ export class HUD {
     const y = hudSichtbar ? 1060 : 700; const sp = lerp(22, 3, ease.outCubic(clamp(lt / 1.2)));
     g.fillStyle = 'rgba(0,0,0,0.35)'; g.fillRect(0, y - 150, W, 260);
     text(g, s.unter, W / 2, y - 92, { size: 30, weight: 600, align: 'center', color: C.orange, spacing: 6, shadow: 10 });
-    text(g, s.text, W / 2, y + 10, { size: 82, weight: 900, font: F.big, align: 'center', spacing: sp, shadow: 24 });
+    g.font = `900 82px ${F.big}`; const tfit = Math.min(1, 960 / (g.measureText(s.text).width + sp * s.text.length));
+    g.save(); g.translate(W / 2, y + 10); g.scale(tfit, tfit);
+    text(g, s.text, 0, 0, { size: 82, weight: 900, font: F.big, align: 'center', spacing: sp, shadow: 24 });
+    g.restore();
     g.fillStyle = C.red; const lw = 360 * ease.outCubic(clamp((lt - 0.3) / 0.6)); g.fillRect(W / 2 - lw / 2, y + 44, lw, 6);
     g.restore();
   }
@@ -309,7 +322,7 @@ export class HUD {
   }
 
   // Zuschauer-Kommentare (Folge 2+): Karten gleiten nacheinander herein
-  drawComments(g, t, s) {
+  drawComments(g, t, s, S = {}) {
     const lt = t - s.t; const d = s.dauer || 4;
     const out = 1 - smooth(d - 0.35, d, lt);
     (s.liste || []).slice(0, 4).forEach((c, i) => {
@@ -317,13 +330,71 @@ export class HUD {
       const y = 880 + i * 128, x = 70 + (1 - k) * -700;
       g.save(); g.globalAlpha = out * clamp((lt - i * 0.35) / 0.2);
       rr(g, x, y, 860, 108, 22); g.fillStyle = 'rgba(255,255,255,0.94)'; g.fill();
-      g.fillStyle = ['#ff8a3d', '#45e3ff', '#ff3b5c', '#ffd84a'][i % 4]; g.beginPath(); g.arc(x + 56, y + 54, 32, 0, 7); g.fill();
-      text(g, (c.name || '?').replace(/^@/, '').slice(0, 1).toUpperCase(), x + 56, y + 66, { size: 34, weight: 800, align: 'center', font: F.big, color: '#111' });
-      text(g, '@' + String(c.name || 'zuschauer').replace(/^@/, ''), x + 106, y + 42, { size: 24, weight: 700, color: 'rgba(0,0,0,0.55)', font: F.big });
+      const img = c.avatar && S.bilder ? S.bilder[c.avatar] : null;
+      if (img) avatar(g, img, x + 56, y + 54, 36, '#ffffff');
+      else { g.fillStyle = ['#ff8a3d', '#45e3ff', '#ff3b5c', '#ffd84a'][i % 4]; g.beginPath(); g.arc(x + 56, y + 54, 32, 0, 7); g.fill();
+        text(g, (c.name || '?').replace(/^@/, '').slice(0, 1).toUpperCase(), x + 56, y + 66, { size: 34, weight: 800, align: 'center', font: F.big, color: '#111' }); }
+      text(g, c.anzeige || ('@' + String(c.name || 'zuschauer').replace(/^@/, '')), x + 106, y + 42, { size: 24, weight: 700, color: 'rgba(0,0,0,0.55)', font: F.big });
       text(g, c.text || '', x + 106, y + 84, { size: 34, weight: 800, color: '#111', font: F.big });
       if (c.likes) { icon(g, 'bubble', x + 800, y + 40, 26, '#ff3b5c'); text(g, String(c.likes), x + 800, y + 88, { size: 22, weight: 700, align: 'center', color: 'rgba(0,0,0,0.6)', font: F.big }); }
       g.restore();
     });
+  }
+
+  // Namensschilder über benannten Einwohnern (mit Profilbild)
+  drawNameTags(g, t, S) {
+    for (const n of S.namen) {
+      const p = S.project(n.pos); if (!p.visible) continue;
+      const d = Math.hypot(S.camPos.x - n.pos[0], S.camPos.y - n.pos[1], S.camPos.z - n.pos[2]); if (d > 48) continue;
+      if (p.y < 420 || p.y > 1240) continue;
+      const a = clamp((t - n.t0 - 0.5) / 0.4) * (1 - smooth(34, 48, d));
+      if (a <= 0) continue;
+      const k = ease.outBack(clamp((t - n.t0 - 0.5) / 0.45));
+      g.save(); g.globalAlpha = a; g.translate(clamp(p.x, 150, W - 150), p.y - 30); g.scale(k, k);
+      g.font = `800 34px ${F.big}`; const tw = g.measureText(n.name).width;
+      const w = tw + 120; rr(g, -w / 2, -40, w, 64, 32); g.fillStyle = 'rgba(8,16,22,0.82)'; g.fill(); g.strokeStyle = C.cyan; g.lineWidth = 2.5; g.stroke();
+      avatar(g, S.bilder[n.avatar], -w / 2 + 34, -8, 26, C.cyan);
+      text(g, n.name, -w / 2 + 70, 4, { size: 34, weight: 800, font: F.big });
+      if (n.nr) text(g, '#' + n.nr, w / 2 - 14, 2, { size: 22, weight: 700, align: 'right', color: C.cyan });
+      g.strokeStyle = C.cyan; g.lineWidth = 2; g.beginPath(); g.moveTo(0, 24); g.lineTo(0, 46); g.stroke();
+      g.restore();
+    }
+  }
+
+  // Geldbewegung an der Stadtkasse (+/- Betrag)
+  drawMoney(g, t, e) {
+    const lt = t - e.t; const plus = e.betrag >= 0;
+    const a = clamp(lt / 0.15) * (1 - smooth(1.8, 2.4, lt));
+    const k = ease.outBack(clamp(lt / 0.35));
+    g.save(); g.globalAlpha = a;
+    // Karte hervorheben
+    g.strokeStyle = plus ? '#3cff8f' : C.red; g.lineWidth = 4; rr(g, 44, 464, 400, 106, 16); g.stroke();
+    g.translate(470, 530 - lt * 22); g.scale(k, k);
+    const s = `${plus ? '+' : '−'}${fmt(Math.abs(e.betrag))} €`;
+    g.font = `900 58px ${F.big}`; const tw = g.measureText(s).width;
+    rr(g, -12, -52, tw + 24, 72, 18); g.fillStyle = 'rgba(0,0,0,0.6)'; g.fill();
+    text(g, s, 0, 2, { size: 58, weight: 900, font: F.big, color: plus ? '#3cff8f' : '#ff5050', shadow: 14 });
+    if (e.text) text(g, e.text, 0, 46, { size: 24, weight: 700, color: C.white, spacing: 1.5, shadow: 8 });
+    g.restore();
+  }
+
+  // Karte "Neuer Follower = neuer Einwohner" mit Profilbild
+  drawFollower(g, t, e, S) {
+    const lt = t - e.t; const d = e.dauer || 3;
+    const a = clamp(lt / 0.2) * (1 - smooth(d - 0.35, d, lt));
+    const k = ease.outBack(clamp(lt / 0.5));
+    g.save(); g.globalAlpha = a; g.translate(W / 2, 930); g.scale(k, k);
+    rr(g, -400, -190, 800, 360, 36); const grd = g.createLinearGradient(-400, -190, 400, 170); grd.addColorStop(0, 'rgba(10,22,30,0.92)'); grd.addColorStop(1, 'rgba(30,12,30,0.92)');
+    g.fillStyle = grd; g.fill(); g.strokeStyle = C.cyan; g.lineWidth = 3; g.stroke();
+    // Glanz-Ring
+    g.save(); g.translate(-230, -10); g.rotate(lt * 1.5); g.strokeStyle = 'rgba(69,227,255,0.7)'; g.lineWidth = 5; g.setLineDash([24, 14]); g.beginPath(); g.arc(0, 0, 122, 0, 7); g.stroke(); g.restore();
+    avatar(g, S.bilder[e.avatar], -230, -10, 108, '#ffffff');
+    text(g, e.text || 'NEUER FOLLOWER', -80, -96, { size: 30, weight: 700, color: C.cyan, spacing: 3 });
+    g.font = `900 92px ${F.big}`; const fit = Math.min(1, 440 / g.measureText(e.name).width);
+    g.save(); g.translate(-80, 10); g.scale(fit, fit); text(g, e.name, 0, 0, { size: 92, weight: 900, font: F.big }); g.restore();
+    rr(g, -80, 46, 400, 64, 32); g.fillStyle = C.orange; g.fill();
+    text(g, e.unter || 'NEUER EINWOHNER', 120, 89, { size: 30, weight: 800, align: 'center', font: F.big, color: '#1a0d04', spacing: 1 });
+    g.restore();
   }
 
   drawQuestion(g, t, s) {
@@ -343,8 +414,8 @@ export class HUD {
     g.save(); g.globalAlpha = a;
     g.fillStyle = `rgba(0,0,0,${0.35 * a})`; g.fillRect(0, 0, W, H);
     const k = ease.outCubic(clamp(lt / 0.6));
-    const y0 = 500 + (1 - k) * 60;
-    panel(g, 120, y0, 840, 470, 1, C.orange);
+    const y0 = (e.kasse !== null && e.kasse !== undefined ? 420 : 500) + (1 - k) * 60;
+    panel(g, 120, y0, 840, e.kasse !== null && e.kasse !== undefined ? 560 : 470, 1, C.orange);
     text(g, 'VALENHEIM · STATUS', W / 2, y0 + 60, { size: 26, align: 'center', color: C.mute, spacing: 6 });
     const tagK = ease.outBack(clamp((lt - 0.1) / 0.5));
     g.save(); g.translate(W / 2, y0 + 190); g.scale(tagK, tagK);
@@ -356,6 +427,9 @@ export class HUD {
     text(g, fmt(e.einwohner), 880, y0 + 320, { size: 62, weight: 700, alpha: r1, align: 'right', color: C.cyan });
     text(g, 'VERBLEIBENDE TAGE:', 200, y0 + 410, { size: 46, weight: 600, alpha: r2, color: C.mute, spacing: 2 });
     text(g, String(e.verbleibend), 880, y0 + 410, { size: 62, weight: 700, alpha: r2, align: 'right', color: C.red });
+    if (e.kasse !== null && e.kasse !== undefined) { const r3 = clamp((lt - 1.05) / 0.4);
+      text(g, 'STADTKASSE:', 200, y0 + 500, { size: 46, weight: 600, alpha: r3, color: C.mute, spacing: 2 });
+      text(g, `${fmt(e.kasse)} ${e.waehrung || '€'}`, 880, y0 + 500, { size: 62, weight: 700, alpha: r3, align: 'right', color: '#3cff8f' }); }
     g.restore();
   }
 

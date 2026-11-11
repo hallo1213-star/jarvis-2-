@@ -208,6 +208,22 @@ def sfx_build(vol=0.22):
     return reverb(out * vol, 0.3)
 
 
+def sfx_kasse(vol=0.3, plus=True):
+    """Münzen + Kassenklingel (plus) bzw. absteigender Ton (minus)."""
+    out = np.zeros((int(2.0 * SR), 2))
+    for k in range(9 if plus else 4):
+        t = t_arr(0.25); f = rng.uniform(2800, 5200)
+        x = (np.sin(2 * np.pi * f * t) + 0.5 * np.sin(2 * np.pi * f * 1.47 * t)) * np.exp(-t * 26) * 0.35
+        add(out, stereo(x, rng.uniform(-0.6, 0.6)), k * 0.055 + rng.uniform(0, 0.02))
+    if plus:
+        t = t_arr(1.2); bell = sum(np.sin(2 * np.pi * f * t) * a for f, a in ((1568, 1), (2093, 0.6), (3136, 0.25))) * np.exp(-t * 3.5)
+        add(out, stereo(bell * 0.5), 0.45)
+    else:
+        t = t_arr(0.6); f = 700 - 400 * t / 0.6
+        add(out, stereo(np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 4) * 0.4), 0.25)
+    return reverb(out * vol, 0.3, 1.4)
+
+
 def sfx_flicker(vol=0.06):
     t = t_arr(1.6); buzz = np.sign(np.sin(2 * np.pi * 100 * t)) * 0.5 + np.sin(2 * np.pi * 200 * t) * 0.3
     gate = (np.sin(t * 37) * np.sin(t * 13.7 + 2) > 0.2).astype(float)
@@ -305,6 +321,8 @@ def main():
             elif ty == 'spawn': add(sfx, sfx_spawn(0.32), t0)
             elif ty == 'shimmer': add(sfx, sfx_spawn(0.18), t0)
             elif ty == 'build': add(sfx, sfx_build(0.2), t0)
+            elif ty == 'kasse': add(sfx, sfx_kasse(0.35, True), t0)
+            elif ty == 'kasse_minus': add(sfx, sfx_kasse(0.3, False), t0)
             elif ty == 'neon_flicker': add(sfx, stereo(sfx_flicker(0.05), -0.3), t0)
             elif ty == 'tick_folge': add(sfx, sfx_ticks(e.get('dauer', 4), 0.16), t0)
             elif ty == 'final_hit':

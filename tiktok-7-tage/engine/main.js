@@ -38,10 +38,22 @@ async function init() {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 6000);
 
-  const world = buildWorld(scene, { seed: STATUS.welt_seed || 7071 });
+  const world = buildWorld(scene, { seed: STATUS.welt_seed || 7071, licht: TL.licht || 'standard' });
+  renderer.toneMappingExposure = world.exposure || 1.2;
+
+  // Profilbilder (Kommentare, neue Follower, benannte Einwohner)
+  const bilder = {};
+  const bildUrls = new Set();
+  for (const sz of TL.szenen) for (const e of sz.effekte || []) {
+    if (e.avatar) bildUrls.add(e.avatar);
+    for (const c of e.liste || []) if (c.avatar) bildUrls.add(c.avatar);
+  }
+  for (const b of STATUS.bewohner || []) if (b.avatar) bildUrls.add(b.avatar);
+  await Promise.all([...bildUrls].map((u) => new Promise((res) => { const im = new Image(); im.onload = () => { bilder[u] = im; res(); }; im.onerror = () => res(); im.src = '/' + u.replace(/^\//, ''); })));
 
   // ---------------- Spielfigur
   const player = new Figure(); player.root.position.set(...ANKER.figur); player.root.rotation.y = Math.PI; scene.add(player.root);
+  if (TL.licht === 'abend') player.setFill(0.18);
   const ring = makeSelectionRing(); ring.position.set(ANKER.figur[0], SLAB + 0.03, ANKER.figur[2]); scene.add(ring);
 
   // ---------------- Bereits gebaute Gebäude (Serienstand)
@@ -60,7 +72,8 @@ async function init() {
   const TL_events = TL.szenen.flatMap((sz) => sz.effekte || []);
   const ankunft = TL_events.filter((e) => e.typ === 'einwohner_ankunft');
   const neuGesamt = ankunft.reduce((a, e) => a + (e.anzahl || 0), 0);
-  const vorher = STATUS.einwohner || 0;
+  const benanntVorher = (STATUS.bewohner || []).length;
+  const vorher = Math.max(0, (STATUS.einwohner || 0) - benanntVorher);
   const MAXF = 60;
   const nCrowd = Math.min(MAXF, vorher + neuGesamt);
   const sichtbarVorher = Math.min(MAXF, vorher);
@@ -72,12 +85,27 @@ async function init() {
     f.arrive = arrival[i] ?? null; if (f.arrive !== null) f.holoMat = holoMaterial();
     crowd.push(f);
   }
+  // Benannte Einwohner (z. B. Follower mit Namen): bleiben dauerhaft an ihrem Platz stehen
+  const benannt = [];
+  const mkBewohner = (b, arrive) => {
+    const look = { ...einwohnerLook(200 + benannt.length), ...(b.look || {}) };
+    for (const k of Object.keys(look)) if (typeof look[k] === 'string' && /^#|^0x/.test(look[k])) look[k] = parseInt(look[k].replace('#', '0x'));
+    const f = new Figure(look, { seed: 70 + benannt.length });
+    if (TL.licht === 'abend') f.setFill(0.22);
+    f.root.position.set(b.pos[0], SLAB, b.pos[1]); f.root.rotation.y = THREE.MathUtils.degToRad(b.richtung ?? 0); scene.add(f.root);
+    const o = { b, f, arrive, aktion: b.aktion || 'idle' };
+    if (arrive !== null) { o.mat = holoMaterial(); o.fx = makeSpawnFx(); o.fx.g.position.set(b.pos[0], SLAB, b.pos[1]); scene.add(o.fx.g); }
+    benannt.push(o);
+  };
+  for (const b of STATUS.bewohner || []) mkBewohner(b, null);
+  for (const sz of TL.szenen) for (const e of sz.effekte || []) if (e.typ === 'bewohner') mkBewohner(e, e.t);
+
   // Bau-Ereignisse: Gebäude wachsen auf ihrem Bauplatz
   const bauten = TL_events.filter((e) => e.typ === 'bau').map((e, i) => {
     const [bi, bj] = BAUPLAETZE[e.platz];
     const grp = buildBuilding(e.gebaeude, { status: 'fertig', name: e.name, seed: 50 + i });
     grp.position.set(bi * P, SLAB, bj * P); grp.rotation.y = Math.atan2(-bi, -bj) + Math.PI; grp.visible = false; scene.add(grp);
-    const bp = makeBlueprint('turm'); bp.g.position.set(bi * P, SLAB, bj * P); scene.add(bp.g);
+    const bp = makeBlueprint(e.form || 'turm'); bp.g.position.set(bi * P, SLAB, bj * P); scene.add(bp.g);
     const fx = makeSpawnFx(); fx.g.position.set(bi * P, SLAB, bj * P); fx.g.scale.set(12, 1, 12); scene.add(fx.g);
     return { e, grp, bp, fx };
   });
@@ -147,7 +175,14 @@ async function init() {
       if (e.typ === 'zaehler_reset' && t >= e.t) { ew = base.einwohner; sim = false; }
     }
     for (const e of events) if (e.typ === 'einwohner_ankunft' && t >= e.t) { const k = clamp((t - e.t) / (e.dauer || 3)); ew += Math.round((e.anzahl || 0) * ease.inOutSine(k)); if (k < 1) pulse = Math.max(pulse, 0.6 + 0.4 * Math.sin(t * 12)); }
+    for (const e of events) if (e.typ === 'bewohner' && t >= e.t + 0.6) { ew += 1; pulse = Math.max(pulse, 1 - clamp((t - e.t - 0.6) / 0.7)); }
     S.einwohner = ew; S.einwohnerSim = sim; S.einwohnerPulse = pulse;
+    // Geld-Einblendungen an der Stadtkasse
+    S.geld = events.filter((e) => e.typ === 'geld' && t >= e.t && t <= e.t + 2.4);
+    S.bilder = bilder;
+    S.follower = events.find((e) => e.typ === 'follower_karte' && t >= e.t && t <= e.t + (e.dauer || 3)) || null;
+    // Namensschilder benannter Einwohner
+    S.namen = benannt.filter((o) => o.arrive === null || t >= o.arrive + 0.5).map((o) => ({ name: o.b.name, avatar: o.b.avatar, nr: o.b.nr, pos: [o.b.pos[0], SLAB + 2.15, o.b.pos[1]], t0: o.arrive ?? -9, feet: [o.b.pos[0], SLAB, o.b.pos[1]] }));
     // 'werte': HUD-Werte zählen animiert auf neue Werte (z. B. Stadtkasse, Gebäude, Entwicklung, Tag)
     for (const e of events) if (e.typ === 'werte' && t >= e.t) {
       const k = ease.outCubic(clamp((t - e.t) / (e.dauer || 1.2)));
@@ -169,7 +204,7 @@ async function init() {
       if (e.typ === 'scan' && t >= e.t) S.scan = e;
       if (e.typ === 'hinweis' && t >= e.t) S.hinweis = e;
       if (e.typ === 'frage' && t >= e.t) S.frage = e;
-      if (e.typ === 'endkarte' && t >= e.t) S.endkarte = { t: e.t, tag: TL.ergebnis.tag ?? base.tag, einwohner: TL.ergebnis.einwohner ?? base.einwohner, verbleibend: TL.ergebnis.verbleibende_tage ?? base.verbleibend };
+      if (e.typ === 'endkarte' && t >= e.t) S.endkarte = { kasse: e.kasse ? (TL.ergebnis.stadtkasse ?? base.kasse) : null, waehrung: base.waehrung, t: e.t, tag: TL.ergebnis.tag ?? base.tag, einwohner: TL.ergebnis.einwohner ?? base.einwohner, verbleibend: TL.ergebnis.verbleibende_tage ?? base.verbleibend };
       if (e.typ === 'kommentar_cta' && t >= e.t) S.cta = e;
       if (e.typ === 'simulation_label' && t >= e.t) S.simLabel = { ...e, a: holoOff && t > holoOff.t ? 1 - clamp((t - holoOff.t) / 0.4) : 1 };
       if (e.typ === 'spieler_label' && t >= e.t) S.playerLabel = { a: clamp((t - e.t) / 0.3) };
@@ -179,6 +214,7 @@ async function init() {
     S.playerHead = [ANKER.figur[0], ANKER.figur[1] + 2.1, ANKER.figur[2]];
     S.playerFeet = [ANKER.figur[0], ANKER.figur[1] + 0.05, ANKER.figur[2]];
     const d = new THREE.Vector3(); camera.getWorldDirection(d);
+    S.camPos = camera.position.clone();
     S.cam = { x: camera.position.x, z: camera.position.z, dx: d.x, dz: d.z };
     return S;
   }
@@ -202,6 +238,14 @@ async function init() {
         else if (lt >= 1.1 && f.holo) f.setNormal();
       }
     });
+    for (const o of benannt) {
+      o.f.pose(t, o.aktion, o.arrive ?? 0);
+      if (o.arrive !== null) {
+        const lt = t - o.arrive; o.fx.update(lt, t); o.f.root.visible = lt > 0.1;
+        if (lt > 0.1 && lt < 1.2) { if (!o.f.holo) o.f.setHolo(o.mat); o.mat.uniforms.uTime.value = t; o.mat.uniforms.uBase.value = SLAB; o.mat.uniforms.uProg.value = clamp((lt - 0.1) / 0.9); o.mat.uniforms.uFade.value = 1; }
+        else if (lt >= 1.2 && o.f.holo) o.f.setNormal();
+      }
+    }
     for (const b of bauten) {
       const lt = t - b.e.t, d = b.e.dauer || 4;
       b.fx.update(lt, t);
@@ -258,6 +302,7 @@ async function init() {
     g.restore();
   }
 
+  window.DEBUG = { scene, camera, THREE };
   window.DAUER = TL.dauer;
   window.renderFrame = (t, q = 0.92) => { renderFrame(t); return out.toDataURL('image/jpeg', q); };
   window.renderOnly = (t) => { renderFrame(t); return true; };
