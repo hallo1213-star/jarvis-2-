@@ -2,15 +2,31 @@
   "_info": "Fortlaufender Stand der Serie. Wird nach jeder Folge mit 'node pipeline/folge-abschliessen.js <nr>' fortgeschrieben. Werte hier kannst du auch von Hand anpassen (z. B. echte Follower-Zahl).",
   "stadt": "VALENHEIM",
   "welt_seed": 7071,
-  "letzte_folge": 1,
+  "letzte_folge": 2,
   "tag": 1,
   "verbleibende_tage": 7,
-  "einwohner": 0,
-  "stadtkasse": 10000,
+  "einwohner": 3,
+  "stadtkasse": 30000,
   "waehrung": "€",
-  "entwicklung_prozent": 0,
-  "entwicklung_stufe": "GEISTERSTADT",
-  "gebaeude": [],
+  "entwicklung_prozent": 15,
+  "entwicklung_stufe": "SIEDLUNG",
+  "gebaeude": [
+    {
+      "status": "fertig",
+      "typ": "doener",
+      "platz": "B2",
+      "name": "MICHELLES DÖNER",
+      "seit_folge": 2
+    },
+    {
+      "status": "fertig",
+      "typ": "militaer",
+      "platz": "B1",
+      "name": "MILITÄRSTATION",
+      "raketen": 1,
+      "seit_folge": 2
+    }
+  ],
   "verlauf": [
     {
       "folge": 1,
@@ -19,7 +35,84 @@
       "tag": 1,
       "einwohner": 0,
       "gebaeude": 0
+    },
+    {
+      "folge": 2,
+      "titel": "Bevor der Tag endet",
+      "abgeschlossen": "2026-11-11",
+      "tag": 1,
+      "einwohner": 3,
+      "gebaeude": 2
     }
   ],
-  "bewohner": []
+  "bewohner": [
+    {
+      "name": "Michelle",
+      "nr": 1,
+      "pos": [
+        55,
+        -5.8
+      ],
+      "richtung": -90,
+      "avatar": "folgen/assets/michelle.jpg",
+      "rolle": "Besitzerin von Michelles Döner",
+      "look": {
+        "jacke": "0x1a1a1c",
+        "kragen": "0x111111",
+        "hose": "0x1b1b22",
+        "haut": "0xefc6a8",
+        "haare": "0x16100c",
+        "schuhe": "0xe6e6e6",
+        "langeHaare": true,
+        "hut": "weihnacht",
+        "rucksack": "0x1a1a1c",
+        "gurt": "0x1a1a1c"
+      },
+      "seit_folge": 2
+    },
+    {
+      "name": "Dean",
+      "nr": 2,
+      "pos": [
+        2.5,
+        18.5
+      ],
+      "richtung": -50,
+      "avatar": "folgen/assets/dean.jpg",
+      "look": {
+        "jacke": "0x7d7f84",
+        "kragen": "0x2a2a2a",
+        "hose": "0x16161a",
+        "haut": "0xe8c0a0",
+        "haare": "0x1a1410",
+        "schuhe": "0xf0f0f0",
+        "hut": "cap",
+        "capFarbe": "0x121212",
+        "rucksack": "0x2a2a2a",
+        "gurt": "0x2a2a2a"
+      },
+      "seit_folge": 2
+    },
+    {
+      "name": "Luis",
+      "nr": 3,
+      "pos": [
+        -2,
+        15
+      ],
+      "richtung": -59,
+      "avatar": "folgen/assets/luis.jpg",
+      "look": {
+        "jacke": "0xc0182a",
+        "kragen": "0x1a2550",
+        "hose": "0x1a2550",
+        "haut": "0xb07a55",
+        "haare": "0x2a1a10",
+        "schuhe": "0xf2f2f2",
+        "rucksack": "0x1a2550",
+        "gurt": "0x1a2550"
+      },
+      "seit_folge": 2
+    }
+  ]
 }

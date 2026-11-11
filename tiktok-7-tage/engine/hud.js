@@ -92,6 +92,8 @@ export class HUD {
     if (S.namen && !S.endkarte) this.drawNameTags(g, t, S);
     if (S.geld && S.hudOn !== null && t >= S.hudOn) for (const e of S.geld) this.drawMoney(g, t, e);
     if (S.follower) this.drawFollower(g, t, S.follower, S);
+    if (S.ausweis) this.drawAusweis(g, t, S.ausweis, S);
+    if (S.ziel && S.hudOn !== null && t >= S.hudOn && !S.endkarte) this.drawZiel(g, t, S.ziel, S);
     if (S.frage) this.drawQuestion(g, t, S.frage);
     if (S.endkarte) this.drawEndcard(g, t, S.endkarte, S);
     if (S.cta) this.drawCTA(g, t, S.cta);
@@ -394,6 +396,65 @@ export class HUD {
     g.save(); g.translate(-80, 10); g.scale(fit, fit); text(g, e.name, 0, 0, { size: 92, weight: 900, font: F.big }); g.restore();
     rr(g, -80, 46, 400, 64, 32); g.fillStyle = C.orange; g.fill();
     text(g, e.unter || 'NEUER EINWOHNER', 120, 89, { size: 30, weight: 800, align: 'center', font: F.big, color: '#1a0d04', spacing: 1 });
+    g.restore();
+  }
+
+  // Einwohnerausweis mit Scan + Stempel
+  drawAusweis(g, t, e, S) {
+    const lt = t - e.t; const d = e.dauer || 1.1;
+    const a = clamp(lt / 0.12) * (1 - smooth(d - 0.12, d, lt));
+    const k = ease.outBack(clamp(lt / 0.25));
+    g.save(); g.globalAlpha = a; g.translate(W / 2 + (1 - k) * 300, 900); g.rotate(-0.04); g.scale(0.85 + 0.15 * k, 0.85 + 0.15 * k);
+    const cw = 760, ch = 460;
+    rr(g, -cw / 2, -ch / 2, cw, ch, 30);
+    const grd = g.createLinearGradient(-cw / 2, -ch / 2, cw / 2, ch / 2);
+    if (e.ok) { grd.addColorStop(0, '#eef4ff'); grd.addColorStop(1, '#c9dbff'); } else { grd.addColorStop(0, '#3a3a3a'); grd.addColorStop(1, '#1d1d1d'); }
+    g.fillStyle = grd; g.fill(); g.lineWidth = 4; g.strokeStyle = e.ok ? '#1f3d8a' : '#666'; g.stroke();
+    // Kopfzeile
+    g.save(); rr(g, -cw / 2, -ch / 2, cw, 86, 30); g.clip(); g.fillStyle = e.ok ? '#1f3d8a' : '#444'; g.fillRect(-cw / 2, -ch / 2, cw, 86); g.restore();
+    text(g, 'VALENHEIM', -cw / 2 + 36, -ch / 2 + 56, { size: 40, weight: 900, font: F.big, color: '#f2c230', spacing: 3 });
+    text(g, 'EINWOHNERAUSWEIS', cw / 2 - 36, -ch / 2 + 54, { size: 26, weight: 700, align: 'right', color: '#ffffff', spacing: 2 });
+    if (e.ok) {
+      g.save(); rr(g, -cw / 2 + 36, -ch / 2 + 116, 200, 240, 16); g.clip();
+      const img = S.bilder[e.avatar]; if (img) g.drawImage(img, -cw / 2 + 36 - 20, -ch / 2 + 116, 240, 240); g.restore();
+      text(g, 'NAME', -cw / 2 + 270, -ch / 2 + 150, { size: 22, weight: 700, color: '#5a6a8a', spacing: 2 });
+      g.font = `900 66px ${F.big}`; const nf = Math.min(1, 420 / g.measureText(e.name).width);
+      g.save(); g.translate(-cw / 2 + 270, -ch / 2 + 214); g.scale(nf, nf); text(g, e.name, 0, 0, { size: 66, weight: 900, font: F.big, color: '#0b1a40' }); g.restore();
+      text(g, 'EINWOHNER-NR.', -cw / 2 + 270, -ch / 2 + 270, { size: 22, weight: 700, color: '#5a6a8a', spacing: 2 });
+      text(g, '#' + String(e.nr).padStart(4, '0'), -cw / 2 + 270, -ch / 2 + 324, { size: 52, weight: 800, color: '#0b1a40' });
+      for (let k2 = 0; k2 < 34; k2++) { g.fillStyle = '#0b1a40'; g.fillRect(-cw / 2 + 270 + k2 * 12, ch / 2 - 70, (k2 * 7) % 3 + 2, 40); }
+    } else {
+      text(g, '?', -cw / 2 + 136, 40, { size: 220, weight: 900, font: F.big, align: 'center', color: '#777' });
+      text(g, 'KEIN AUSWEIS', -cw / 2 + 270, -20, { size: 54, weight: 900, font: F.big, color: '#bbbbbb' });
+      text(g, 'NICHT REGISTRIERT', -cw / 2 + 270, 40, { size: 30, weight: 700, color: '#999', spacing: 2 });
+    }
+    // Scan-Laser
+    if (lt < 0.45) { const y = -ch / 2 + (lt / 0.45) * ch; g.fillStyle = 'rgba(255,40,40,0.85)'; g.fillRect(-cw / 2 - 20, y, cw + 40, 5); g.fillStyle = 'rgba(255,40,40,0.18)'; g.fillRect(-cw / 2 - 20, y - 30, cw + 40, 30); }
+    // Stempel
+    if (lt >= 0.45) {
+      const sk = ease.outBack(clamp((lt - 0.45) / 0.18)); const col = e.ok ? '#18c964' : '#ff2a2a';
+      g.save(); g.translate(150, 60); g.rotate(-0.18); g.scale(2.2 - 1.2 * sk, 2.2 - 1.2 * sk); g.globalAlpha *= clamp((lt - 0.45) / 0.1);
+      const txt = e.ok ? 'ZUGANG GEWÄHRT' : 'ZUGANG VERWEIGERT';
+      g.font = `900 50px ${F.big}`; const tw = g.measureText(txt).width;
+      g.lineWidth = 8; g.strokeStyle = col; rr(g, -tw / 2 - 26, -48, tw + 52, 92, 14); g.stroke();
+      g.fillStyle = e.ok ? 'rgba(24,201,100,0.12)' : 'rgba(255,42,42,0.15)'; g.fill();
+      text(g, txt, 0, 18, { size: 50, weight: 900, font: F.big, align: 'center', color: col });
+      g.restore();
+    }
+    g.restore();
+  }
+
+  // Zielbalken unter der Karte: Überraschung bei X Followern
+  drawZiel(g, t, z, S) {
+    const a = clamp((t - (z.t0 ?? -9)) / 0.4); if (a <= 0) return;
+    const x = 784, y = 652, w = 256, h = 96; const cur = Math.round(S.einwohner), ziel = z.ziel || 50;
+    g.save(); g.globalAlpha = a;
+    panel(g, x, y, w, h, 1, C.yellow);
+    text(g, z.text || '🎁 ÜBERRASCHUNG', x + 16, y + 30, { size: 19, weight: 700, color: C.yellow, spacing: 1.5 });
+    g.fillStyle = 'rgba(255,255,255,0.12)'; rr(g, x + 16, y + 46, w - 32, 16, 8); g.fill();
+    const k = clamp(cur / ziel); const pulse = 0.75 + 0.25 * Math.sin(t * 4);
+    g.fillStyle = `rgba(255,216,74,${pulse})`; rr(g, x + 16, y + 46, Math.max(16, (w - 32) * k), 16, 8); g.fill();
+    text(g, `${cur} / ${ziel} FOLLOWER`, x + 16, y + 84, { size: 20, weight: 700, color: C.white, spacing: 1 });
     g.restore();
   }
 

@@ -224,6 +224,40 @@ def sfx_kasse(vol=0.3, plus=True):
     return reverb(out * vol, 0.3, 1.4)
 
 
+def sfx_scan_ok(vol=0.22):
+    out = np.zeros((int(1.0 * SR), 2))
+    t = t_arr(0.35); sw = np.sin(2 * np.pi * np.cumsum(900 + 2200 * t / 0.35) / SR) * 0.12
+    add(out, stereo(sw), 0.0)
+    add(out, stereo(sfx_blip(1760, 0.12, 0.5)), 0.42); add(out, stereo(sfx_blip(2350, 0.16, 0.5)), 0.52)
+    return reverb(out * vol, 0.2, 0.8)
+
+
+def sfx_scan_nein(vol=0.25):
+    out = np.zeros((int(1.2 * SR), 2))
+    t = t_arr(0.35); sw = np.sin(2 * np.pi * np.cumsum(900 + 2200 * t / 0.35) / SR) * 0.12
+    add(out, stereo(sw), 0.0)
+    t2 = t_arr(0.55); bz = (np.sign(np.sin(2 * np.pi * 140 * t2)) * 0.5 + np.sin(2 * np.pi * 280 * t2) * 0.3) * env_adsr(len(t2), 0.01, 0.05, 1, 0.08)
+    add(out, stereo(lp(bz, 2500) * 0.6), 0.45)
+    return reverb(out * vol, 0.2, 0.8)
+
+
+def sfx_jubel(dur=4.0, vol=0.3):
+    t = t_arr(dur)
+    n = np.stack([bp(noise(dur), 300, 3500), bp(noise(dur), 300, 3500)], 1)
+    mod = 0.7 + 0.3 * np.sin(2 * np.pi * 3.1 * t + np.sin(2 * np.pi * 0.7 * t))
+    env = env_adsr(len(t), 0.6, 0.4, 0.8, 1.4) * mod
+    whistle = np.sin(2 * np.pi * np.cumsum(2200 + 600 * np.sin(2 * np.pi * 1.5 * t)) / SR) * 0.04 * (t > 0.8) * (t < 1.6)
+    return reverb((n * env[:, None] + stereo(whistle)) * vol, 0.4, 2.0)
+
+
+def sfx_schild(dur=2.0, vol=0.25):
+    t = t_arr(dur)
+    hum = (np.sin(2 * np.pi * 55 * t) + 0.5 * np.sin(2 * np.pi * 110.5 * t) + 0.25 * saw(220, t)) * env_adsr(len(t), 0.05, 0.2, 0.8, 0.6)
+    glitch = (np.sin(t * 37) * np.sin(t * 11 + 1) > 0.1).astype(float)
+    sweep = np.sin(2 * np.pi * np.cumsum(300 + 1500 * t / dur) / SR) * 0.15
+    return reverb(stereo(lp(hum * (0.5 + 0.5 * glitch), 1800) * 0.6 + sweep) * vol, 0.45, 2.5)
+
+
 def sfx_flicker(vol=0.06):
     t = t_arr(1.6); buzz = np.sign(np.sin(2 * np.pi * 100 * t)) * 0.5 + np.sin(2 * np.pi * 200 * t) * 0.3
     gate = (np.sin(t * 37) * np.sin(t * 13.7 + 2) > 0.2).astype(float)
@@ -323,6 +357,10 @@ def main():
             elif ty == 'build': add(sfx, sfx_build(0.2), t0)
             elif ty == 'kasse': add(sfx, sfx_kasse(0.35, True), t0)
             elif ty == 'kasse_minus': add(sfx, sfx_kasse(0.3, False), t0)
+            elif ty == 'scan_ok': add(sfx, sfx_scan_ok(0.22), t0)
+            elif ty == 'scan_nein': add(sfx, sfx_scan_nein(0.26), t0)
+            elif ty == 'jubel': add(sfx, sfx_jubel(e.get('dauer', 4.0), 0.3), t0)
+            elif ty == 'schild': add(sfx, sfx_schild(e.get('dauer', 2.0), 0.3), t0)
             elif ty == 'neon_flicker': add(sfx, stereo(sfx_flicker(0.05), -0.3), t0)
             elif ty == 'tick_folge': add(sfx, sfx_ticks(e.get('dauer', 4), 0.16), t0)
             elif ty == 'final_hit':

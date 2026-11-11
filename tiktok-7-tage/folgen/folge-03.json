@@ -1,0 +1,1193 @@
+{
+ "folge": 3,
+ "titel": "Tag 2: Verein & Bunker",
+ "licht": "morgen",
+ "_hinweis": "Folge 3 – Tag 2 (Morgen). Neue Einwohner J.ezy (#4) und Taube (#5), +10.000 € Geschenk, Stadion SV Valenheim 07 (10.000 €), unterirdischer Schutzbunker mit Ausweis-Kontrolle (10.000 €), Teaser: Überraschung bei 50 Followern (Schutzschild, wird in Folge 4+ enthüllt).",
+ "stimme": {
+  "modell": "de_DE-thorsten-high",
+  "tempo": 1.04,
+  "lebendigkeit": 0.72,
+  "rhythmus": 0.85,
+  "tonhoehe_halbtoene": 1.0
+ },
+ "aussprache": {
+  "Follower": "Follohuer",
+  "Michelle": "Mischell",
+  "Michelles": "Mischells",
+  "Dean": "Dien",
+  "J.ezy": "Dschiesi",
+  "SV": "Es Fau"
+ },
+ "musik": {
+  "stil": "dunkel-hoffnungsvoll",
+  "tonart": "d-moll",
+  "bpm": 84
+ },
+ "szenen": [
+  {
+   "id": "s1_morgen",
+   "name": "Tag 2",
+   "vorlauf": 0.8,
+   "nachlauf": 0.35,
+   "sprecher": "*Tag* *zwei* in Valenheim. | Nur noch !sechs! !Tage! bis zum Krieg.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      48
+     ],
+     "wackeln": 0.25,
+     "keys": [
+      {
+       "pos": [
+        -420,
+        300,
+        -380
+       ],
+       "ziel": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "pos": [
+        -200,
+        170,
+        -170
+       ],
+       "ziel": [
+        0,
+        0,
+        10
+       ]
+      },
+      {
+       "pos": [
+        -70,
+        55,
+        -40
+       ],
+       "ziel": [
+        10,
+        2,
+        20
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "titel",
+     "zeit": 0.15,
+     "dauer": 2.4,
+     "text": "TAG 2",
+     "unter": "FOLGE 3 · DIE LETZTEN 7 TAGE"
+    },
+    {
+     "typ": "werte",
+     "zeit": 0.9,
+     "tag": 2,
+     "verbleibende_tage": 6
+    }
+   ],
+   "toene": [
+    {
+     "typ": "boom",
+     "zeit": 0.05
+    },
+    {
+     "typ": "wind_swell",
+     "zeit": 0
+    },
+    {
+     "typ": "whoosh",
+     "ende": -0.25
+    }
+   ]
+  },
+  {
+   "id": "s2_follower",
+   "name": "J.ezy und Taube",
+   "uebergang": "blitz",
+   "vorlauf": 0.3,
+   "nachlauf": 0.45,
+   "sprecher": "Über Nacht sind *zwei* neue Einwohner gekommen: |0.35| *J.ezy*, |0.4| und *Taube*! |0.3| Willkommen in Valenheim!",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      40,
+      34
+     ],
+     "wackeln": 0.2,
+     "keys": [
+      {
+       "pos": [
+        3.5,
+        2.6,
+        6.0
+       ],
+       "ziel": [
+        -6.5,
+        1.4,
+        9.5
+       ]
+      },
+      {
+       "pos": [
+        1.4,
+        1.9,
+        7.4
+       ],
+       "ziel": [
+        -6.5,
+        1.5,
+        9.5
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "pfad",
+     "ab_wort": "und",
+     "offset": -0.15,
+     "anteil": 1,
+     "fov": [
+      40,
+      34
+     ],
+     "wackeln": 0.2,
+     "keys": [
+      {
+       "pos": [
+        15.5,
+        2.6,
+        24.5
+       ],
+       "ziel": [
+        5.5,
+        1.3,
+        22.5
+       ]
+      },
+      {
+       "pos": [
+        12.8,
+        1.9,
+        24.0
+       ],
+       "ziel": [
+        5.5,
+        1.4,
+        22.5
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "follower_karte",
+     "wort": "J.ezy",
+     "offset": -0.2,
+     "dauer": 2.3,
+     "name": "J.ezy",
+     "avatar": "folgen/assets/jezy.jpg",
+     "text": "NEUER FOLLOWER",
+     "unter": "EINWOHNER #4"
+    },
+    {
+     "typ": "bewohner",
+     "wort": "J.ezy",
+     "offset": -0.1,
+     "name": "J.ezy",
+     "nr": 4,
+     "pos": [
+      -6.5,
+      9.5
+     ],
+     "richtung": 104,
+     "avatar": "folgen/assets/jezy.jpg",
+     "look": {
+      "jacke": "0x0e0e10",
+      "kragen": "0x0e0e10",
+      "hose": "0x0e0e10",
+      "haut": "0x8a6a50",
+      "haare": "0x0e0e10",
+      "schuhe": "0x1a1a1a",
+      "kapuze": true,
+      "hut": "krone",
+      "rucksack": "0x0e0e10",
+      "gurt": "0xd4a017"
+     }
+    },
+    {
+     "typ": "follower_karte",
+     "wort": "Taube",
+     "offset": -0.2,
+     "dauer": 2.5,
+     "name": "Taube",
+     "avatar": "folgen/assets/taube.jpg",
+     "text": "NEUER FOLLOWER",
+     "unter": "EINWOHNER #5"
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Taube",
+     "offset": -0.1,
+     "name": "Taube",
+     "nr": 5,
+     "pos": [
+      5.5,
+      22.5
+     ],
+     "richtung": 79,
+     "avatar": "folgen/assets/taube.jpg",
+     "look": {
+      "jacke": "0x8a93a3",
+      "kragen": "0xff6a2a",
+      "hose": "0x3c4352",
+      "haut": "0xe8c8b0",
+      "haare": "0xdfe3ea",
+      "schuhe": "0xf0f0f0",
+      "rucksack": "0x5a6272",
+      "gurt": "0xff6a2a"
+     }
+    }
+   ],
+   "toene": [
+    {
+     "typ": "whoosh_down",
+     "zeit": 0
+    },
+    {
+     "typ": "spawn",
+     "wort": "J.ezy",
+     "offset": -0.1
+    },
+    {
+     "typ": "spawn",
+     "wort": "Taube",
+     "offset": -0.1
+    },
+    {
+     "typ": "shimmer",
+     "wort": "Willkommen"
+    }
+   ]
+  },
+  {
+   "id": "s3_geld",
+   "name": "Geschenk",
+   "uebergang": "schnitt",
+   "vorlauf": 0.25,
+   "nachlauf": 0.35,
+   "sprecher": "Und ich lege nochmal *zehntausend* *Euro* in die Stadtkasse.",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      0,
+      0,
+      0
+     ],
+     "radius": [
+      150,
+      120
+     ],
+     "hoehe": [
+      100,
+      80
+     ],
+     "winkel": [
+      -25,
+      15
+     ],
+     "fov": [
+      42,
+      40
+     ],
+     "wackeln": 0.15
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "geld",
+     "wort": "zehntausend",
+     "offset": 0.1,
+     "betrag": 10000,
+     "text": "GESCHENK"
+    },
+    {
+     "typ": "werte",
+     "wort": "zehntausend",
+     "offset": 0.2,
+     "dauer": 1.4,
+     "stadtkasse": 40000
+    }
+   ],
+   "toene": [
+    {
+     "typ": "whoosh",
+     "zeit": 0
+    },
+    {
+     "typ": "kasse",
+     "wort": "zehntausend",
+     "offset": 0.1
+    }
+   ]
+  },
+  {
+   "id": "s4_stadion",
+   "name": "SV Valenheim 07",
+   "uebergang": "schnitt",
+   "vorlauf": 0.3,
+   "nachlauf": 0.8,
+   "sprecher": "Damit gründen wir unseren eigenen *Fußballverein*: |0.4| den *SV* *Valenheim* *null* *sieben*!",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      74,
+      5,
+      74
+     ],
+     "radius": [
+      90,
+      66
+     ],
+     "hoehe": [
+      52,
+      30
+     ],
+     "winkel": [
+      200,
+      248
+     ],
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.2
+    },
+    {
+     "typ": "pfad",
+     "ab_wort": "den",
+     "offset": -0.1,
+     "anteil": 1,
+     "fov": [
+      46,
+      40
+     ],
+     "wackeln": 0.2,
+     "keys": [
+      {
+       "pos": [
+        84.61,
+        4.6,
+        84.61
+       ],
+       "ziel": [
+        72.59,
+        1.4,
+        72.59
+       ]
+      },
+      {
+       "pos": [
+        83.55,
+        3.8,
+        83.55
+       ],
+       "ziel": [
+        72.59,
+        1.4,
+        72.59
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "bau",
+     "zeit": 0.2,
+     "dauer": 3.0,
+     "platz": "B4",
+     "gebaeude": "stadion",
+     "name": "SV VALENHEIM 07",
+     "form": "halle"
+    },
+    {
+     "typ": "geld",
+     "zeit": 1.6,
+     "betrag": -10000,
+     "text": "STADION"
+    },
+    {
+     "typ": "werte",
+     "zeit": 1.7,
+     "dauer": 1.4,
+     "stadtkasse": 30000,
+     "gebaeude": 3,
+     "entwicklung_prozent": 22
+    },
+    {
+     "typ": "mannschaft",
+     "wort": "den",
+     "offset": -0.3,
+     "platz": "B4",
+     "lauf": 2.2,
+     "trikot": "0x1f3d8a",
+     "kragen": "0xf2c230",
+     "hose": "0xf4f4f4",
+     "spieler": [
+      {
+       "name": "Michelle",
+       "nr": 1,
+       "avatar": "folgen/assets/michelle.jpg",
+       "look": {
+        "jacke": "0x1a1a1c",
+        "kragen": "0x111111",
+        "hose": "0x1b1b22",
+        "haut": "0xefc6a8",
+        "haare": "0x16100c",
+        "schuhe": "0xe6e6e6",
+        "langeHaare": true,
+        "hut": "weihnacht",
+        "rucksack": "0x1a1a1c",
+        "gurt": "0x1a1a1c"
+       }
+      },
+      {
+       "name": "Dean",
+       "nr": 2,
+       "avatar": "folgen/assets/dean.jpg",
+       "look": {
+        "jacke": "0x7d7f84",
+        "kragen": "0x2a2a2a",
+        "hose": "0x16161a",
+        "haut": "0xe8c0a0",
+        "haare": "0x1a1410",
+        "schuhe": "0xf0f0f0",
+        "hut": "cap",
+        "capFarbe": "0x121212",
+        "rucksack": "0x2a2a2a",
+        "gurt": "0x2a2a2a"
+       }
+      },
+      {
+       "name": "Luis",
+       "nr": 3,
+       "avatar": "folgen/assets/luis.jpg",
+       "look": {
+        "jacke": "0xc0182a",
+        "kragen": "0x1a2550",
+        "hose": "0x1a2550",
+        "haut": "0xb07a55",
+        "haare": "0x2a1a10",
+        "schuhe": "0xf2f2f2",
+        "rucksack": "0x1a2550",
+        "gurt": "0x1a2550"
+       }
+      },
+      {
+       "name": "J.ezy",
+       "nr": 4,
+       "avatar": "folgen/assets/jezy.jpg",
+       "look": {
+        "jacke": "0x0e0e10",
+        "kragen": "0x0e0e10",
+        "hose": "0x0e0e10",
+        "haut": "0x8a6a50",
+        "haare": "0x0e0e10",
+        "schuhe": "0x1a1a1a",
+        "kapuze": true,
+        "hut": "krone",
+        "rucksack": "0x0e0e10",
+        "gurt": "0xd4a017"
+       }
+      },
+      {
+       "name": "Taube",
+       "nr": 5,
+       "avatar": "folgen/assets/taube.jpg",
+       "look": {
+        "jacke": "0x8a93a3",
+        "kragen": "0xff6a2a",
+        "hose": "0x3c4352",
+        "haut": "0xe8c8b0",
+        "haare": "0xdfe3ea",
+        "schuhe": "0xf0f0f0",
+        "rucksack": "0x5a6272",
+        "gurt": "0xff6a2a"
+       }
+      }
+     ]
+    },
+    {
+     "typ": "callout",
+     "zeit": 2.4,
+     "dauer": 2.0,
+     "anker": [
+      74,
+      12,
+      74
+     ],
+     "titel": "SV VALENHEIM 07",
+     "unter": "STADION · KOSTEN 10.000 €"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "build",
+     "zeit": 0.2
+    },
+    {
+     "typ": "riser",
+     "zeit": 0.4,
+     "dauer": 1.6
+    },
+    {
+     "typ": "kasse_minus",
+     "zeit": 1.6
+    },
+    {
+     "typ": "boom",
+     "zeit": 2.0
+    },
+    {
+     "typ": "jubel",
+     "wort": "den",
+     "offset": -0.2,
+     "dauer": 4.5
+    }
+   ]
+  },
+  {
+   "id": "s5_bunker",
+   "name": "Bunker",
+   "uebergang": "schnitt",
+   "vorlauf": 0.3,
+   "nachlauf": 0.45,
+   "sprecher": "Und für den Ernstfall: | ein *Bunker*, |0.2| tief unter der Erde. |0.4| Aber rein darf nur, | wer einen *Valenheim-Ausweis* hat.",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      -74,
+      3,
+      74
+     ],
+     "radius": [
+      72,
+      48
+     ],
+     "hoehe": [
+      40,
+      20
+     ],
+     "winkel": [
+      112,
+      158
+     ],
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.2
+    },
+    {
+     "typ": "pfad",
+     "ab_wort": "tief",
+     "offset": -0.2,
+     "anteil": 1,
+     "fov": [
+      52,
+      48
+     ],
+     "wackeln": 0.25,
+     "keys": [
+      {
+       "pos": [
+        -61.98,
+        -5.38,
+        76.12
+       ],
+       "ziel": [
+        -81.07,
+        -8.18,
+        75.41
+       ]
+      },
+      {
+       "pos": [
+        -65.16,
+        -5.78,
+        75.77
+       ],
+       "ziel": [
+        -81.07,
+        -8.18,
+        75.41
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "pfad",
+     "ab_wort": "Aber",
+     "offset": -0.2,
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.2,
+     "keys": [
+      {
+       "pos": [
+        -62.69,
+        9,
+        42.89
+       ],
+       "ziel": [
+        -66.22,
+        4,
+        66.22
+       ]
+      },
+      {
+       "pos": [
+        -61.27,
+        4.5,
+        52.79
+       ],
+       "ziel": [
+        -66.22,
+        4,
+        66.22
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "bau",
+     "zeit": 0.15,
+     "dauer": 2.6,
+     "platz": "B3",
+     "gebaeude": "bunker_tief",
+     "name": "SCHUTZBUNKER",
+     "form": "halle"
+    },
+    {
+     "typ": "geld",
+     "zeit": 1.4,
+     "betrag": -10000,
+     "text": "BUNKER"
+    },
+    {
+     "typ": "werte",
+     "zeit": 1.5,
+     "dauer": 1.4,
+     "stadtkasse": 20000,
+     "gebaeude": 4,
+     "entwicklung_prozent": 28
+    },
+    {
+     "typ": "callout",
+     "wort": "tief",
+     "offset": 0.3,
+     "dauer": 2.2,
+     "anker": [
+      -76.83,
+      -4.78,
+      76.83
+     ],
+     "titel": "UNTERGRUND",
+     "unter": "PLÄTZE: 100 · LUFT & WASSER OK"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "build",
+     "zeit": 0.15
+    },
+    {
+     "typ": "kasse_minus",
+     "zeit": 1.4
+    },
+    {
+     "typ": "whoosh_down",
+     "wort": "tief",
+     "offset": -0.3
+    },
+    {
+     "typ": "impact",
+     "wort": "tief",
+     "offset": -0.1
+    }
+   ]
+  },
+  {
+   "id": "s6_ausweis",
+   "name": "Ausweis-Kontrolle",
+   "uebergang": "schnitt",
+   "vorlauf": 0.3,
+   "nachlauf": 0.5,
+   "sprecher": "Michelle, | Dean, | Luis, | J.ezy | und Taube: |0.2| *Zugang* *gewährt*! |0.45| Und du? |0.35| Ohne Ausweis: | !kein! !Zutritt!.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      42,
+      38
+     ],
+     "wackeln": 0.2,
+     "keys": [
+      {
+       "pos": [
+        -59.5,
+        2.6,
+        48.9
+       ],
+       "ziel": [
+        -61.55,
+        1.4,
+        65.23
+       ]
+      },
+      {
+       "pos": [
+        -60.56,
+        2.2,
+        52.08
+       ],
+       "ziel": [
+        -61.55,
+        1.4,
+        65.23
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "bewohner_pos",
+     "zeit": 0,
+     "dauer": 30,
+     "name": "Michelle",
+     "pos": [
+      -61.98,
+      65.94
+     ],
+     "richtung": -45.0
+    },
+    {
+     "typ": "bewohner_pos",
+     "zeit": 0,
+     "dauer": 30,
+     "name": "Dean",
+     "pos": [
+      -60.49,
+      64.45
+     ],
+     "richtung": -45.0
+    },
+    {
+     "typ": "bewohner_pos",
+     "zeit": 0,
+     "dauer": 30,
+     "name": "Luis",
+     "pos": [
+      -59.01,
+      62.97
+     ],
+     "richtung": -45.0
+    },
+    {
+     "typ": "bewohner_pos",
+     "zeit": 0,
+     "dauer": 30,
+     "name": "J.ezy",
+     "pos": [
+      -57.52,
+      61.48
+     ],
+     "richtung": -45.0
+    },
+    {
+     "typ": "bewohner_pos",
+     "zeit": 0,
+     "dauer": 30,
+     "name": "Taube",
+     "pos": [
+      -56.04,
+      60.0
+     ],
+     "richtung": -45.0
+    },
+    {
+     "typ": "statist",
+     "zeit": 0,
+     "dauer": 30,
+     "pos": [
+      -54.55,
+      58.51
+     ],
+     "richtung": -45.0,
+     "look": {
+      "jacke": "0x3a3a3a",
+      "hose": "0x2a2a2a",
+      "kapuze": true
+     }
+    },
+    {
+     "typ": "ausweis",
+     "wort": "Michelle",
+     "offset": -0.1,
+     "dauer": 1.05,
+     "name": "Michelle",
+     "nr": 1,
+     "avatar": "folgen/assets/michelle.jpg",
+     "ok": true
+    },
+    {
+     "typ": "ausweis",
+     "wort": "Dean",
+     "offset": -0.1,
+     "dauer": 1.05,
+     "name": "Dean",
+     "nr": 2,
+     "avatar": "folgen/assets/dean.jpg",
+     "ok": true
+    },
+    {
+     "typ": "ausweis",
+     "wort": "Luis",
+     "offset": -0.1,
+     "dauer": 1.05,
+     "name": "Luis",
+     "nr": 3,
+     "avatar": "folgen/assets/luis.jpg",
+     "ok": true
+    },
+    {
+     "typ": "ausweis",
+     "wort": "J.ezy",
+     "offset": -0.1,
+     "dauer": 1.05,
+     "name": "J.ezy",
+     "nr": 4,
+     "avatar": "folgen/assets/jezy.jpg",
+     "ok": true
+    },
+    {
+     "typ": "ausweis",
+     "wort": "Taube",
+     "offset": -0.1,
+     "dauer": 1.05,
+     "name": "Taube",
+     "nr": 5,
+     "avatar": "folgen/assets/taube.jpg",
+     "ok": true
+    },
+    {
+     "typ": "ausweis",
+     "wort": "du",
+     "offset": -0.15,
+     "dauer": 2.4,
+     "name": "???",
+     "ok": false
+    }
+   ],
+   "toene": [
+    {
+     "typ": "scan_ok",
+     "wort": "Michelle",
+     "offset": -0.1
+    },
+    {
+     "typ": "scan_ok",
+     "wort": "Dean",
+     "offset": -0.1
+    },
+    {
+     "typ": "scan_ok",
+     "wort": "Luis",
+     "offset": -0.1
+    },
+    {
+     "typ": "scan_ok",
+     "wort": "J.ezy",
+     "offset": -0.1
+    },
+    {
+     "typ": "scan_ok",
+     "wort": "Taube",
+     "offset": -0.1
+    },
+    {
+     "typ": "scan_nein",
+     "wort": "du",
+     "offset": -0.15
+    },
+    {
+     "typ": "impact",
+     "wort": "kein",
+     "offset": -0.05
+    }
+   ]
+  },
+  {
+   "id": "s7_teaser",
+   "name": "Überraschung bei 50",
+   "uebergang": "blitz",
+   "vorlauf": 0.3,
+   "nachlauf": 0.5,
+   "sprecher": "Und bei *fünfzig* Followern | wartet eine *riesige* *Überraschung* auf die ganze Stadt. |0.3| Was glaubt ihr, was es ist?",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      0,
+      40,
+      0
+     ],
+     "radius": [
+      760,
+      640
+     ],
+     "hoehe": [
+      360,
+      300
+     ],
+     "winkel": [
+      200,
+      230
+     ],
+     "fov": [
+      50,
+      48
+     ],
+     "wackeln": 0.15
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "ziel",
+     "wort": "fünfzig",
+     "offset": -0.1,
+     "text": "ÜBERRASCHUNG BEI 50",
+     "ziel": 50
+    },
+    {
+     "typ": "schild_teaser",
+     "wort": "Überraschung",
+     "offset": -0.1,
+     "dauer": 1.6
+    },
+    {
+     "typ": "hinweis",
+     "wort": "fünfzig",
+     "offset": 0.1,
+     "dauer": 3.4,
+     "text": "BEI 50 FOLLOWERN: ???"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "riser",
+     "wort": "fünfzig",
+     "offset": -0.3,
+     "dauer": 1.4
+    },
+    {
+     "typ": "schild",
+     "wort": "Überraschung",
+     "offset": -0.1,
+     "dauer": 1.6
+    }
+   ]
+  },
+  {
+   "id": "s8_ende",
+   "name": "Ende",
+   "uebergang": "schnitt",
+   "vorlauf": 0.35,
+   "nachlauf": 2.3,
+   "sprecher": "In der Kasse bleiben *zwanzigtausend* *Euro*. |0.3| Folgt, damit ihr in den *Bunker* dürft, | und schreibt in die *Kommentare*, was wir als Nächstes bauen!",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      40,
+      46
+     ],
+     "wackeln": 0.12,
+     "ease": "inOutSine",
+     "keys": [
+      {
+       "pos": "figur+-2.6,1.7,-3.6",
+       "ziel": "figur+0,1.4,0"
+      },
+      {
+       "pos": "figur+-14,12,-18",
+       "ziel": "figur+0,1,0"
+      },
+      {
+       "pos": [
+        -160,
+        260,
+        -300
+       ],
+       "ziel": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "pos": [
+        -260,
+        620,
+        -470
+       ],
+       "ziel": [
+        0,
+        0,
+        20
+       ]
+      }
+     ]
+    }
+   ],
+   "figur": [
+    {
+     "zeit": 0,
+     "aktion": "winken",
+     "richtung": 180
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "endkarte",
+     "wort": "Folgt",
+     "offset": -0.1,
+     "kasse": true
+    },
+    {
+     "typ": "kommentar_cta",
+     "wort": "Kommentare",
+     "offset": -0.3
+    }
+   ],
+   "toene": [
+    {
+     "typ": "whoosh_up",
+     "zeit": 0
+    },
+    {
+     "typ": "boom",
+     "wort": "Folgt",
+     "offset": -0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "Kommentare"
+    },
+    {
+     "typ": "final_hit",
+     "ende": -1.9
+    }
+   ]
+  }
+ ],
+ "ergebnis": {
+  "tag": 2,
+  "verbleibende_tage": 6,
+  "einwohner": 5,
+  "stadtkasse": 20000,
+  "entwicklung_prozent": 28,
+  "entwicklung_stufe": "SIEDLUNG",
+  "ziel": {
+   "text": "ÜBERRASCHUNG BEI 50",
+   "ziel": 50,
+   "was": "Schutzschild über der Stadt (geheim)"
+  },
+  "neue_gebaeude": [
+   {
+    "typ": "stadion",
+    "platz": "B4",
+    "name": "SV VALENHEIM 07",
+    "status": "fertig"
+   },
+   {
+    "typ": "bunker_tief",
+    "platz": "B3",
+    "name": "SCHUTZBUNKER",
+    "status": "fertig",
+    "nur_einwohner": true
+   }
+  ],
+  "neue_bewohner": [
+   {
+    "name": "J.ezy",
+    "nr": 4,
+    "pos": [
+     -6.5,
+     9.5
+    ],
+    "richtung": 104,
+    "avatar": "folgen/assets/jezy.jpg",
+    "look": {
+     "jacke": "0x0e0e10",
+     "kragen": "0x0e0e10",
+     "hose": "0x0e0e10",
+     "haut": "0x8a6a50",
+     "haare": "0x0e0e10",
+     "schuhe": "0x1a1a1a",
+     "kapuze": true,
+     "hut": "krone",
+     "rucksack": "0x0e0e10",
+     "gurt": "0xd4a017"
+    }
+   },
+   {
+    "name": "Taube",
+    "nr": 5,
+    "pos": [
+     5.5,
+     22.5
+    ],
+    "richtung": 79,
+    "avatar": "folgen/assets/taube.jpg",
+    "look": {
+     "jacke": "0x8a93a3",
+     "kragen": "0xff6a2a",
+     "hose": "0x3c4352",
+     "haut": "0xe8c8b0",
+     "haare": "0xdfe3ea",
+     "schuhe": "0xf0f0f0",
+     "rucksack": "0x5a6272",
+     "gurt": "0xff6a2a"
+    }
+   }
+  ]
+ }
+}

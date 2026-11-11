@@ -56,6 +56,7 @@ async function init() {
   if (TL.licht === 'abend') player.setFill(0.18);
   const ring = makeSelectionRing(); ring.position.set(ANKER.figur[0], SLAB + 0.03, ANKER.figur[2]); scene.add(ring);
 
+  const scanner = [];
   // ---------------- Bereits gebaute Gebäude (Serienstand)
   for (const [i, b] of (STATUS.gebaeude || []).entries()) {
     if (!BAUPLAETZE[b.platz]) continue;
@@ -65,6 +66,8 @@ async function init() {
     grp.rotation.y = Math.atan2(-bi, -bj) + Math.PI; // Front zum Platz
     scene.add(grp);
     world.setLotFree(b.platz, false);
+    if (grp.userData.flutlicht) for (const m of grp.userData.flutlicht) m.emissiveIntensity = 3.0;
+    if (grp.userData.scanner) scanner.push(grp.userData.scanner);
   }
 
   // ---------------- Einwohner aus dem Serienstand (max. 60 sichtbar)
@@ -104,11 +107,59 @@ async function init() {
   const bauten = TL_events.filter((e) => e.typ === 'bau').map((e, i) => {
     const [bi, bj] = BAUPLAETZE[e.platz];
     const grp = buildBuilding(e.gebaeude, { status: 'fertig', name: e.name, seed: 50 + i });
+    if (grp.userData.scanner) scanner.push(grp.userData.scanner);
     grp.position.set(bi * P, SLAB, bj * P); grp.rotation.y = Math.atan2(-bi, -bj) + Math.PI; grp.visible = false; scene.add(grp);
     const bp = makeBlueprint(e.form || 'turm'); bp.g.position.set(bi * P, SLAB, bj * P); scene.add(bp.g);
     const fx = makeSpawnFx(); fx.g.position.set(bi * P, SLAB, bj * P); fx.g.scale.set(12, 1, 12); scene.add(fx.g);
     return { e, grp, bp, fx };
   });
+
+  // Lokale Bauplatz-Koordinaten -> Welt (Front des Gebäudes zeigt zum Platz)
+  const lotToWorld = (platz, x, z) => { const [bi, bj] = BAUPLAETZE[platz]; const th = Math.atan2(-bi, -bj) + Math.PI; const c = Math.cos(th), s2 = Math.sin(th);
+    return { x: bi * P + x * c + z * s2, z: bj * P - x * s2 + z * c, yaw: th }; };
+  // Mannschaft läuft ins Stadion ein
+  const teams = TL_events.filter((e) => e.typ === 'mannschaft').map((e) => {
+    const n = e.spieler.length;
+    const spieler = e.spieler.map((sp, k) => {
+      const look = { ...einwohnerLook(300 + k), ...(sp.look || {}) };
+      for (const kk of Object.keys(look)) if (typeof look[kk] === 'string' && /^0x/.test(look[kk])) look[kk] = parseInt(look[kk]);
+      look.jacke = parseInt(e.trikot || '0x1f3d8a'); look.kragen = parseInt(e.kragen || '0xf2c230'); look.hose = parseInt(e.hose || '0xf4f4f4'); look.rucksack = look.jacke; look.gurt = look.kragen;
+      if (look.kapuze) look.kapuze = look.jacke;
+      const f = new Figure(look, { seed: 90 + k }); f.root.visible = false; scene.add(f.root);
+      if (TL.licht === 'abend') f.setFill(0.22);
+      const start = lotToWorld(e.platz, (k - (n - 1) / 2) * 1.2, -11), ziel = lotToWorld(e.platz, (k - (n - 1) / 2) * 2.0, -1.5);
+      return { sp, f, start, ziel, delay: k * 0.18 };
+    });
+    return { e, spieler };
+  });
+  const statisten = TL_events.filter((e) => e.typ === 'statist').map((e, i) => {
+    const look = { ...einwohnerLook(400 + i), ...(e.look || {}) };
+    for (const kk of Object.keys(look)) if (typeof look[kk] === 'string' && /^0x/.test(look[kk])) look[kk] = parseInt(look[kk]);
+    const f = new Figure(look, { seed: 120 + i }); f.root.position.set(e.pos[0], SLAB, e.pos[1]); f.root.rotation.y = THREE.MathUtils.degToRad(e.richtung || 0); f.root.visible = false; scene.add(f.root);
+    return { e, f };
+  });
+  // Schutzschild-Kuppel über der Stadt
+  const schildEv = TL_events.filter((e) => e.typ === 'schild' || e.typ === 'schild_teaser');
+  let schild = null;
+  if (schildEv.length || STATUS.schild) {
+    const mat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+      uniforms: { uA: { value: 0 }, uTime: { value: 0 } },
+      vertexShader: `varying vec3 vP; varying vec3 vN; varying vec3 vW; void main(){ vP = position; vec4 w = modelMatrix*vec4(position,1.0); vW = w.xyz; vN = normalize(mat3(modelMatrix)*normal); gl_Position = projectionMatrix*viewMatrix*w; }`,
+      fragmentShader: `uniform float uA; uniform float uTime; varying vec3 vP; varying vec3 vN; varying vec3 vW;
+        void main(){
+          vec3 d = normalize(vP); float lon = atan(d.z, d.x); float lat = asin(clamp(d.y, -1.0, 1.0));
+          vec2 uv = vec2(lon * 18.0, lat * 22.0);
+          vec2 r = vec2(1.0, 1.732); vec2 h = r * 0.5;
+          vec2 a = mod(uv, r) - h; vec2 b = mod(uv - h, r) - h; vec2 gv = dot(a,a) < dot(b,b) ? a : b;
+          float hex = smoothstep(0.42, 0.5, max(abs(gv.x)*0.866 + abs(gv.y)*0.5, abs(gv.y)));
+          float fres = pow(1.0 - abs(dot(normalize(vN), normalize(cameraPosition - vW))), 2.5);
+          float wave = smoothstep(0.06, 0.0, abs(fract(d.y*1.5 - uTime*0.35) - 0.5));
+          vec3 c = vec3(0.25, 0.85, 1.0) * (0.015 + hex*0.22 + fres*0.55 + wave*0.3);
+          gl_FragColor = vec4(c * uA, 1.0);
+        }` });
+    schild = new THREE.Mesh(new THREE.SphereGeometry(430, 64, 32, 0, Math.PI * 2, 0, Math.PI / 2), mat);
+    schild.position.set(0, 0, 0); schild.renderOrder = 5; schild.frustumCulled = false; scene.add(schild);
+  }
 
   // ---------------- Szenen / Shots / Ereignisse vorbereiten
   const anchors = { ...ANKER };
@@ -182,7 +233,10 @@ async function init() {
     S.bilder = bilder;
     S.follower = events.find((e) => e.typ === 'follower_karte' && t >= e.t && t <= e.t + (e.dauer || 3)) || null;
     // Namensschilder benannter Einwohner
-    S.namen = benannt.filter((o) => o.arrive === null || t >= o.arrive + 0.5).map((o) => ({ name: o.b.name, avatar: o.b.avatar, nr: o.b.nr, pos: [o.b.pos[0], SLAB + 2.15, o.b.pos[1]], t0: o.arrive ?? -9, feet: [o.b.pos[0], SLAB, o.b.pos[1]] }));
+    S.namen = benannt.filter((o) => o.arrive === null || t >= o.arrive + 0.5).map((o) => { const pp = o.cur || o.b.pos; return { name: o.b.name, avatar: o.b.avatar, nr: o.b.nr, pos: [pp[0], SLAB + 2.15, pp[1]], t0: o.arrive ?? -9 }; });
+    for (const tm of teams) for (const sp of tm.spieler) if (sp.f.root.visible && t > tm.e.t + sp.delay + (tm.e.lauf || 2.4) * 0.8) S.namen.push({ name: sp.sp.name, avatar: sp.sp.avatar, nr: sp.sp.nr, pos: [sp.f.root.position.x, SLAB + 2.3, sp.f.root.position.z], t0: tm.e.t + sp.delay + (tm.e.lauf || 2.4) * 0.8 - 0.5 });
+    S.ausweis = null; for (const e of events) if (e.typ === 'ausweis' && t >= e.t && t < e.t + (e.dauer || 1.1)) S.ausweis = e;
+    S.ziel = STATUS.ziel || null; for (const e of events) if (e.typ === 'ziel' && t >= e.t) S.ziel = { ...e, t0: e.t };
     // 'werte': HUD-Werte zählen animiert auf neue Werte (z. B. Stadtkasse, Gebäude, Entwicklung, Tag)
     for (const e of events) if (e.typ === 'werte' && t >= e.t) {
       const k = ease.outCubic(clamp((t - e.t) / (e.dauer || 1.2)));
@@ -239,15 +293,39 @@ async function init() {
       }
     });
     for (const o of benannt) {
-      o.f.pose(t, o.aktion, o.arrive ?? 0);
+      // Positions-Übersteuerung (z. B. Warteschlange vor dem Bunker)
+      let ov = null; for (const e of events) if (e.typ === 'bewohner_pos' && e.name === o.b.name && t >= e.t && (!e.dauer || t < e.t + e.dauer)) ov = e;
+      const pp = ov ? ov.pos : o.b.pos, ry = ov ? (ov.richtung ?? 0) : (o.b.richtung ?? 0);
+      o.f.root.position.set(pp[0], SLAB, pp[1]); o.f.root.rotation.y = THREE.MathUtils.degToRad(ry); o.cur = pp;
+      o.f.pose(t, (ov && ov.aktion) || o.aktion, ov ? ov.t : (o.arrive ?? 0));
       if (o.arrive !== null) {
         const lt = t - o.arrive; o.fx.update(lt, t); o.f.root.visible = lt > 0.1;
         if (lt > 0.1 && lt < 1.2) { if (!o.f.holo) o.f.setHolo(o.mat); o.mat.uniforms.uTime.value = t; o.mat.uniforms.uBase.value = SLAB; o.mat.uniforms.uProg.value = clamp((lt - 0.1) / 0.9); o.mat.uniforms.uFade.value = 1; }
         else if (lt >= 1.2 && o.f.holo) o.f.setNormal();
       }
     }
+    for (const tm of teams) for (const sp of tm.spieler) {
+      const lt = t - tm.e.t - sp.delay; const dauer = tm.e.dauer || 99;
+      sp.f.root.visible = lt > 0 && t < tm.e.t + dauer;
+      const k = clamp(lt / (tm.e.lauf || 2.4)); const e2 = ease.inOutSine(k);
+      sp.f.root.position.set(sp.start.x + (sp.ziel.x - sp.start.x) * e2, SLAB + 0.16, sp.start.z + (sp.ziel.z - sp.start.z) * e2);
+      sp.f.root.rotation.y = sp.ziel.yaw;
+      sp.f.pose(t, k < 1 ? 'laufen' : (sp.sp.aktion || 'winken'), tm.e.t + sp.delay + (tm.e.lauf || 2.4));
+    }
+    for (const st of statisten) { st.f.root.visible = t >= st.e.t && t < st.e.t + (st.e.dauer || 3); st.f.pose(t, st.e.aktion || 'idle', st.e.t); }
+    if (schild) {
+      let a = STATUS.schild ? 0.8 : 0;
+      for (const e of schildEv) { const lt = t - e.t, d = e.dauer || 2;
+        if (e.typ === 'schild_teaser' && lt >= 0 && lt < d) a = Math.max(a, (Math.sin(lt * 37) * Math.sin(lt * 11 + 1) > 0.1 ? 0.75 : 0.12) * (1 - smooth(d - 0.3, d, lt)));
+        if (e.typ === 'schild' && lt >= 0) a = Math.max(a, 0.85 * clamp(lt / 1.5)); }
+      schild.material.uniforms.uA.value = a; schild.material.uniforms.uTime.value = t; schild.visible = a > 0.001;
+    }
+    { const nein = events.find((e) => e.typ === 'ausweis' && !e.ok && t >= e.t + 0.45 && t < e.t + (e.dauer || 1.1));
+      const ja = events.find((e) => e.typ === 'ausweis' && e.ok && t >= e.t + 0.45 && t < e.t + (e.dauer || 1.1));
+      for (const m of scanner) { m.emissive.set(nein ? 0xff2020 : 0x2bff88); m.emissiveIntensity = nein ? 2.4 + Math.sin(t * 30) : ja ? 2.6 : 1.2; } }
     for (const b of bauten) {
       const lt = t - b.e.t, d = b.e.dauer || 4;
+      if (b.grp.userData.flutlicht) for (const m of b.grp.userData.flutlicht) m.emissiveIntensity = lt > d * 0.9 ? 3.0 * clamp((lt - d * 0.9) / 0.6) : 0;
       b.fx.update(lt, t);
       b.bp.update(lt, lt < d * 0.5 ? 1 : 1 - clamp((lt - d * 0.5) / (d * 0.3)));
       b.grp.visible = lt > d * 0.25;

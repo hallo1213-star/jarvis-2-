@@ -23,6 +23,8 @@ export const KATALOG = {
   lager:        { name: 'VORRATSLAGER',  farbe: 0x6d6a60, akzent: 0xf2994a, h: 10, w: 40, d: 28, tore: 0x4a4a4a },
   rathaus:      { name: 'RATHAUS',       farbe: 0xd8cfc0, akzent: 0x39e6ff, h: 20, w: 36, d: 26, fenster: true, kuppel: true },
   doener:       { name: 'DÖNER',         farbe: 0xf1ead8, akzent: 0xd62828, h: 4.6, w: 16, d: 11, spezial: true },
+  stadion:      { name: 'SV VALENHEIM 07', farbe: 0x1f3d8a, akzent: 0xf2c230, h: 9, w: 46, d: 46, spezial: true },
+  bunker_tief:  { name: 'SCHUTZBUNKER',  farbe: 0x5b5e57, akzent: 0xf2c94c, h: 4.5, w: 30, d: 30, spezial: true },
   militaer:     { name: 'MILITÄRSTATION',farbe: 0x4a5236, akzent: 0xc9a227, h: 7,  w: 30, d: 18, spezial: true },
   park:         { name: 'PARK',          farbe: 0x3f5a2a, akzent: 0x6fcf97, h: 0,  w: 44, d: 44, park: true },
 };
@@ -38,6 +40,8 @@ export function buildBuilding(typ, { status = 'fertig', name, seed = 1, fortschr
 
   if (typ === 'doener') return buildDoener(g, add, name || def.name, r);
   if (typ === 'militaer') return buildMilitaer(g, add, name || def.name, r);
+  if (typ === 'stadion') return buildStadion(g, add, name || def.name, r);
+  if (typ === 'bunker_tief') return buildBunker(g, add, name || def.name, r);
   if (def.park) {
     add(new THREE.CylinderGeometry(18, 18, 0.15, 40), M(0x2f4a22, { roughness: 1 }), 0, 0.08, 0, false);
     for (let k = 0; k < 18; k++) {
@@ -213,5 +217,138 @@ function buildMilitaer(g, add, name, r) {
   }
   // Sandsäcke an der Einfahrt
   for (const x of [-7, 7]) for (let k = 0; k < 3; k++) add(new THREE.BoxGeometry(2.6, 0.5, 1.2), M(0x9a8a62, { roughness: 1 }), x, 0.4 + k * 0.5, -23);
+  return g;
+}
+
+// ---------------------------------------------------------------- Vereinswappen (Canvas)
+export function wappenCanvas(name = 'SV VALENHEIM 07', size = 512) {
+  const c = document.createElement('canvas'); c.width = size; c.height = size; const g = c.getContext('2d');
+  const S = size / 512; g.scale(S, S);
+  const shield = () => { g.beginPath(); g.moveTo(256, 20); g.lineTo(470, 80); g.lineTo(450, 300); g.quadraticCurveTo(400, 430, 256, 495); g.quadraticCurveTo(112, 430, 62, 300); g.lineTo(42, 80); g.closePath(); };
+  shield(); g.fillStyle = '#f2c230'; g.fill();
+  g.save(); g.translate(256, 262); g.scale(0.9, 0.9); g.translate(-256, -262); shield(); g.fillStyle = '#1f3d8a'; g.fill(); g.restore();
+  g.save(); shield(); g.clip(); g.fillStyle = '#f2c230'; g.fillRect(232, 0, 48, 512); g.restore();
+  g.fillStyle = '#ffffff'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.font = '900 120px Montserrat'; g.strokeStyle = '#0b1a40'; g.lineWidth = 14; g.strokeText('SV', 256, 175); g.fillText('SV', 256, 175);
+  g.font = '900 54px Montserrat'; g.strokeText('VALENHEIM', 256, 280); g.fillText('VALENHEIM', 256, 280);
+  g.font = '900 100px Montserrat'; g.fillStyle = '#f2c230'; g.strokeText('07', 256, 380); g.fillText('07', 256, 380);
+  return c;
+}
+
+// ---------------------------------------------------------------- Stadion des SV Valenheim 07
+function buildStadion(g, add, name, r) {
+  const blau = M(0x1f3d8a, { roughness: 0.6 }), gold = M(0xf2c230, { roughness: 0.5 }), beton = M(0x8a8a86), dunkel = M(0x2a2c30);
+  add(new THREE.BoxGeometry(46, 0.14, 46), beton, 0, 0.07, 0, false);
+  // Spielfeld
+  const pc = document.createElement('canvas'); pc.width = 1024; pc.height = 680; const pg = pc.getContext('2d');
+  for (let k = 0; k < 12; k++) { pg.fillStyle = k % 2 ? '#2f7d32' : '#36893a'; pg.fillRect(k * 1024 / 12, 0, 1024 / 12 + 1, 680); }
+  pg.strokeStyle = '#f4f4f4'; pg.lineWidth = 6; pg.strokeRect(20, 20, 984, 640); pg.beginPath(); pg.moveTo(512, 20); pg.lineTo(512, 660); pg.stroke();
+  pg.beginPath(); pg.arc(512, 340, 90, 0, 7); pg.stroke(); pg.strokeRect(20, 190, 130, 300); pg.strokeRect(874, 190, 130, 300); pg.strokeRect(20, 270, 50, 140); pg.strokeRect(954, 270, 50, 140);
+  pg.globalAlpha = 0.85; pg.drawImage(wappenCanvas(name, 160), 432, 260, 160, 160); pg.globalAlpha = 1;
+  const pt = new THREE.CanvasTexture(pc); pt.colorSpace = THREE.SRGBColorSpace; pt.anisotropy = 8;
+  add(new THREE.PlaneGeometry(34, 22.6).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ map: pt, roughness: 0.9 }), 0, 0.16, 0, false);
+  // Tore
+  for (const sx of [-1, 1]) {
+    const w = M(0xf4f4f4, { roughness: 0.4 });
+    add(new THREE.BoxGeometry(0.15, 2.4, 0.15), w, sx * 16.6, 1.36, -3.6); add(new THREE.BoxGeometry(0.15, 2.4, 0.15), w, sx * 16.6, 1.36, 3.6);
+    add(new THREE.BoxGeometry(0.15, 0.15, 7.35), w, sx * 16.6, 2.56, 0);
+    add(new THREE.BoxGeometry(1.6, 2.4, 7.2), new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.25, side: THREE.DoubleSide }), sx * 17.4, 1.36, 0, false);
+  }
+  // Tribünen (Stufen) an den Längsseiten und Stirnseiten
+  const stufen = (len, along, side, axisX) => {
+    for (let k = 0; k < 6; k++) {
+      const d = 13 + k * 1.1, h = 0.6 + k * 0.75;
+      const mat = (k % 2) ? blau : M(0x284fa8, { roughness: 0.6 });
+      const geo = axisX ? new THREE.BoxGeometry(len, h, 1.1) : new THREE.BoxGeometry(1.1, h, len);
+      if (axisX) add(geo, mat, 0, h / 2, side * d); else add(geo, mat, side * (d + 6), h / 2, 0);
+    }
+  };
+  stufen(38, 0, -1, true); stufen(38, 0, 1, true); stufen(24, 0, -1, false); stufen(24, 0, 1, false);
+  // Gold-Band "07" in den Sitzen der Gegentribüne
+  add(new THREE.BoxGeometry(10, 0.05, 6), gold, 0, 3.9, 16.4, false).rotation.x = 0;
+  // Dach über der Haupttribüne + Rückwand
+  add(new THREE.BoxGeometry(40, 7, 0.6), dunkel, 0, 3.5, -20);
+  const roof = add(new THREE.BoxGeometry(40, 0.4, 8), M(0xdddddd, { metalness: 0.5, roughness: 0.4 }), 0, 8.2, -16.5); roof.rotation.x = -0.08;
+  // Anzeigetafel mit Wappen
+  const wc = wappenCanvas(name, 512);
+  const sb = document.createElement('canvas'); sb.width = 1024; sb.height = 400; const sg = sb.getContext('2d');
+  sg.fillStyle = '#05070c'; sg.fillRect(0, 0, 1024, 400); sg.drawImage(wc, 20, 20, 360, 360);
+  sg.fillStyle = '#f2c230'; sg.font = '900 96px Montserrat'; sg.fillText('SV VALENHEIM', 400, 150); sg.fillStyle = '#ffffff'; sg.font = '900 150px Montserrat'; sg.fillText('07', 400, 320);
+  const st = new THREE.CanvasTexture(sb); st.colorSpace = THREE.SRGBColorSpace;
+  const tafel = new THREE.Mesh(new THREE.PlaneGeometry(14, 5.5), new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0xffffff, emissiveMap: st, emissiveIntensity: 1.0 }));
+  tafel.position.set(0, 11.2, -19.6); g.add(tafel);
+  add(new THREE.BoxGeometry(14.6, 6.1, 0.4), dunkel, 0, 11.2, -19.9);
+  // Flutlichtmasten
+  g.userData.flutlicht = [];
+  for (const [x, z] of [[-21, -21], [21, -21], [-21, 21], [21, 21]]) {
+    add(new THREE.CylinderGeometry(0.35, 0.6, 24, 8), M(0x9aa0a6, { metalness: 0.6 }), x, 12, z);
+    const lm = new THREE.MeshStandardMaterial({ color: 0x111111, emissive: 0xfff4dd, emissiveIntensity: 0.0 });
+    const p = add(new THREE.BoxGeometry(4, 2.4, 0.4), lm, x * 0.97, 24.5, z * 0.97, false); p.lookAt(0, 0, 0); g.userData.flutlicht.push(lm);
+  }
+  // Fahnen
+  for (const x of [-12, -4, 4, 12]) { add(new THREE.CylinderGeometry(0.06, 0.06, 5, 6), M(0xcccccc), x, 9.5, -20.3, false); add(new THREE.BoxGeometry(1.8, 1.1, 0.04), (x / 4) % 2 ? gold : blau, x + 0.95, 11.4, -20.3, false); }
+  // Eingangsschild zur Stadt hin
+  const tex = textTexture(name, { w: 1024, h: 200, bg: '#1f3d8a', color: '#f2c230', font: '900 130px Montserrat' });
+  const sign = new THREE.Mesh(new THREE.PlaneGeometry(16, 3.1), new THREE.MeshStandardMaterial({ map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.5 }));
+  sign.position.set(0, 9.0, -20.35); sign.rotation.y = Math.PI; g.add(sign);
+  return g;
+}
+
+// ---------------------------------------------------------------- Schutzbunker: Eingang oben, Räume unter der Erde
+function buildBunker(g, add, name, r) {
+  const beton = M(0x6f706b, { roughness: 0.95 }), betonD = M(0x4a4b47), stahl = M(0x5a5f66, { metalness: 0.7, roughness: 0.35 });
+  const gelbSchwarz = document.createElement('canvas'); gelbSchwarz.width = 256; gelbSchwarz.height = 64; { const x = gelbSchwarz.getContext('2d'); x.fillStyle = '#111'; x.fillRect(0, 0, 256, 64); x.fillStyle = '#f2c230'; for (let k = -2; k < 10; k++) { x.beginPath(); x.moveTo(k * 32, 64); x.lineTo(k * 32 + 16, 64); x.lineTo(k * 32 + 48, 0); x.lineTo(k * 32 + 32, 0); x.fill(); } }
+  const hz = new THREE.CanvasTexture(gelbSchwarz); hz.colorSpace = THREE.SRGBColorSpace; hz.wrapS = THREE.RepeatWrapping; hz.repeat.set(4, 1);
+  const hazard = new THREE.MeshStandardMaterial({ map: hz, roughness: 0.7 });
+  // Oberfläche
+  add(new THREE.BoxGeometry(32, 0.14, 32), M(0x5b5c58), 0, 0.07, 0, false);
+  add(new THREE.BoxGeometry(14, 5, 10), beton, 0, 2.5, -6);                     // Eingangsbau
+  add(new THREE.BoxGeometry(15, 0.8, 11), betonD, 0, 5.4, -6);
+  add(new THREE.BoxGeometry(7.2, 4.0, 0.25), stahl, 0, 2.1, -11.05);              // Panzertür
+  add(new THREE.BoxGeometry(7.6, 0.45, 0.3), hazard, 0, 4.35, -11.1, false);
+  add(new THREE.BoxGeometry(0.3, 4.2, 0.3), hazard, -3.75, 2.1, -11.1, false); add(new THREE.BoxGeometry(0.3, 4.2, 0.3), hazard, 3.75, 2.1, -11.1, false);
+  const tex = textTexture([name, 'NUR FÜR EINWOHNER'], { w: 1024, h: 300, bg: '#141414', color: '#f2c230', font: '900 100px Montserrat' });
+  const sign = new THREE.Mesh(new THREE.PlaneGeometry(10, 2.9), new THREE.MeshStandardMaterial({ map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.55 }));
+  sign.position.set(0, 7.3, -11.2); sign.rotation.y = Math.PI; g.add(sign);
+  add(new THREE.BoxGeometry(10.4, 3.2, 0.3), betonD, 0, 7.3, -11.0);
+  // Ausweis-Scanner
+  add(new THREE.BoxGeometry(0.25, 1.3, 0.25), stahl, 4.6, 0.65, -12.6);
+  add(new THREE.BoxGeometry(0.7, 0.9, 0.35), M(0x1d1f22), 4.6, 1.6, -12.6);
+  const scanMat = new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0x2bff88, emissiveIntensity: 1.6 });
+  add(new THREE.BoxGeometry(0.5, 0.55, 0.05), scanMat, 4.6, 1.65, -12.8, false);
+  g.userData.scanner = scanMat;
+  // Absperrung (Poller)
+  for (const x of [-6, -3, 3, 6]) add(new THREE.CylinderGeometry(0.2, 0.2, 1.0, 10), hazard, x, 0.5, -14);
+  // Lüftungsrohre
+  for (const [x, z] of [[-10, 6], [10, 6], [0, 11]]) { add(new THREE.CylinderGeometry(0.6, 0.6, 2.2, 12), stahl, x, 1.1, z); add(new THREE.CylinderGeometry(0.9, 0.9, 0.2, 12), stahl, x, 2.3, z); }
+  // --- Unterirdische Räume (y -11 bis -3), von innen sichtbar
+  const UY = -7;
+  const shell = new THREE.Mesh(new THREE.BoxGeometry(28, 8, 20), new THREE.MeshStandardMaterial({ color: 0x5e605a, roughness: 0.9, side: THREE.BackSide, emissive: 0x1c1d1a }));
+  shell.position.set(0, UY, 0); shell.receiveShadow = true; g.add(shell);
+  const fill = (hex, e = 0.3) => new THREE.MeshStandardMaterial({ color: hex, roughness: 0.8, emissive: hex, emissiveIntensity: e });
+  // Deckenlichter
+  for (const x of [-9, 0, 9]) for (const z of [-5, 5]) add(new THREE.BoxGeometry(3, 0.12, 0.4), new THREE.MeshStandardMaterial({ color: 0x111111, emissive: 0xfff1d6, emissiveIntensity: 2.4 }), x, UY + 3.9, z, false);
+  // Gelb-schwarze Linie am Boden
+  add(new THREE.BoxGeometry(26, 0.03, 0.5), hazard, 0, UY - 3.98, 0, false);
+  // Stockbetten
+  for (let k = 0; k < 5; k++) {
+    const x = -12 + k * 2.6;
+    for (const y of [0.5, 1.9]) { add(new THREE.BoxGeometry(2.0, 0.25, 0.95), fill(0x3b4a5c), x, UY - 4 + y, 8.6, false); add(new THREE.BoxGeometry(1.9, 0.15, 0.85), fill(0xd9d4c8, 0.35), x, UY - 4 + y + 0.18, 8.6, false); }
+    for (const dx of [-0.95, 0.95]) add(new THREE.BoxGeometry(0.08, 2.4, 0.08), fill(0x555555), x + dx, UY - 2.8, 8.6, false);
+  }
+  // Vorräte: Kisten, Wasserfässer
+  for (let k = 0; k < 14; k++) add(new THREE.BoxGeometry(1.1, 0.8, 0.9), fill(r() < 0.5 ? 0x6b5a3a : 0x4f5a3a), 8 + (k % 4) * 1.2, UY - 3.6 + Math.floor(k / 4) * 0.82, 8.4, false);
+  for (let k = 0; k < 8; k++) add(new THREE.CylinderGeometry(0.4, 0.4, 1.1, 12), fill(0x1e5aa8, 0.35), 8 + (k % 4) * 1.0, UY - 3.45, 6.6 - Math.floor(k / 4) * 1.0, false);
+  // Generator & Kontrolltisch
+  add(new THREE.BoxGeometry(3, 2, 1.6), fill(0x4a5236), -11.5, UY - 3, -7.6, false);
+  add(new THREE.BoxGeometry(5, 1, 2.2), fill(0x2a2c30), 0, UY - 3.5, -2, false);
+  const screen = textTexture(['BUNKER-STATUS', 'PLÄTZE: 100', 'LUFT: OK · WASSER: OK'], { w: 1024, h: 512, bg: '#06121a', color: '#45e3ff', font: '800 90px Oxanium' });
+  const scr = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 2.1), new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0xffffff, emissiveMap: screen, emissiveIntensity: 0.9 }));
+  scr.position.set(0, UY - 1.6, -9.9); g.add(scr);
+  // runde Druckschleuse an der Stirnwand
+  const tuer = add(new THREE.CylinderGeometry(2.4, 2.4, 0.5, 32).rotateZ(Math.PI / 2), stahl, 13.8, UY - 1.5, 0, false);
+  add(new THREE.TorusGeometry(2.45, 0.18, 8, 32).rotateY(Math.PI / 2), hazard, 13.7, UY - 1.5, 0, false);
+  add(new THREE.TorusGeometry(0.8, 0.08, 8, 20).rotateY(Math.PI / 2), M(0xc9a227, { metalness: 0.8 }), 13.5, UY - 1.5, 0, false);
+  g.userData.untergrundY = UY;
   return g;
 }

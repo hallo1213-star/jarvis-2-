@@ -532,6 +532,7 @@ function makeLotDecor(root, lots, fenceMat) {
 // Lichtstimmungen pro Folge ("licht" im Drehbuch): standard = goldene Stunde, abend = kurz vor Sonnenuntergang
 export const LICHT = {
   standard: { sunDir: [-1, 0.36, -0.42], sunCol: 0xffbf88, skyTop: 0x22385c, skyHor: 0xe39a66, fog: 0x8a7066, hemiSky: 0x9cb6de, hemiI: 1.35, sunI: 3.8, lit: 0.972, laternen: false, exposure: 1.2 },
+  morgen: { sunDir: [1, 0.24, 0.32], sunCol: 0xffc39a, skyTop: 0x3a5a8c, skyHor: 0xf2b48c, fog: 0xa89090, hemiSky: 0xaec4ea, hemiI: 1.45, sunI: 3.6, lit: 0.99, laternen: false, exposure: 1.22 },
   abend: { sunDir: [-1, 0.2, -0.3], sunCol: 0xff9a5c, skyTop: 0x1a2a4c, skyHor: 0xe0784e, fog: 0x7a5a58, hemiSky: 0x8096c8, hemiI: 1.15, sunI: 3.4, lit: 0.93, laternen: true, exposure: 1.25 },
 };
 
