@@ -1,0 +1,462 @@
+{
+  "folge": 2,
+  "titel": "Tag 2: Krankenhaus",
+  "_hinweis": "BEISPIEL – so sieht eine von 'neue-folge.js' erzeugte Folge 2 aus (erstellt mit: node pipeline/neue-folge.js 2 --bau krankenhaus:B1 --neue-einwohner 250 --kommentar ...). Die echte Folge 2 bitte mit eurem echten Kommentar-Ergebnis neu erzeugen.",
+  "stimme": {
+    "modell": "de_DE-thorsten-high",
+    "tempo": 1.07,
+    "lebendigkeit": 0.72,
+    "rhythmus": 0.85,
+    "tonhoehe_halbtoene": 1
+  },
+  "aussprache": {
+    "Follower": "Follohuer"
+  },
+  "szenen": [
+    {
+      "id": "s1_rueckblick",
+      "name": "Neuer Tag",
+      "vorlauf": 0.8,
+      "nachlauf": 0.35,
+      "sprecher": "*Tag* *2* in Valenheim. | Nur noch !6! !Tage! bis zum Krieg.",
+      "shots": [
+        {
+          "typ": "pfad",
+          "anteil": 1,
+          "fov": [
+            42,
+            48
+          ],
+          "wackeln": 0.25,
+          "keys": [
+            {
+              "pos": [
+                37,
+                190,
+                600
+              ],
+              "ziel": [
+                37,
+                0,
+                220
+              ]
+            },
+            {
+              "pos": [
+                40,
+                118,
+                270
+              ],
+              "ziel": [
+                30,
+                0,
+                -60
+              ]
+            },
+            {
+              "pos": [
+                30,
+                64,
+                128
+              ],
+              "ziel": [
+                8,
+                12,
+                -140
+              ]
+            }
+          ]
+        }
+      ],
+      "effekte": [
+        {
+          "typ": "titel",
+          "zeit": 0.15,
+          "dauer": 2.4,
+          "text": "TAG 2",
+          "unter": "FOLGE 2 · DIE LETZTEN 7 TAGE"
+        },
+        {
+          "typ": "werte",
+          "zeit": 0.6,
+          "tag": 2,
+          "verbleibende_tage": 6
+        }
+      ],
+      "toene": [
+        {
+          "typ": "boom",
+          "zeit": 0.05
+        },
+        {
+          "typ": "wind_swell",
+          "zeit": 0
+        },
+        {
+          "typ": "whoosh",
+          "ende": -0.25
+        }
+      ]
+    },
+    {
+      "id": "s2_kommentare",
+      "name": "Eure Entscheidung",
+      "uebergang": "blitz",
+      "vorlauf": 0.3,
+      "nachlauf": 0.4,
+      "sprecher": "Ihr habt in den *Kommentaren* entschieden. | Und die meisten wollten: | *Krankenhaus*!",
+      "shots": [
+        {
+          "typ": "orbit",
+          "anteil": 1,
+          "ziel": "figur+0,1.3,0",
+          "radius": [
+            6.5,
+            5.2
+          ],
+          "hoehe": [
+            1.3,
+            1
+          ],
+          "winkel": [
+            160,
+            125
+          ],
+          "fov": [
+            34,
+            30
+          ],
+          "wackeln": 0.2
+        }
+      ],
+      "figur": [
+        {
+          "zeit": 0,
+          "aktion": "umsehen",
+          "richtung": 180
+        }
+      ],
+      "effekte": [
+        {
+          "typ": "kommentare",
+          "zeit": 0.3,
+          "dauer": 4.2,
+          "liste": [
+            {
+              "name": "lena.k",
+              "text": "Baut ein Krankenhaus!",
+              "likes": 412
+            },
+            {
+              "name": "max_99",
+              "text": "Wir brauchen Ärzte!",
+              "likes": 233
+            },
+            {
+              "name": "sophie.r",
+              "text": "Krankenhaus zuerst!",
+              "likes": 187
+            }
+          ]
+        },
+        {
+          "typ": "spieler_label",
+          "zeit": 0,
+          "dauer": 99
+        }
+      ],
+      "toene": [
+        {
+          "typ": "whoosh_down",
+          "zeit": 0
+        },
+        {
+          "typ": "blip",
+          "zeit": 0.3
+        },
+        {
+          "typ": "blip",
+          "zeit": 0.65
+        },
+        {
+          "typ": "blip",
+          "zeit": 1
+        }
+      ]
+    },
+    {
+      "id": "s3_bau",
+      "name": "Der Bau",
+      "uebergang": "schnitt",
+      "vorlauf": 0.3,
+      "nachlauf": 0.6,
+      "sprecher": "Also bauen wir ein *Krankenhaus*. |0.4| Direkt hier, | auf *Bauplatz* *1*.",
+      "shots": [
+        {
+          "typ": "orbit",
+          "anteil": 1,
+          "ziel": [
+            -74,
+            10,
+            0
+          ],
+          "radius": [
+            95,
+            80
+          ],
+          "hoehe": [
+            45,
+            30
+          ],
+          "winkel": [
+            65,
+            105
+          ],
+          "fov": [
+            44,
+            40
+          ],
+          "wackeln": 0.2
+        }
+      ],
+      "effekte": [
+        {
+          "typ": "bau",
+          "zeit": 0.4,
+          "dauer": 4.5,
+          "platz": "B1",
+          "gebaeude": "krankenhaus"
+        },
+        {
+          "typ": "werte",
+          "zeit": 3.8,
+          "stadtkasse": 4000,
+          "gebaeude": 1
+        },
+        {
+          "typ": "callout",
+          "zeit": 2.6,
+          "dauer": 2.6,
+          "anker": [
+            -74,
+            14,
+            0
+          ],
+          "titel": "KRANKENHAUS",
+          "unter": "KOSTEN: 6.000 €"
+        }
+      ],
+      "toene": [
+        {
+          "typ": "build",
+          "zeit": 0.4
+        },
+        {
+          "typ": "riser",
+          "zeit": 0.6,
+          "dauer": 1.8
+        },
+        {
+          "typ": "boom",
+          "zeit": 2.6
+        },
+        {
+          "typ": "build",
+          "zeit": 2
+        }
+      ]
+    },
+    {
+      "id": "s4_einwohner",
+      "name": "Neue Einwohner",
+      "uebergang": "schnitt",
+      "vorlauf": 0.3,
+      "nachlauf": 0.5,
+      "sprecher": "Und dank euch | sind *250* *neue* *Einwohner* in unsere Stadt gezogen!",
+      "shots": [
+        {
+          "typ": "pfad",
+          "anteil": 1,
+          "fov": [
+            44,
+            40
+          ],
+          "wackeln": 0.2,
+          "keys": [
+            {
+              "pos": [
+                34,
+                12,
+                34
+              ],
+              "ziel": [
+                0,
+                1.5,
+                4
+              ]
+            },
+            {
+              "pos": [
+                26,
+                8,
+                26
+              ],
+              "ziel": [
+                0,
+                1.5,
+                2
+              ]
+            }
+          ]
+        }
+      ],
+      "effekte": [
+        {
+          "typ": "einwohner_ankunft",
+          "zeit": 0.3,
+          "dauer": 3.5,
+          "anzahl": 250
+        }
+      ],
+      "toene": [
+        {
+          "typ": "spawn",
+          "zeit": 0.3
+        },
+        {
+          "typ": "spawn",
+          "zeit": 1.4
+        },
+        {
+          "typ": "shimmer",
+          "zeit": 2.5
+        }
+      ]
+    },
+    {
+      "id": "s5_ende",
+      "name": "Ende",
+      "uebergang": "schnitt",
+      "vorlauf": 0.35,
+      "nachlauf": 2.3,
+      "sprecher": "Was bauen wir als *Nächstes*? |0.4| Schreibt es in die *Kommentare*. |0.35| Und jeder neue *Follower* wird ein neuer *Einwohner*!",
+      "shots": [
+        {
+          "typ": "pfad",
+          "anteil": 1,
+          "fov": [
+            40,
+            46
+          ],
+          "wackeln": 0.12,
+          "ease": "inOutSine",
+          "keys": [
+            {
+              "pos": "figur+-2.6,1.7,-3.6",
+              "ziel": "figur+0,1.4,0"
+            },
+            {
+              "pos": "figur+-14,12,-18",
+              "ziel": "figur+0,1,0"
+            },
+            {
+              "pos": [
+                -160,
+                260,
+                -300
+              ],
+              "ziel": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "pos": [
+                -260,
+                620,
+                -470
+              ],
+              "ziel": [
+                0,
+                0,
+                20
+              ]
+            }
+          ]
+        }
+      ],
+      "figur": [
+        {
+          "zeit": 0,
+          "aktion": "winken",
+          "richtung": 180
+        }
+      ],
+      "effekte": [
+        {
+          "typ": "werte",
+          "zeit": 0.2,
+          "stadtkasse": 9000,
+          "entwicklung_prozent": 28,
+          "entwicklung_stufe": "SIEDLUNG"
+        },
+        {
+          "typ": "frage",
+          "wort": "Was",
+          "dauer": 2.6,
+          "text": "WAS BAUEN WIR ALS NÄCHSTES?"
+        },
+        {
+          "typ": "endkarte",
+          "wort": "Schreibt",
+          "offset": -0.2
+        },
+        {
+          "typ": "kommentar_cta",
+          "wort": "Kommentare",
+          "offset": -0.3
+        }
+      ],
+      "toene": [
+        {
+          "typ": "whoosh_up",
+          "zeit": 0
+        },
+        {
+          "typ": "boom",
+          "wort": "Schreibt",
+          "offset": -0.2
+        },
+        {
+          "typ": "blip",
+          "wort": "Kommentare"
+        },
+        {
+          "typ": "shimmer",
+          "wort": "Einwohner",
+          "offset": -0.1
+        },
+        {
+          "typ": "final_hit",
+          "ende": -1.9
+        }
+      ]
+    }
+  ],
+  "ergebnis": {
+    "tag": 2,
+    "verbleibende_tage": 6,
+    "einwohner": 250,
+    "stadtkasse": 9000,
+    "entwicklung_prozent": 28,
+    "entwicklung_stufe": "SIEDLUNG",
+    "neue_gebaeude": [
+      {
+        "typ": "krankenhaus",
+        "platz": "B1",
+        "status": "fertig"
+      }
+    ]
+  }
+}

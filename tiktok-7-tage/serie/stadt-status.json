@@ -1,0 +1,15 @@
+{
+  "_info": "Fortlaufender Stand der Serie. Wird nach jeder Folge mit 'node pipeline/folge-abschliessen.js <nr>' fortgeschrieben. Werte hier kannst du auch von Hand anpassen (z. B. echte Follower-Zahl).",
+  "stadt": "VALENHEIM",
+  "welt_seed": 7071,
+  "letzte_folge": 0,
+  "tag": 1,
+  "verbleibende_tage": 7,
+  "einwohner": 0,
+  "stadtkasse": 10000,
+  "waehrung": "€",
+  "entwicklung_prozent": 0,
+  "entwicklung_stufe": "GEISTERSTADT",
+  "gebaeude": [],
+  "verlauf": []
+}

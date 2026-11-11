@@ -1,0 +1,259 @@
+{
+  "folge": 1,
+  "titel": "Der letzte Mensch",
+  "_hinweis": "Markup im Sprechertext: *wort* = gelb hervorgehoben, !wort! = rot hervorgehoben, | = kurze Sprechpause, |0.6| = Pause mit Länge in Sekunden. Zeitanker: {\"wort\": \"Weltkrieg\"} = Zeitpunkt, an dem das Wort gesprochen wird; {\"zeit\": 1.2} = Sekunden ab Szenenbeginn; {\"ende\": -0.5} = relativ zum Szenenende.",
+
+  "stimme": {
+    "modell": "de_DE-thorsten-high",
+    "tempo": 1.07,
+    "lebendigkeit": 0.72,
+    "rhythmus": 0.85,
+    "tonhoehe_halbtoene": 1.0
+  },
+
+  "aussprache": {
+    "Follower": "Follohuer"
+  },
+
+  "musik": { "stil": "dunkel-hoffnungsvoll", "tonart": "d-moll", "bpm": 84 },
+
+  "szenen": [
+    {
+      "id": "s1_stadt",
+      "name": "Die verlassene Stadt",
+      "vorlauf": 0.9,
+      "nachlauf": 0.35,
+      "sprecher": "Stellt euch vor, | ihr wacht eines Tages auf … |0.25| und seid der *letzte* *Mensch* in einer ganzen Stadt.",
+      "shots": [
+        { "typ": "pfad", "anteil": 0.62, "fov": [42, 50], "wackeln": 0.25,
+          "keys": [
+            { "pos": [37, 190, 600], "ziel": [37, 0, 220] },
+            { "pos": [40, 118, 270], "ziel": [30, 0, -60] },
+            { "pos": [30, 64, 128], "ziel": [8, 12, -140] }
+          ] },
+        { "typ": "pfad", "anteil": 0.38, "fov": [52, 48], "wackeln": 0.35,
+          "keys": [
+            { "pos": [305, 3.2, 33], "ziel": [0, 7, 37] },
+            { "pos": [205, 2.4, 35], "ziel": [-100, 6, 38] }
+          ] }
+      ],
+      "effekte": [
+        { "typ": "titel", "zeit": 0.15, "dauer": 2.4, "text": "DIE LETZTEN 7 TAGE", "unter": "FOLGE 1 · DER LETZTE MENSCH" },
+        { "typ": "callout", "wort": "ganzen", "dauer": 2.2, "anker": [37, 4, -40], "titel": "HAUPTALLEE", "unter": "0 FAHRZEUGE IN BEWEGUNG" }
+      ],
+      "toene": [
+        { "typ": "boom", "zeit": 0.05 },
+        { "typ": "wind_swell", "zeit": 0.0 },
+        { "typ": "whoosh", "ende": -0.25 }
+      ]
+    },
+    {
+      "id": "s2_alleine",
+      "name": "Ich bin alleine",
+      "uebergang": "blitz",
+      "vorlauf": 0.3,
+      "nachlauf": 0.45,
+      "sprecher": "Ich bin *komplett* *alleine*. |0.4| Keine Menschen, | keine Bewohner, |0.3| *niemand*.",
+      "shots": [
+        { "typ": "pfad", "anteil": 0.6, "fov": [38, 34], "wackeln": 0.15, "ease": "inOutCubic",
+          "keys": [
+            { "pos": "figur+0,170,-46", "ziel": "figur+0,0,0" },
+            { "pos": "figur+20,34,-22", "ziel": "figur+0,1,0" },
+            { "pos": "figur+4.0,2.0,-5.0", "ziel": "figur+0,1.3,0" }
+          ] },
+        { "typ": "orbit", "anteil": 0.4, "ziel": "figur+0,1.35,0", "radius": [6.0, 5.0], "hoehe": [1.2, 0.9], "winkel": [152, 122], "fov": [32, 30], "wackeln": 0.2 }
+      ],
+      "figur": [
+        { "wort": "Ich", "aktion": "umsehen", "richtung": 180 }
+      ],
+      "effekte": [
+        { "typ": "spieler_label", "wort": "Ich", "dauer": 99 },
+        { "typ": "scan", "wort": "Menschen", "text": "SUCHE NACH LEBENSZEICHEN …", "ergebnis": "0 GEFUNDEN", "dauer": 2.6 }
+      ],
+      "toene": [
+        { "typ": "whoosh_down", "zeit": 0.0 },
+        { "typ": "scan", "wort": "Menschen" },
+        { "typ": "blip", "wort": "niemand" }
+      ]
+    },
+    {
+      "id": "s3_problem",
+      "name": "Das Problem",
+      "uebergang": "schnitt",
+      "vorlauf": 0.25,
+      "nachlauf": 0.5,
+      "sprecher": "Und das Schlimmste? |0.65| In genau !sieben! !Tagen! soll ein neuer !Weltkrieg! ausbrechen. |0.4| Aber unsere Stadt ist auf *nichts* vorbereitet.",
+      "shots": [
+        { "typ": "pfad", "anteil": 1.0, "fov": [56, 52], "wackeln": 0.3,
+          "keys": [
+            { "pos": [-14, 1.9, 58.5], "ziel": [-14, 1.4, 90] },
+            { "pos": [-14, 1.9, 74], "ziel": [-13, 1.2, 100] }
+          ] },
+        { "typ": "pfad", "ab_wort": "In", "offset": -0.15, "anteil": 1.0, "fov": [50, 46], "wackeln": 0.3,
+          "keys": [
+            { "pos": [-96, 1.6, 100], "ziel": [-140, 16, 132] },
+            { "pos": [-100, 1.7, 98], "ziel": [-142, 26, 134] }
+          ] },
+        { "typ": "pfad", "ab_wort": "neuer", "offset": -0.35, "anteil": 1.0, "fov": [46, 40], "wackeln": 0.6,
+          "keys": [
+            { "pos": [190, 120, 260], "ziel": [0, 50, -150] },
+            { "pos": [160, 105, 220], "ziel": [0, 55, -150] }
+          ] },
+        { "typ": "pfad", "ab_wort": "Aber", "offset": -0.2, "anteil": 1.0, "fov": [44, 40], "wackeln": 0.2,
+          "keys": [
+            { "pos": [52, 26, 64], "ziel": [0, 2, 0] },
+            { "pos": [44, 14, 50], "ziel": [0, 1.5, -4] }
+          ] }
+      ],
+      "effekte": [
+        { "typ": "callout", "zeit": 0.35, "dauer": 2.3, "anker": [-6, 2.6, 82], "titel": "SUPERMARKT", "unter": "REGALE LEER · 0 KUNDEN" },
+        { "typ": "callout", "wort": "In", "offset": 0.25, "dauer": 1.9, "anker": [-148, 26, 140], "titel": "WOHNBLOCK 7", "unter": "0 / 240 WOHNUNGEN BELEGT" },
+        { "typ": "alarm", "wort": "Weltkrieg", "offset": -0.05, "dauer": 2.3, "text": "WARNUNG", "unter": "KRIEGSBEGINN IN 7 TAGEN" },
+        { "typ": "glitch", "wort": "Weltkrieg", "offset": -0.05, "dauer": 0.45 },
+        { "typ": "callout", "wort": "Stadt", "dauer": 2.3, "anker": [0, 3, 0], "titel": "ZENTRALPLATZ", "unter": "VORBEREITUNG: 0 %" }
+      ],
+      "toene": [
+        { "typ": "boom", "zeit": 0.0 },
+        { "typ": "neon_flicker", "zeit": 0.3 },
+        { "typ": "riser", "wort": "In", "dauer": 1.6 },
+        { "typ": "impact", "wort": "Weltkrieg", "offset": -0.05 },
+        { "typ": "alarm", "wort": "Weltkrieg", "offset": 0.1, "dauer": 2.6 },
+        { "typ": "whoosh", "wort": "Aber", "offset": -0.35 }
+      ]
+    },
+    {
+      "id": "s4_countdown",
+      "name": "Der Countdown",
+      "uebergang": "schwarz",
+      "vorlauf": 0.45,
+      "nachlauf": 0.4,
+      "sprecher": "Wir haben *sieben* *Tage* Zeit, | um aus dieser verlassenen Stadt eine *funktionierende* *Gemeinschaft* zu machen.",
+      "shots": [
+        { "typ": "orbit", "anteil": 1.0, "ziel": [0, 0, 10], "radius": [70, 28], "hoehe": [640, 470], "winkel": [-20, 12], "fov": [40, 38], "wackeln": 0.1 }
+      ],
+      "effekte": [
+        { "typ": "hud_einblenden", "zeit": 0.15 },
+        { "typ": "countdown_start", "zeit": 0.6 }
+      ],
+      "toene": [
+        { "typ": "hud_boot", "zeit": 0.15 },
+        { "typ": "tick_folge", "zeit": 0.8, "dauer": 5.0 }
+      ]
+    },
+    {
+      "id": "s5_zuschauer",
+      "name": "Die Zuschauer",
+      "uebergang": "blitz",
+      "vorlauf": 0.25,
+      "nachlauf": 0.3,
+      "sprecher": "Und jetzt kommt *ihr* ins Spiel. |0.35| Jeder neue *Follower* wird ein neuer *Einwohner* unserer Stadt.",
+      "shots": [
+        { "typ": "pfad", "anteil": 1.0, "fov": [40, 36], "wackeln": 0.25,
+          "keys": [
+            { "pos": "figur+4.6,2.3,1.4", "ziel": "figur+-140,9,-24" },
+            { "pos": "figur+3.5,2.1,1.0", "ziel": "figur+-140,11,-30" }
+          ] },
+        { "typ": "pfad", "ab_wort": "Jeder", "offset": -0.25, "anteil": 1.0, "fov": [44, 50], "wackeln": 0.2, "ease": "inOutCubic",
+          "keys": [
+            { "pos": "figur+3.6,2.2,0.9", "ziel": "figur+-200,16,-36" },
+            { "pos": "figur+16,13,4", "ziel": "figur+-300,22,-50" },
+            { "pos": "figur+48,54,12", "ziel": "figur+-430,12,-70" }
+          ] }
+      ],
+      "figur": [
+        { "zeit": 0.0, "aktion": "blick_stadt", "richtung": -90 }
+      ],
+      "effekte": [
+        { "typ": "hinweis", "wort": "Follower", "dauer": 2.6, "text": "1 FOLLOWER = 1 EINWOHNER" }
+      ],
+      "toene": [
+        { "typ": "whoosh", "zeit": 0.0 },
+        { "typ": "shimmer", "wort": "Follower" }
+      ]
+    },
+    {
+      "id": "s6_einwohner",
+      "name": "Neuer Einwohner",
+      "uebergang": "schnitt",
+      "vorlauf": 0.3,
+      "nachlauf": 0.4,
+      "sprecher": "Ihr könnt *entscheiden*, | welche *Gebäude* wir bauen, | welche *Orte* wir brauchen | und wie unsere Stadt *aussehen* soll.",
+      "shots": [
+        { "typ": "pfad", "anteil": 1.0, "fov": [44, 40], "wackeln": 0.2,
+          "keys": [
+            { "pos": [15, 4.4, 12], "ziel": [-30, 5, 7] },
+            { "pos": [12, 3.9, 14.5], "ziel": [-34, 6, 9] }
+          ] },
+        { "typ": "pfad", "ab_wort": "wie", "offset": -0.3, "anteil": 1.0, "fov": [40, 46], "wackeln": 0.15, "ease": "inOutCubic",
+          "keys": [
+            { "pos": [12, 3.9, 14.5], "ziel": [-34, 6, 9] },
+            { "pos": [46, 40, 62], "ziel": [-50, 4, -2] }
+          ] }
+      ],
+      "figur": [
+        { "zeit": 0.0, "aktion": "idle", "richtung": 35 }
+      ],
+      "effekte": [
+        { "typ": "einwohner_holo", "zeit": 0.25, "pos": [1.5, 0.25, 8.5], "zaehler": 1 },
+        { "typ": "einwohner_holo", "wort": "Gebäude", "offset": -0.2, "pos": [-1.5, 0.25, 14.5], "zaehler": 2 },
+        { "typ": "einwohner_holo", "wort": "Orte", "offset": -0.2, "pos": [3.0, 0.25, 19.5], "zaehler": 3 },
+        { "typ": "simulation_label", "zeit": 0.2, "dauer": 99, "text": "VORSCHAU · SO FUNKTIONIERT ES" },
+        { "typ": "bauplan", "wort": "Gebäude", "offset": 0.1, "platz": "B1", "form": "turm" },
+        { "typ": "bauplan", "wort": "Orte", "offset": 0.1, "platz": "B5", "form": "halle" },
+        { "typ": "callout", "wort": "brauchen", "offset": 0.2, "dauer": 2.0, "anker": [-74, 14, 0], "titel": "BAUPLATZ 1", "unter": "WAS BAUEN WIR HIER?" }
+      ],
+      "toene": [
+        { "typ": "spawn", "zeit": 0.25 },
+        { "typ": "spawn", "wort": "Gebäude", "offset": -0.2 },
+        { "typ": "spawn", "wort": "Orte", "offset": -0.2 },
+        { "typ": "build", "wort": "Gebäude", "offset": 0.1 },
+        { "typ": "build", "wort": "Orte", "offset": 0.1 }
+      ]
+    },
+    {
+      "id": "s7_ende",
+      "name": "Das Ende",
+      "uebergang": "schnitt",
+      "vorlauf": 0.35,
+      "nachlauf": 2.3,
+      "sprecher": "Was sollen wir als *Erstes* bauen? |0.4| Schreibt eure Ideen in die *Kommentare*. |0.35| Und jeder neue *Follower* wird ein neuer *Einwohner*!",
+      "shots": [
+        { "typ": "pfad", "anteil": 1.0, "fov": [40, 46], "wackeln": 0.12, "ease": "inOutSine",
+          "keys": [
+            { "pos": "figur+-2.6,1.7,-3.6", "ziel": "figur+0,1.4,0" },
+            { "pos": "figur+-14,12,-18", "ziel": "figur+0,1,0" },
+            { "pos": [-160, 260, -300], "ziel": [0, 0, 0] },
+            { "pos": [-260, 620, -470], "ziel": [0, 0, 20] }
+          ] }
+      ],
+      "figur": [
+        { "zeit": 0.0, "aktion": "winken", "richtung": 180 }
+      ],
+      "effekte": [
+        { "typ": "hologramme_aus", "zeit": 0.0 },
+        { "typ": "zaehler_reset", "zeit": 0.0 },
+        { "typ": "frage", "wort": "Was", "dauer": 2.6, "text": "WAS BAUEN WIR ZUERST?" },
+        { "typ": "endkarte", "wort": "Schreibt", "offset": -0.2 },
+        { "typ": "kommentar_cta", "wort": "Kommentare", "offset": -0.3 }
+      ],
+      "toene": [
+        { "typ": "whoosh_up", "zeit": 0.0 },
+        { "typ": "boom", "wort": "Schreibt", "offset": -0.2 },
+        { "typ": "blip", "wort": "Kommentare" },
+        { "typ": "shimmer", "wort": "Einwohner", "offset": -0.1 },
+        { "typ": "final_hit", "ende": -1.9 }
+      ]
+    }
+  ],
+
+  "ergebnis": {
+    "_info": "Stand NACH dieser Folge. Wird von 'folge-abschliessen.js' in serie/stadt-status.json übernommen.",
+    "tag": 1,
+    "verbleibende_tage": 7,
+    "einwohner": 0,
+    "stadtkasse": 10000,
+    "entwicklung_prozent": 0,
+    "entwicklung_stufe": "GEISTERSTADT",
+    "neue_gebaeude": []
+  }
+}
