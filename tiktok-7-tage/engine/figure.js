@@ -86,6 +86,12 @@ export class Figure {
       for (let k = 0; k < 5; k++) { const a2 = (k / 5) * Math.PI * 2; add(this.head, new THREE.ConeGeometry(0.025, 0.09, 6), gold, Math.sin(a2) * 0.1, 0.355, Math.cos(a2) * 0.1 - 0.01); }
       add(this.head, new THREE.SphereGeometry(0.018, 8, 6), new THREE.MeshStandardMaterial({ color: 0x400000, emissive: 0xff2020, emissiveIntensity: 1.2 }), 0, 0.29, 0.1);
     }
+    if (look.hut === 'stroh') {
+      const stroh = M(0xe2b44a, 0.95), band = M(0xc81e1e, 0.7);
+      add(this.head, new THREE.CylinderGeometry(0.27, 0.27, 0.015, 24), stroh, 0, 0.2, 0);
+      add(this.head, new THREE.CylinderGeometry(0.115, 0.125, 0.12, 20), stroh, 0, 0.27, -0.005);
+      add(this.head, new THREE.CylinderGeometry(0.127, 0.127, 0.04, 20), band, 0, 0.225, -0.005);
+    }
     if (look.hut === 'cap') {
       const cm = M(look.capFarbe || 0x161616, 0.7);
       add(this.head, new THREE.SphereGeometry(0.124, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.5).scale(1, 0.85, 1.05), cm, 0, 0.165, -0.008);

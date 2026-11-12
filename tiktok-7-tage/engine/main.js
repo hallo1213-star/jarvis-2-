@@ -6,7 +6,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { buildWorld, ANKER, BAUPLAETZE, P, SLAB, U } from './world.js';
 import { Figure, holoMaterial, einwohnerLook, crowdPath, makeSpawnFx, makeSelectionRing } from './figure.js';
-import { buildBuilding, makeBlueprint } from './catalog.js';
+import { buildBuilding, makeBlueprint, buildObjekt } from './catalog.js';
 import { prepareShot, evalShot } from './camera.js';
 import { HUD, W, H } from './hud.js';
 import { clamp, smooth, ease, makeRng } from './rng.js';
@@ -56,7 +56,7 @@ async function init() {
   if (TL.licht === 'abend') player.setFill(0.18);
   const ring = makeSelectionRing(); ring.position.set(ANKER.figur[0], SLAB + 0.03, ANKER.figur[2]); scene.add(ring);
 
-  const scanner = [];
+  const scanner = []; const updater = [];
   // ---------------- Bereits gebaute Gebäude (Serienstand)
   for (const [i, b] of (STATUS.gebaeude || []).entries()) {
     if (!BAUPLAETZE[b.platz]) continue;
@@ -68,7 +68,18 @@ async function init() {
     world.setLotFree(b.platz, false);
     if (grp.userData.flutlicht) for (const m of grp.userData.flutlicht) m.emissiveIntensity = 3.0;
     if (grp.userData.scanner) scanner.push(grp.userData.scanner);
+    if (grp.userData.update) updater.push(grp.userData.update);
   }
+  // Einzelobjekte aus dem Serienstand (Automaten, Fahrzeuge …)
+  const objekte = [];
+  const mkObjekt = (o, t0) => {
+    const grp = buildObjekt(o.typ_obj || o.typ, { name: o.name }); grp.position.set(o.pos[0], SLAB, o.pos[1]); grp.rotation.y = THREE.MathUtils.degToRad(o.richtung || 0); scene.add(grp);
+    if (grp.userData.update) updater.push(grp.userData.update);
+    const ob = { o, grp, t0 };
+    if (t0 !== null) { ob.fx = makeSpawnFx(); ob.fx.g.position.set(o.pos[0], SLAB, o.pos[1]); ob.fx.g.scale.set(2.5, 1, 2.5); scene.add(ob.fx.g); }
+    objekte.push(ob);
+  };
+  for (const o of STATUS.objekte || []) mkObjekt(o, null);
 
   // ---------------- Einwohner aus dem Serienstand (max. 60 sichtbar)
   const crowd = [];
@@ -108,12 +119,14 @@ async function init() {
     const [bi, bj] = BAUPLAETZE[e.platz];
     const grp = buildBuilding(e.gebaeude, { status: 'fertig', name: e.name, seed: 50 + i });
     if (grp.userData.scanner) scanner.push(grp.userData.scanner);
+    if (grp.userData.update) updater.push(grp.userData.update);
     grp.position.set(bi * P, SLAB, bj * P); grp.rotation.y = Math.atan2(-bi, -bj) + Math.PI; grp.visible = false; scene.add(grp);
     const bp = makeBlueprint(e.form || 'turm'); bp.g.position.set(bi * P, SLAB, bj * P); scene.add(bp.g);
     const fx = makeSpawnFx(); fx.g.position.set(bi * P, SLAB, bj * P); fx.g.scale.set(12, 1, 12); scene.add(fx.g);
     return { e, grp, bp, fx };
   });
 
+  for (const e of TL_events) if (e.typ === 'objekt') mkObjekt(e, e.t);
   // Lokale Bauplatz-Koordinaten -> Welt (Front des Gebäudes zeigt zum Platz)
   const lotToWorld = (platz, x, z) => { const [bi, bj] = BAUPLAETZE[platz]; const th = Math.atan2(-bi, -bj) + Math.PI; const c = Math.cos(th), s2 = Math.sin(th);
     return { x: bi * P + x * c + z * s2, z: bj * P - x * s2 + z * c, yaw: th }; };
@@ -323,6 +336,11 @@ async function init() {
     { const nein = events.find((e) => e.typ === 'ausweis' && !e.ok && t >= e.t + 0.45 && t < e.t + (e.dauer || 1.1));
       const ja = events.find((e) => e.typ === 'ausweis' && e.ok && t >= e.t + 0.45 && t < e.t + (e.dauer || 1.1));
       for (const m of scanner) { m.emissive.set(nein ? 0xff2020 : 0x2bff88); m.emissiveIntensity = nein ? 2.4 + Math.sin(t * 30) : ja ? 2.6 : 1.2; } }
+    for (const u of updater) u(t);
+    for (const ob of objekte) if (ob.t0 !== null) {
+      const lt = t - ob.t0; ob.fx.update(lt, t); ob.grp.visible = lt > 0.3;
+      const k = ease.outBack(clamp((lt - 0.3) / 0.6)); ob.grp.scale.setScalar(Math.max(0.001, k));
+    }
     for (const b of bauten) {
       const lt = t - b.e.t, d = b.e.dauer || 4;
       if (b.grp.userData.flutlicht) for (const m of b.grp.userData.flutlicht) m.emissiveIntensity = lt > d * 0.9 ? 3.0 * clamp((lt - d * 0.9) / 0.6) : 0;

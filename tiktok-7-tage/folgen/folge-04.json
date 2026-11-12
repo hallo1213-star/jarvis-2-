@@ -1,0 +1,1495 @@
+{
+ "folge": 4,
+ "titel": "Tag 3: Der Ansturm",
+ "licht": "standard",
+ "_hinweis": "Folge 4 – Tag 3. 8 neue Einwohner (#6–#13) + Josua (#14). Zigarettenautomat (J.Ezy, selbst bezahlt), Josuas Bank (selbst bezahlt), Louis' Burger (selbst bezahlt, eigenes Logo statt McDonald's), Angels Freizeitpark (Stadt, 10.000 €), Panzer für Roblox (Stadt, 5.000 €).",
+ "stimme": {
+  "modell": "de_DE-thorsten-high",
+  "tempo": 1.03,
+  "lebendigkeit": 0.72,
+  "rhythmus": 0.85,
+  "tonhoehe_halbtoene": 1.0
+ },
+ "aussprache": {
+  "Follower": "Follohuer",
+  "Michelle": "Mischell",
+  "Michelles": "Mischells",
+  "J.Ezy": "Dschiesi",
+  "J.m": "Dscheiem",
+  "Chickenman123": "Tschickenmän",
+  "Angel": "Ändschel",
+  "Louis": "Lui",
+  "Louis'": "Luis",
+  "McDonald's": "Mäckdonnelds"
+ },
+ "musik": {
+  "stil": "dunkel-hoffnungsvoll",
+  "tonart": "d-moll",
+  "bpm": 84
+ },
+ "szenen": [
+  {
+   "id": "s1_tag3",
+   "name": "Tag 3",
+   "vorlauf": 0.8,
+   "nachlauf": 0.3,
+   "sprecher": "*Tag* *drei*. | Noch !fünf! !Tage! bis zum Krieg. |0.3| Und über Nacht ist etwas *Verrücktes* passiert:",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      46
+     ],
+     "wackeln": 0.25,
+     "keys": [
+      {
+       "pos": [
+        380,
+        300,
+        420
+       ],
+       "ziel": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "pos": [
+        180,
+        170,
+        200
+       ],
+       "ziel": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "pos": [
+        60,
+        45,
+        60
+       ],
+       "ziel": [
+        0,
+        2,
+        0
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "titel",
+     "zeit": 0.15,
+     "dauer": 2.3,
+     "text": "TAG 3",
+     "unter": "FOLGE 4 · DIE LETZTEN 7 TAGE"
+    },
+    {
+     "typ": "werte",
+     "zeit": 0.9,
+     "tag": 3,
+     "verbleibende_tage": 5
+    }
+   ],
+   "toene": [
+    {
+     "typ": "boom",
+     "zeit": 0.05
+    },
+    {
+     "typ": "wind_swell",
+     "zeit": 0
+    },
+    {
+     "typ": "riser",
+     "wort": "Verrücktes",
+     "offset": -0.4,
+     "dauer": 1.4
+    }
+   ]
+  },
+  {
+   "id": "s2_ansturm",
+   "name": "Acht neue Einwohner",
+   "uebergang": "blitz",
+   "vorlauf": 0.25,
+   "nachlauf": 0.4,
+   "sprecher": "*Acht* neue Einwohner auf einmal! |0.35| Baum, | Angel, | Bennet, | Roblox, | J.m, | Chickenman123, | Nihat | und Louis! |0.3| Willkommen in Valenheim!",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      46,
+      42
+     ],
+     "wackeln": 0.2,
+     "keys": [
+      {
+       "pos": [
+        6,
+        12.5,
+        36
+       ],
+       "ziel": [
+        0,
+        2,
+        -7
+       ]
+      },
+      {
+       "pos": [
+        5,
+        9.8,
+        25
+       ],
+       "ziel": [
+        0,
+        1.8,
+        -8
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "follower_karte",
+     "wort": "Baum",
+     "offset": -0.12,
+     "dauer": 0.95,
+     "name": "Baum",
+     "avatar": "folgen/assets/baum.jpg",
+     "text": "NEUER FOLLOWER",
+     "unter": "EINWOHNER #6"
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Baum",
+     "offset": -0.15,
+     "name": "Baum",
+     "nr": 6,
+     "pos": [
+      -12,
+      -7
+     ],
+     "richtung": 0,
+     "avatar": "folgen/assets/baum.jpg",
+     "look": {
+      "jacke": "0x3f6b2a",
+      "kragen": "0x2a4a1a",
+      "hose": "0x5a4030",
+      "haut": "0xe8c0a0",
+      "haare": "0x4a3020",
+      "schuhe": "0x3a2a1a",
+      "rucksack": "0x3f6b2a",
+      "gurt": "0x2a4a1a"
+     }
+    },
+    {
+     "typ": "follower_karte",
+     "wort": "Angel",
+     "offset": -0.12,
+     "dauer": 0.95,
+     "name": "Angel",
+     "avatar": "folgen/assets/angel.jpg",
+     "text": "NEUER FOLLOWER",
+     "unter": "EINWOHNER #7"
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Angel",
+     "offset": -0.15,
+     "name": "Angel",
+     "nr": 7,
+     "pos": [
+      -124,
+      -3
+     ],
+     "richtung": 90,
+     "avatar": "folgen/assets/angel.jpg",
+     "look": {
+      "jacke": "0xf2f2f2",
+      "kragen": "0xdddddd",
+      "hose": "0x7a7350",
+      "haut": "0xd9a888",
+      "haare": "0x1a1410",
+      "schuhe": "0x8a8a8a",
+      "rucksack": "0x5a5a5a",
+      "gurt": "0x3a3a3a"
+     }
+    },
+    {
+     "typ": "follower_karte",
+     "wort": "Bennet",
+     "offset": -0.12,
+     "dauer": 0.95,
+     "name": "Bennet",
+     "avatar": "folgen/assets/bennet.jpg",
+     "text": "NEUER FOLLOWER",
+     "unter": "EINWOHNER #8"
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Bennet",
+     "offset": -0.15,
+     "name": "Bennet",
+     "nr": 8,
+     "pos": [
+      -6,
+      -13
+     ],
+     "richtung": 0,
+     "avatar": "folgen/assets/bennet.jpg",
+     "look": {
+      "jacke": "0xc0c6cc",
+      "kragen": "0xff5fa0",
+      "hose": "0x2a2a2a",
+      "haut": "0xf0c8a8",
+      "haare": "0x6a4a2a",
+      "schuhe": "0xd9a050",
+      "rucksack": "0x2f6fd1",
+      "gurt": "0xff5fa0"
+     }
+    },
+    {
+     "typ": "follower_karte",
+     "wort": "Roblox",
+     "offset": -0.12,
+     "dauer": 0.95,
+     "name": "Roblox",
+     "avatar": "folgen/assets/roblox.jpg",
+     "text": "NEUER FOLLOWER",
+     "unter": "EINWOHNER #9"
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Roblox",
+     "offset": -0.15,
+     "name": "Roblox",
+     "nr": 9,
+     "pos": [
+      -57.5,
+      -15.5
+     ],
+     "richtung": 160,
+     "avatar": "folgen/assets/roblox.jpg",
+     "look": {
+      "jacke": "0x0d69ac",
+      "kragen": "0x0d69ac",
+      "hose": "0x4b974b",
+      "haut": "0xf5cd30",
+      "haare": "0x3a2a1a",
+      "schuhe": "0x4b974b",
+      "rucksack": "0x0d69ac",
+      "gurt": "0x0d69ac"
+     }
+    },
+    {
+     "typ": "follower_karte",
+     "wort": "J.m",
+     "offset": -0.12,
+     "dauer": 0.95,
+     "name": "J.m",
+     "avatar": "folgen/assets/jm.jpg",
+     "text": "NEUER FOLLOWER",
+     "unter": "EINWOHNER #10"
+    },
+    {
+     "typ": "bewohner",
+     "wort": "J.m",
+     "offset": -0.15,
+     "name": "J.m",
+     "nr": 10,
+     "pos": [
+      2,
+      -14
+     ],
+     "richtung": 0,
+     "avatar": "folgen/assets/jm.jpg",
+     "look": {
+      "jacke": "0x4a4d52",
+      "kragen": "0x2a2c30",
+      "hose": "0x3a3d42",
+      "haut": "0xc89a78",
+      "haare": "0x5a3a20",
+      "schuhe": "0x1a1a1a",
+      "hut": "weihnacht",
+      "rucksack": "0x2a2c30",
+      "gurt": "0x2a2c30"
+     }
+    },
+    {
+     "typ": "follower_karte",
+     "wort": "Chickenman123",
+     "offset": -0.12,
+     "dauer": 0.95,
+     "name": "Chickenman123",
+     "avatar": "folgen/assets/chickenman123.jpg",
+     "text": "NEUER FOLLOWER",
+     "unter": "EINWOHNER #11"
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Chickenman123",
+     "offset": -0.15,
+     "name": "Chickenman123",
+     "nr": 11,
+     "pos": [
+      9,
+      -11
+     ],
+     "richtung": 0,
+     "avatar": "folgen/assets/chickenman123.jpg",
+     "look": {
+      "jacke": "0x1f2a4a",
+      "kragen": "0xc81e1e",
+      "hose": "0x2a3a6a",
+      "haut": "0xc68a5a",
+      "haare": "0x111111",
+      "schuhe": "0x8a5a2a",
+      "hut": "stroh",
+      "rucksack": "0x1f2a4a",
+      "gurt": "0xc81e1e"
+     }
+    },
+    {
+     "typ": "follower_karte",
+     "wort": "Nihat",
+     "offset": -0.12,
+     "dauer": 0.95,
+     "name": "Nihat",
+     "avatar": "folgen/assets/nihat.jpg",
+     "text": "NEUER FOLLOWER",
+     "unter": "EINWOHNER #12"
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Nihat",
+     "offset": -0.15,
+     "name": "Nihat",
+     "nr": 12,
+     "pos": [
+      13,
+      -4
+     ],
+     "richtung": -20,
+     "avatar": "folgen/assets/nihat.jpg",
+     "look": {
+      "jacke": "0x111111",
+      "kragen": "0xf2f2f2",
+      "hose": "0x7a1a1a",
+      "haut": "0xd8b090",
+      "haare": "0x111111",
+      "schuhe": "0xf2f2f2",
+      "rucksack": "0x111111",
+      "gurt": "0x7a1a1a"
+     }
+    },
+    {
+     "typ": "follower_karte",
+     "wort": "Louis",
+     "offset": -0.12,
+     "dauer": 0.95,
+     "name": "Louis",
+     "avatar": "folgen/assets/louis.jpg",
+     "text": "NEUER FOLLOWER",
+     "unter": "EINWOHNER #13"
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Louis",
+     "offset": -0.15,
+     "name": "Louis",
+     "nr": 13,
+     "pos": [
+      3,
+      128
+     ],
+     "richtung": 180,
+     "avatar": "folgen/assets/louis.jpg",
+     "look": {
+      "jacke": "0x9cc4f2",
+      "kragen": "0xffb070",
+      "hose": "0x2a3a4a",
+      "haut": "0xf0c8a8",
+      "haare": "0x7a5a3a",
+      "schuhe": "0xf2f2f2",
+      "rucksack": "0x5a7aa2",
+      "gurt": "0xffb070"
+     }
+    }
+   ],
+   "toene": [
+    {
+     "typ": "impact",
+     "wort": "Acht",
+     "offset": -0.1
+    },
+    {
+     "typ": "spawn",
+     "wort": "Baum",
+     "offset": -0.15
+    },
+    {
+     "typ": "spawn",
+     "wort": "Angel",
+     "offset": -0.15
+    },
+    {
+     "typ": "spawn",
+     "wort": "Bennet",
+     "offset": -0.15
+    },
+    {
+     "typ": "spawn",
+     "wort": "Roblox",
+     "offset": -0.15
+    },
+    {
+     "typ": "spawn",
+     "wort": "J.m",
+     "offset": -0.15
+    },
+    {
+     "typ": "spawn",
+     "wort": "Chickenman123",
+     "offset": -0.15
+    },
+    {
+     "typ": "spawn",
+     "wort": "Nihat",
+     "offset": -0.15
+    },
+    {
+     "typ": "spawn",
+     "wort": "Louis",
+     "offset": -0.15
+    },
+    {
+     "typ": "shimmer",
+     "wort": "Willkommen"
+    }
+   ]
+  },
+  {
+   "id": "s3_automat",
+   "name": "Zigarettenautomat",
+   "uebergang": "schnitt",
+   "vorlauf": 0.25,
+   "nachlauf": 0.4,
+   "sprecher": "J.Ezy wollte einen *Zigarettenautomaten*. |0.3| Bitte schön: | direkt neben Michelles Döner!",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      42,
+      38
+     ],
+     "wackeln": 0.2,
+     "keys": [
+      {
+       "pos": [
+        47.5,
+        2.4,
+        10.5
+       ],
+       "ziel": [
+        56,
+        1.2,
+        4.0
+       ]
+      },
+      {
+       "pos": [
+        49.5,
+        1.8,
+        8.6
+       ],
+       "ziel": [
+        56,
+        1.1,
+        4.2
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "kommentare",
+     "zeit": 0.2,
+     "dauer": 3.2,
+     "liste": [
+      {
+       "name": "J.Ezy",
+       "anzeige": "J.Ezy · Freund*innen",
+       "text": "Zigarettenautomat",
+       "avatar": "folgen/assets/jezy.jpg",
+       "likes": 1
+      }
+     ]
+    },
+    {
+     "typ": "objekt",
+     "wort": "Bitte",
+     "offset": -0.1,
+     "pos": [
+      56.2,
+      4.5
+     ],
+     "richtung": -90,
+     "typ_obj": "zigarettenautomat"
+    },
+    {
+     "typ": "callout",
+     "wort": "direkt",
+     "dauer": 2.2,
+     "anker": [
+      56.2,
+      2.2,
+      4.5
+     ],
+     "titel": "ZIGARETTENAUTOMAT",
+     "unter": "BEZAHLT VON J.EZY"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "blip",
+     "zeit": 0.2
+    },
+    {
+     "typ": "build",
+     "wort": "Bitte",
+     "offset": -0.1
+    },
+    {
+     "typ": "kasse",
+     "wort": "direkt",
+     "offset": 0.1
+    }
+   ]
+  },
+  {
+   "id": "s4_bank",
+   "name": "Josuas Bank",
+   "uebergang": "schnitt",
+   "vorlauf": 0.25,
+   "nachlauf": 0.45,
+   "sprecher": "Josua will eine *Bank* eröffnen. |0.3| Klar! |0.25| Willkommen, Josua, | Einwohner Nummer *vierzehn*!",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      148,
+      6,
+      0
+     ],
+     "radius": [
+      72,
+      54
+     ],
+     "hoehe": [
+      34,
+      18
+     ],
+     "winkel": [
+      245,
+      290
+     ],
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.2
+    },
+    {
+     "typ": "pfad",
+     "ab_wort": "Willkommen",
+     "offset": -0.2,
+     "anteil": 1,
+     "fov": [
+      40,
+      34
+     ],
+     "wackeln": 0.2,
+     "keys": [
+      {
+       "pos": [
+        126,
+        2.6,
+        4.5
+       ],
+       "ziel": [
+        135,
+        1.5,
+        0
+       ]
+      },
+      {
+       "pos": [
+        128.6,
+        2.0,
+        3.2
+       ],
+       "ziel": [
+        135,
+        1.5,
+        0
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "kommentare",
+     "zeit": 0.15,
+     "dauer": 3.2,
+     "liste": [
+      {
+       "name": "Josua",
+       "anzeige": "Josua",
+       "text": "Darf ich eine Bank eröffnen",
+       "avatar": "folgen/assets/josua.jpg",
+       "likes": 1
+      }
+     ]
+    },
+    {
+     "typ": "bau",
+     "wort": "Klar",
+     "offset": -0.2,
+     "dauer": 2.6,
+     "platz": "B6",
+     "gebaeude": "bank",
+     "name": "JOSUAS BANK",
+     "form": "turm"
+    },
+    {
+     "typ": "werte",
+     "wort": "Klar",
+     "offset": 1.6,
+     "gebaeude": 5,
+     "entwicklung_prozent": 33,
+     "entwicklung_stufe": "KLEINSTADT"
+    },
+    {
+     "typ": "callout",
+     "wort": "Klar",
+     "offset": 1.2,
+     "dauer": 2.0,
+     "anker": [
+      148,
+      16,
+      0
+     ],
+     "titel": "JOSUAS BANK",
+     "unter": "BEZAHLT VON JOSUA"
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Willkommen",
+     "offset": -0.1,
+     "name": "Josua",
+     "nr": 14,
+     "pos": [
+      135,
+      0
+     ],
+     "richtung": -90,
+     "avatar": "folgen/assets/josua.jpg",
+     "look": {
+      "jacke": "0xb8bcc2",
+      "kragen": "0x8a8e94",
+      "hose": "0x2a2e36",
+      "haut": "0xf0c8a8",
+      "haare": "0x3a2a1a",
+      "schuhe": "0xf2f2f2",
+      "rucksack": "0x5a5e66",
+      "gurt": "0x5a5e66"
+     }
+    },
+    {
+     "typ": "follower_karte",
+     "wort": "Willkommen",
+     "offset": 0.0,
+     "dauer": 0.95,
+     "name": "Josua",
+     "avatar": "folgen/assets/josua.jpg",
+     "text": "NEUER EINWOHNER",
+     "unter": "EINWOHNER #14"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "blip",
+     "zeit": 0.15
+    },
+    {
+     "typ": "build",
+     "wort": "Klar",
+     "offset": -0.2
+    },
+    {
+     "typ": "kasse",
+     "wort": "Klar",
+     "offset": 1.2
+    },
+    {
+     "typ": "spawn",
+     "wort": "Willkommen",
+     "offset": -0.1
+    }
+   ]
+  },
+  {
+   "id": "s5_burger",
+   "name": "Louis' Burger",
+   "uebergang": "schnitt",
+   "vorlauf": 0.25,
+   "nachlauf": 0.45,
+   "sprecher": "Louis wollte ein *McDonald's*. |0.3| Wir haben was Eigenes: |0.25| *Louis'* *Burger*!",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      0,
+      5,
+      140
+     ],
+     "radius": [
+      62,
+      46
+     ],
+     "hoehe": [
+      30,
+      14
+     ],
+     "winkel": [
+      155,
+      200
+     ],
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.2
+    },
+    {
+     "typ": "pfad",
+     "ab_wort": "Louis'",
+     "n": 1,
+     "offset": -0.25,
+     "anteil": 1,
+     "fov": [
+      42,
+      38
+     ],
+     "wackeln": 0.2,
+     "keys": [
+      {
+       "pos": [
+        8,
+        2.6,
+        118
+       ],
+       "ziel": [
+        2,
+        3,
+        132
+       ]
+      },
+      {
+       "pos": [
+        6.5,
+        2.0,
+        121.5
+       ],
+       "ziel": [
+        2,
+        2.6,
+        132
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "kommentare",
+     "zeit": 0.15,
+     "dauer": 3.2,
+     "liste": [
+      {
+       "name": "Louis",
+       "anzeige": "Louis · Freund*innen",
+       "text": "Darf ich ein McDonalds eröffnen",
+       "avatar": "folgen/assets/louis.jpg",
+       "likes": 1
+      }
+     ]
+    },
+    {
+     "typ": "bau",
+     "wort": "Wir",
+     "offset": -0.15,
+     "dauer": 2.4,
+     "platz": "B7",
+     "gebaeude": "burger",
+     "name": "LOUIS' BURGER",
+     "form": "halle"
+    },
+    {
+     "typ": "werte",
+     "wort": "Wir",
+     "offset": 1.5,
+     "gebaeude": 6,
+     "entwicklung_prozent": 37
+    },
+    {
+     "typ": "callout",
+     "wort": "Louis'",
+     "n": 1,
+     "offset": 0.2,
+     "dauer": 2.2,
+     "anker": [
+      2,
+      8,
+      134
+     ],
+     "titel": "LOUIS' BURGER",
+     "unter": "BEZAHLT VON LOUIS"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "blip",
+     "zeit": 0.15
+    },
+    {
+     "typ": "build",
+     "wort": "Wir",
+     "offset": -0.15
+    },
+    {
+     "typ": "boom",
+     "wort": "Louis'",
+     "n": 1,
+     "offset": -0.1
+    },
+    {
+     "typ": "kasse",
+     "wort": "Louis'",
+     "n": 1,
+     "offset": 0.3
+    }
+   ]
+  },
+  {
+   "id": "s6_freizeitpark",
+   "name": "Freizeitpark",
+   "uebergang": "schnitt",
+   "vorlauf": 0.25,
+   "nachlauf": 0.45,
+   "sprecher": "Angel bekommt einen *Freizeitpark*, | mit Riesenrad und Achterbahn! |0.3| Bezahlt von der Stadt: | *zehntausend* *Euro*.",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      -148,
+      8,
+      0
+     ],
+     "radius": [
+      82,
+      62
+     ],
+     "hoehe": [
+      46,
+      26
+     ],
+     "winkel": [
+      55,
+      105
+     ],
+     "fov": [
+      44,
+      42
+     ],
+     "wackeln": 0.2
+    },
+    {
+     "typ": "pfad",
+     "ab_wort": "Bezahlt",
+     "offset": -0.2,
+     "anteil": 1,
+     "fov": [
+      46,
+      42
+     ],
+     "wackeln": 0.2,
+     "keys": [
+      {
+       "pos": [
+        -110,
+        13,
+        15
+       ],
+       "ziel": [
+        -150,
+        8,
+        2
+       ]
+      },
+      {
+       "pos": [
+        -116,
+        10.5,
+        11
+       ],
+       "ziel": [
+        -152,
+        9,
+        2
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "kommentare",
+     "zeit": 0.15,
+     "dauer": 3.2,
+     "liste": [
+      {
+       "name": "Angel",
+       "anzeige": "Angel Davila · Freund*innen",
+       "text": "darf ich einen Freizeit Park eröffnen?",
+       "avatar": "folgen/assets/angel.jpg",
+       "likes": 1
+      }
+     ]
+    },
+    {
+     "typ": "bau",
+     "zeit": 0.4,
+     "dauer": 3.0,
+     "platz": "B5",
+     "gebaeude": "freizeitpark",
+     "name": "ANGELS FREIZEITPARK",
+     "form": "halle"
+    },
+    {
+     "typ": "geld",
+     "wort": "zehntausend",
+     "offset": 0.05,
+     "betrag": -10000,
+     "text": "FREIZEITPARK"
+    },
+    {
+     "typ": "werte",
+     "wort": "zehntausend",
+     "offset": 0.15,
+     "dauer": 1.4,
+     "stadtkasse": 10000,
+     "gebaeude": 7,
+     "entwicklung_prozent": 42
+    }
+   ],
+   "toene": [
+    {
+     "typ": "blip",
+     "zeit": 0.15
+    },
+    {
+     "typ": "build",
+     "zeit": 0.4
+    },
+    {
+     "typ": "jubel",
+     "zeit": 2.6,
+     "dauer": 3.0
+    },
+    {
+     "typ": "kasse_minus",
+     "wort": "zehntausend",
+     "offset": 0.05
+    }
+   ]
+  },
+  {
+   "id": "s7_panzer",
+   "name": "Panzer",
+   "uebergang": "schnitt",
+   "vorlauf": 0.25,
+   "nachlauf": 0.5,
+   "sprecher": "Und Roblox will *Panzer* fahren. |0.3| Okay, Roblox: | Ab jetzt verteidigst *du* unsere Stadt! |0.25| Kosten: *fünftausend* *Euro*.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      38
+     ],
+     "wackeln": 0.25,
+     "keys": [
+      {
+       "pos": [
+        -50,
+        5.6,
+        -28.5
+       ],
+       "ziel": [
+        -57.5,
+        1.8,
+        -12.5
+       ]
+      },
+      {
+       "pos": [
+        -53.5,
+        4.4,
+        -25.5
+       ],
+       "ziel": [
+        -57.5,
+        1.6,
+        -12.5
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "kommentare",
+     "zeit": 0.15,
+     "dauer": 3.2,
+     "liste": [
+      {
+       "name": "Roblox_Fan",
+       "anzeige": "Roblox_Fan · Freund*innen",
+       "text": "Darf ich Panzer fahren um zu verteidigen bin sehr gut da Drin",
+       "avatar": "folgen/assets/roblox.jpg",
+       "likes": 1
+      }
+     ]
+    },
+    {
+     "typ": "objekt",
+     "wort": "Okay",
+     "offset": -0.1,
+     "name": "ROBLOX",
+     "pos": [
+      -58,
+      -12
+     ],
+     "richtung": 90,
+     "typ_obj": "panzer"
+    },
+    {
+     "typ": "callout",
+     "wort": "verteidigst",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "anker": [
+      -58,
+      4,
+      -12
+     ],
+     "titel": "PANZER-KOMMANDANT",
+     "unter": "ROBLOX"
+    },
+    {
+     "typ": "geld",
+     "wort": "fünftausend",
+     "offset": 0.05,
+     "betrag": -5000,
+     "text": "PANZER"
+    },
+    {
+     "typ": "werte",
+     "wort": "fünftausend",
+     "offset": 0.15,
+     "dauer": 1.4,
+     "stadtkasse": 5000
+    }
+   ],
+   "toene": [
+    {
+     "typ": "blip",
+     "zeit": 0.15
+    },
+    {
+     "typ": "impact",
+     "wort": "Okay",
+     "offset": -0.1
+    },
+    {
+     "typ": "kasse_minus",
+     "wort": "fünftausend",
+     "offset": 0.05
+    }
+   ]
+  },
+  {
+   "id": "s8_ende",
+   "name": "Ende",
+   "uebergang": "schnitt",
+   "vorlauf": 0.35,
+   "nachlauf": 2.3,
+   "sprecher": "In der Kasse bleiben *fünftausend* *Euro*. |0.3| Noch *sechsunddreißig* Follower | bis zur großen *Überraschung*! |0.3| Schreibt in die *Kommentare*, was wir als Nächstes bauen!",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      40,
+      46
+     ],
+     "wackeln": 0.12,
+     "ease": "inOutSine",
+     "keys": [
+      {
+       "pos": "figur+-2.6,1.7,-3.6",
+       "ziel": "figur+0,1.4,0"
+      },
+      {
+       "pos": "figur+-14,12,-18",
+       "ziel": "figur+0,1,0"
+      },
+      {
+       "pos": [
+        -160,
+        260,
+        -300
+       ],
+       "ziel": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "pos": [
+        -260,
+        620,
+        -470
+       ],
+       "ziel": [
+        0,
+        0,
+        20
+       ]
+      }
+     ]
+    }
+   ],
+   "figur": [
+    {
+     "zeit": 0,
+     "aktion": "winken",
+     "richtung": 180
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "werte",
+     "zeit": 0.2,
+     "entwicklung_prozent": 45,
+     "entwicklung_stufe": "KLEINSTADT"
+    },
+    {
+     "typ": "hinweis",
+     "wort": "sechsunddreißig",
+     "offset": -0.1,
+     "dauer": 2.6,
+     "text": "NOCH 36 BIS ZUR ÜBERRASCHUNG"
+    },
+    {
+     "typ": "endkarte",
+     "wort": "Schreibt",
+     "offset": -0.2,
+     "kasse": true
+    },
+    {
+     "typ": "kommentar_cta",
+     "wort": "Kommentare",
+     "offset": -0.3
+    }
+   ],
+   "toene": [
+    {
+     "typ": "whoosh_up",
+     "zeit": 0
+    },
+    {
+     "typ": "riser",
+     "wort": "sechsunddreißig",
+     "offset": -0.3,
+     "dauer": 1.2
+    },
+    {
+     "typ": "boom",
+     "wort": "Schreibt",
+     "offset": -0.2
+    },
+    {
+     "typ": "final_hit",
+     "ende": -1.9
+    }
+   ]
+  }
+ ],
+ "ergebnis": {
+  "tag": 3,
+  "verbleibende_tage": 5,
+  "einwohner": 14,
+  "stadtkasse": 5000,
+  "entwicklung_prozent": 45,
+  "entwicklung_stufe": "KLEINSTADT",
+  "neue_gebaeude": [
+   {
+    "typ": "bank",
+    "platz": "B6",
+    "name": "JOSUAS BANK",
+    "status": "fertig",
+    "besitzer": "Josua"
+   },
+   {
+    "typ": "burger",
+    "platz": "B7",
+    "name": "LOUIS' BURGER",
+    "status": "fertig",
+    "besitzer": "Louis"
+   },
+   {
+    "typ": "freizeitpark",
+    "platz": "B5",
+    "name": "ANGELS FREIZEITPARK",
+    "status": "fertig",
+    "besitzer": "Angel"
+   }
+  ],
+  "neue_objekte": [
+   {
+    "typ": "zigarettenautomat",
+    "pos": [
+     56.2,
+     4.5
+    ],
+    "richtung": -90,
+    "besitzer": "J.Ezy"
+   },
+   {
+    "typ": "panzer",
+    "pos": [
+     -58,
+     -12
+    ],
+    "richtung": 90,
+    "name": "ROBLOX",
+    "besitzer": "Roblox"
+   }
+  ],
+  "neue_bewohner": [
+   {
+    "name": "Baum",
+    "nr": 6,
+    "pos": [
+     -12,
+     -7
+    ],
+    "richtung": 0,
+    "avatar": "folgen/assets/baum.jpg",
+    "look": {
+     "jacke": "0x3f6b2a",
+     "kragen": "0x2a4a1a",
+     "hose": "0x5a4030",
+     "haut": "0xe8c0a0",
+     "haare": "0x4a3020",
+     "schuhe": "0x3a2a1a",
+     "rucksack": "0x3f6b2a",
+     "gurt": "0x2a4a1a"
+    }
+   },
+   {
+    "name": "Angel",
+    "nr": 7,
+    "pos": [
+     -124,
+     -3
+    ],
+    "richtung": 90,
+    "avatar": "folgen/assets/angel.jpg",
+    "look": {
+     "jacke": "0xf2f2f2",
+     "kragen": "0xdddddd",
+     "hose": "0x7a7350",
+     "haut": "0xd9a888",
+     "haare": "0x1a1410",
+     "schuhe": "0x8a8a8a",
+     "rucksack": "0x5a5a5a",
+     "gurt": "0x3a3a3a"
+    }
+   },
+   {
+    "name": "Bennet",
+    "nr": 8,
+    "pos": [
+     -6,
+     -13
+    ],
+    "richtung": 0,
+    "avatar": "folgen/assets/bennet.jpg",
+    "look": {
+     "jacke": "0xc0c6cc",
+     "kragen": "0xff5fa0",
+     "hose": "0x2a2a2a",
+     "haut": "0xf0c8a8",
+     "haare": "0x6a4a2a",
+     "schuhe": "0xd9a050",
+     "rucksack": "0x2f6fd1",
+     "gurt": "0xff5fa0"
+    }
+   },
+   {
+    "name": "Roblox",
+    "nr": 9,
+    "pos": [
+     -57.5,
+     -15.5
+    ],
+    "richtung": 160,
+    "avatar": "folgen/assets/roblox.jpg",
+    "look": {
+     "jacke": "0x0d69ac",
+     "kragen": "0x0d69ac",
+     "hose": "0x4b974b",
+     "haut": "0xf5cd30",
+     "haare": "0x3a2a1a",
+     "schuhe": "0x4b974b",
+     "rucksack": "0x0d69ac",
+     "gurt": "0x0d69ac"
+    }
+   },
+   {
+    "name": "J.m",
+    "nr": 10,
+    "pos": [
+     2,
+     -14
+    ],
+    "richtung": 0,
+    "avatar": "folgen/assets/jm.jpg",
+    "look": {
+     "jacke": "0x4a4d52",
+     "kragen": "0x2a2c30",
+     "hose": "0x3a3d42",
+     "haut": "0xc89a78",
+     "haare": "0x5a3a20",
+     "schuhe": "0x1a1a1a",
+     "hut": "weihnacht",
+     "rucksack": "0x2a2c30",
+     "gurt": "0x2a2c30"
+    }
+   },
+   {
+    "name": "Chickenman123",
+    "nr": 11,
+    "pos": [
+     9,
+     -11
+    ],
+    "richtung": 0,
+    "avatar": "folgen/assets/chickenman123.jpg",
+    "look": {
+     "jacke": "0x1f2a4a",
+     "kragen": "0xc81e1e",
+     "hose": "0x2a3a6a",
+     "haut": "0xc68a5a",
+     "haare": "0x111111",
+     "schuhe": "0x8a5a2a",
+     "hut": "stroh",
+     "rucksack": "0x1f2a4a",
+     "gurt": "0xc81e1e"
+    }
+   },
+   {
+    "name": "Nihat",
+    "nr": 12,
+    "pos": [
+     13,
+     -4
+    ],
+    "richtung": -20,
+    "avatar": "folgen/assets/nihat.jpg",
+    "look": {
+     "jacke": "0x111111",
+     "kragen": "0xf2f2f2",
+     "hose": "0x7a1a1a",
+     "haut": "0xd8b090",
+     "haare": "0x111111",
+     "schuhe": "0xf2f2f2",
+     "rucksack": "0x111111",
+     "gurt": "0x7a1a1a"
+    }
+   },
+   {
+    "name": "Louis",
+    "nr": 13,
+    "pos": [
+     3,
+     128
+    ],
+    "richtung": 180,
+    "avatar": "folgen/assets/louis.jpg",
+    "look": {
+     "jacke": "0x9cc4f2",
+     "kragen": "0xffb070",
+     "hose": "0x2a3a4a",
+     "haut": "0xf0c8a8",
+     "haare": "0x7a5a3a",
+     "schuhe": "0xf2f2f2",
+     "rucksack": "0x5a7aa2",
+     "gurt": "0xffb070"
+    }
+   },
+   {
+    "name": "Josua",
+    "nr": 14,
+    "pos": [
+     135,
+     0
+    ],
+    "richtung": -90,
+    "avatar": "folgen/assets/josua.jpg",
+    "look": {
+     "jacke": "0xb8bcc2",
+     "kragen": "0x8a8e94",
+     "hose": "0x2a2e36",
+     "haut": "0xf0c8a8",
+     "haare": "0x3a2a1a",
+     "schuhe": "0xf2f2f2",
+     "rucksack": "0x5a5e66",
+     "gurt": "0x5a5e66"
+    }
+   }
+  ]
+ }
+}

@@ -23,6 +23,8 @@ status.bewohner = status.bewohner || [];
 for (const b of e.neue_bewohner || []) { status.bewohner = status.bewohner.filter((x) => x.name !== b.name); status.bewohner.push({ ...b, seit_folge: nr }); }
 if (e.ziel !== undefined) status.ziel = e.ziel;
 if (e.schild !== undefined) status.schild = e.schild;
+status.objekte = status.objekte || [];
+for (const o of e.neue_objekte || []) status.objekte.push({ ...o, seit_folge: nr });
 status.letzte_folge = nr;
 status.verlauf.push({ folge: nr, titel: ep.titel, abgeschlossen: new Date().toISOString().slice(0, 10), tag: status.tag, einwohner: status.einwohner, gebaeude: status.gebaeude.length });
 fs.writeFileSync(statusPath, JSON.stringify(status, null, 2) + '\n');

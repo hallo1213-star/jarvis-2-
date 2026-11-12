@@ -2,13 +2,13 @@
   "_info": "Fortlaufender Stand der Serie. Wird nach jeder Folge mit 'node pipeline/folge-abschliessen.js <nr>' fortgeschrieben. Werte hier kannst du auch von Hand anpassen (z. B. echte Follower-Zahl).",
   "stadt": "VALENHEIM",
   "welt_seed": 7071,
-  "letzte_folge": 2,
-  "tag": 1,
-  "verbleibende_tage": 7,
-  "einwohner": 3,
-  "stadtkasse": 30000,
+  "letzte_folge": 3,
+  "tag": 2,
+  "verbleibende_tage": 6,
+  "einwohner": 5,
+  "stadtkasse": 20000,
   "waehrung": "€",
-  "entwicklung_prozent": 15,
+  "entwicklung_prozent": 28,
   "entwicklung_stufe": "SIEDLUNG",
   "gebaeude": [
     {
@@ -25,6 +25,21 @@
       "name": "MILITÄRSTATION",
       "raketen": 1,
       "seit_folge": 2
+    },
+    {
+      "status": "fertig",
+      "typ": "stadion",
+      "platz": "B4",
+      "name": "SV VALENHEIM 07",
+      "seit_folge": 3
+    },
+    {
+      "status": "fertig",
+      "typ": "bunker_tief",
+      "platz": "B3",
+      "name": "SCHUTZBUNKER",
+      "nur_einwohner": true,
+      "seit_folge": 3
     }
   ],
   "verlauf": [
@@ -43,6 +58,14 @@
       "tag": 1,
       "einwohner": 3,
       "gebaeude": 2
+    },
+    {
+      "folge": 3,
+      "titel": "Tag 2: Verein & Bunker",
+      "abgeschlossen": "2026-11-12",
+      "tag": 2,
+      "einwohner": 5,
+      "gebaeude": 4
     }
   ],
   "bewohner": [
@@ -113,6 +136,55 @@
         "gurt": "0x1a2550"
       },
       "seit_folge": 2
+    },
+    {
+      "name": "J.ezy",
+      "nr": 4,
+      "pos": [
+        -6.5,
+        9.5
+      ],
+      "richtung": 104,
+      "avatar": "folgen/assets/jezy.jpg",
+      "look": {
+        "jacke": "0x0e0e10",
+        "kragen": "0x0e0e10",
+        "hose": "0x0e0e10",
+        "haut": "0x8a6a50",
+        "haare": "0x0e0e10",
+        "schuhe": "0x1a1a1a",
+        "kapuze": true,
+        "hut": "krone",
+        "rucksack": "0x0e0e10",
+        "gurt": "0xd4a017"
+      },
+      "seit_folge": 3
+    },
+    {
+      "name": "Taube",
+      "nr": 5,
+      "pos": [
+        5.5,
+        22.5
+      ],
+      "richtung": 79,
+      "avatar": "folgen/assets/taube.jpg",
+      "look": {
+        "jacke": "0x8a93a3",
+        "kragen": "0xff6a2a",
+        "hose": "0x3c4352",
+        "haut": "0xe8c8b0",
+        "haare": "0xdfe3ea",
+        "schuhe": "0xf0f0f0",
+        "rucksack": "0x5a6272",
+        "gurt": "0xff6a2a"
+      },
+      "seit_folge": 3
     }
-  ]
+  ],
+  "ziel": {
+    "text": "ÜBERRASCHUNG BEI 50",
+    "ziel": 50,
+    "was": "Schutzschild über der Stadt (geheim)"
+  }
 }

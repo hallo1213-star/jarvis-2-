@@ -25,6 +25,9 @@ export const KATALOG = {
   doener:       { name: 'DÖNER',         farbe: 0xf1ead8, akzent: 0xd62828, h: 4.6, w: 16, d: 11, spezial: true },
   stadion:      { name: 'SV VALENHEIM 07', farbe: 0x1f3d8a, akzent: 0xf2c230, h: 9, w: 46, d: 46, spezial: true },
   bunker_tief:  { name: 'SCHUTZBUNKER',  farbe: 0x5b5e57, akzent: 0xf2c94c, h: 4.5, w: 30, d: 30, spezial: true },
+  bank:         { name: 'BANK', farbe: 0xe8e1d0, akzent: 0xc9a227, h: 12, w: 26, d: 14, spezial: true },
+  burger:       { name: "LOUIS' BURGER", farbe: 0x1f6fd1, akzent: 0xff8a1f, h: 5.5, w: 18, d: 12, spezial: true },
+  freizeitpark: { name: 'FREIZEITPARK', farbe: 0x3f5a2a, akzent: 0xff3b8a, h: 0, w: 46, d: 46, spezial: true },
   militaer:     { name: 'MILITÄRSTATION',farbe: 0x4a5236, akzent: 0xc9a227, h: 7,  w: 30, d: 18, spezial: true },
   park:         { name: 'PARK',          farbe: 0x3f5a2a, akzent: 0x6fcf97, h: 0,  w: 44, d: 44, park: true },
 };
@@ -41,6 +44,9 @@ export function buildBuilding(typ, { status = 'fertig', name, seed = 1, fortschr
   if (typ === 'doener') return buildDoener(g, add, name || def.name, r);
   if (typ === 'militaer') return buildMilitaer(g, add, name || def.name, r);
   if (typ === 'stadion') return buildStadion(g, add, name || def.name, r);
+  if (typ === 'bank') return buildBank(g, add, name || def.name, r);
+  if (typ === 'burger') return buildBurger(g, add, name || def.name, r);
+  if (typ === 'freizeitpark') return buildFreizeitpark(g, add, name || def.name, r);
   if (typ === 'bunker_tief') return buildBunker(g, add, name || def.name, r);
   if (def.park) {
     add(new THREE.CylinderGeometry(18, 18, 0.15, 40), M(0x2f4a22, { roughness: 1 }), 0, 0.08, 0, false);
@@ -349,5 +355,147 @@ function buildBunker(g, add, name, r) {
   add(new THREE.TorusGeometry(2.45, 0.18, 8, 32).rotateY(Math.PI / 2), hazard, 13.7, UY - 1.5, 0, false);
   add(new THREE.TorusGeometry(0.8, 0.08, 8, 20).rotateY(Math.PI / 2), M(0xc9a227, { metalness: 0.8 }), 13.5, UY - 1.5, 0, false);
   g.userData.untergrundY = UY;
+  return g;
+}
+
+// ---------------------------------------------------------------- Bank (klassizistisch, mit Säulen)
+function buildBank(g, add, name, r) {
+  const stein = M(0xe8e1d0, { roughness: 0.8 }), steinD = M(0xc9c0aa), gold = M(0xc9a227, { metalness: 0.85, roughness: 0.3 });
+  add(new THREE.BoxGeometry(30, 0.14, 24), M(0x9a9488), 0, 0.07, -2, false);
+  for (let k = 0; k < 3; k++) add(new THREE.BoxGeometry(24 - k * 0.8, 0.35, 4 - k * 1.1), steinD, 0, 0.17 + k * 0.35, -9.5 + k * 0.55);
+  add(new THREE.BoxGeometry(24, 11, 12), stein, 0, 6.5, 0);
+  add(new THREE.BoxGeometry(25, 1.0, 13), steinD, 0, 12.4, 0);
+  // Giebel
+  const shape = new THREE.Shape(); shape.moveTo(-12.5, 0); shape.lineTo(12.5, 0); shape.lineTo(0, 4); shape.closePath();
+  const gieb = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: 2.2, bevelEnabled: false }), stein); gieb.position.set(0, 12.9, -9.2); gieb.castShadow = true; g.add(gieb);
+  add(new THREE.BoxGeometry(25, 0.8, 3), steinD, 0, 12.5, -8.1);
+  for (let k = 0; k < 6; k++) { const x = -10 + k * 4; add(new THREE.CylinderGeometry(0.75, 0.85, 10.6, 16), stein, x, 6.9, -8.4); add(new THREE.BoxGeometry(2, 0.5, 2), steinD, x, 1.4, -8.4); add(new THREE.BoxGeometry(2, 0.5, 2), steinD, x, 12.0, -8.4); }
+  // Tresortür hinter den Säulen
+  add(new THREE.CylinderGeometry(2.4, 2.4, 0.4, 32).rotateX(Math.PI / 2), gold, 0, 4.2, -6.1, false);
+  for (let k = 0; k < 6; k++) { const sp = add(new THREE.BoxGeometry(0.18, 2.0, 0.15), M(0x8a6a10, { metalness: 0.8 }), 0, 4.2, -6.4, false); sp.rotation.z = k * Math.PI / 6; }
+  // Fenster mit warmem Licht
+  const fen = new THREE.MeshStandardMaterial({ color: 0x1a140c, emissive: 0xffc070, emissiveIntensity: 0.6 });
+  for (const x of [-9, -5, 5, 9]) add(new THREE.BoxGeometry(1.6, 3.2, 0.1), fen, x, 5, -6.05, false);
+  const tex = textTexture(name, { w: 1024, h: 180, bg: 'rgba(0,0,0,0)', color: '#c9a227', font: '900 120px Montserrat' });
+  const sign = new THREE.Mesh(new THREE.PlaneGeometry(16, 2.8), new THREE.MeshStandardMaterial({ map: tex, transparent: true, emissive: 0xffd36a, emissiveMap: tex, emissiveIntensity: 0.6, metalness: 0.6 }));
+  sign.position.set(0, 13.6, -9.35); sign.rotation.y = Math.PI; g.add(sign);
+  // Geldsäcke als Deko
+  for (const x of [-11.5, 11.5]) { add(new THREE.SphereGeometry(0.7, 12, 10).scale(1, 1.15, 1), M(0x9a7a4a), x, 1.5, -10.5); const t2 = textTexture('€', { w: 128, h: 128, color: '#1d1d1d', font: '900 100px Montserrat' }); const s2 = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.8), new THREE.MeshStandardMaterial({ map: t2, transparent: true })); s2.position.set(x, 1.6, -11.22); s2.rotation.y = Math.PI; g.add(s2); }
+  return g;
+}
+
+// ---------------------------------------------------------------- Louis' Burger (eigenes Logo: Wolke + Burger)
+export function burgerLogo(name = "LOUIS' BURGER", size = 512) {
+  const c = document.createElement('canvas'); c.width = size; c.height = size; const x = c.getContext('2d'); x.scale(size / 512, size / 512);
+  x.fillStyle = '#1f6fd1'; x.beginPath(); x.arc(256, 256, 250, 0, 7); x.fill(); x.lineWidth = 16; x.strokeStyle = '#ff8a1f'; x.stroke();
+  // Wolke (wie Louis' Profilbild)
+  x.fillStyle = '#ffd7a0'; for (const [cx, cy, rr] of [[200, 150, 60], [270, 120, 75], [340, 160, 55], [250, 175, 60]]) { x.beginPath(); x.arc(cx, cy, rr, 0, 7); x.fill(); }
+  // Burger
+  x.fillStyle = '#e8a03a'; x.beginPath(); x.ellipse(256, 270, 120, 55, 0, Math.PI, 0); x.fill();
+  x.fillStyle = '#4fbf3a'; x.fillRect(140, 268, 232, 16); x.fillStyle = '#6a3a1a'; x.fillRect(146, 284, 220, 28); x.fillStyle = '#e8a03a'; x.fillRect(150, 312, 212, 24);
+  x.fillStyle = '#ffffff'; x.textAlign = 'center'; x.font = '900 72px Montserrat'; x.fillText("LOUIS'", 256, 410); x.font = '900 52px Montserrat'; x.fillStyle = '#ff8a1f'; x.fillText('BURGER', 256, 465);
+  return c;
+}
+function buildBurger(g, add, name, r) {
+  const blau = M(0x1f6fd1, { roughness: 0.6 }), orange = M(0xff8a1f, { roughness: 0.5 }), weiss = M(0xf2f2f2), dunkel = M(0x202226);
+  const Z = -8;
+  add(new THREE.BoxGeometry(40, 0.12, 36), M(0x2c2e33), 0, 0.06, 0, false);
+  add(new THREE.BoxGeometry(18, 5.5, 12), blau, 0, 2.75, Z);
+  add(new THREE.BoxGeometry(18.6, 0.9, 12.6), orange, 0, 5.9, Z);
+  const glas = new THREE.MeshStandardMaterial({ color: 0x0a1018, emissive: 0xffd9a0, emissiveIntensity: 0.55, roughness: 0.1 });
+  add(new THREE.BoxGeometry(14, 3, 0.1), glas, 0, 2.2, Z - 6.05, false);
+  const lc = new THREE.CanvasTexture(burgerLogo(name)); lc.colorSpace = THREE.SRGBColorSpace;
+  const logoM = new THREE.MeshStandardMaterial({ map: lc, transparent: true, emissive: 0xffffff, emissiveMap: lc, emissiveIntensity: 0.6 });
+  const l1 = new THREE.Mesh(new THREE.CircleGeometry(2.6, 40), logoM); l1.position.set(0, 7.9, Z - 6.2); l1.rotation.y = Math.PI; g.add(l1);
+  add(new THREE.BoxGeometry(5.6, 5.6, 0.2), M(0xffffff, { transparent: true, opacity: 0 }), 0, 7.9, Z - 6.0, false);
+  // Hoher Werbepylon mit Logo
+  add(new THREE.BoxGeometry(0.8, 14, 0.8), dunkel, 13, 7, -16);
+  const l2 = new THREE.Mesh(new THREE.CircleGeometry(3.2, 40), logoM); l2.position.set(13, 15.5, -16.45); l2.rotation.y = Math.PI; g.add(l2);
+  add(new THREE.CylinderGeometry(3.4, 3.4, 0.6, 40).rotateX(Math.PI / 2), orange, 13, 15.5, -16.1);
+  // Drive-in-Spur
+  for (let k = 0; k < 8; k++) add(new THREE.BoxGeometry(0.3, 0.02, 2), weiss, -12, 0.14, -16 + k * 4, false);
+  const dt = textTexture('DRIVE-IN', { w: 512, h: 128, bg: '#ff8a1f', color: '#ffffff', font: '900 90px Montserrat' });
+  const dts = new THREE.Mesh(new THREE.PlaneGeometry(3, 0.75), new THREE.MeshStandardMaterial({ map: dt })); dts.position.set(-12, 2.6, -18.2); dts.rotation.y = Math.PI; g.add(dts);
+  add(new THREE.BoxGeometry(0.15, 2.2, 0.15), dunkel, -12, 1.1, -18);
+  // Tische
+  for (const [x, z] of [[-6, -18], [0, -19], [6, -18]]) { add(new THREE.CylinderGeometry(0.7, 0.7, 0.06, 14), orange, x, 0.85, z); add(new THREE.CylinderGeometry(0.06, 0.06, 0.8, 6), dunkel, x, 0.45, z, false); for (const dx of [-1.1, 1.1]) add(new THREE.BoxGeometry(0.5, 0.45, 0.5), blau, x + dx, 0.35, z); }
+  return g;
+}
+
+// ---------------------------------------------------------------- Freizeitpark: Riesenrad, Achterbahn, Karussell (animiert)
+function buildFreizeitpark(g, add, name, r) {
+  const pink = M(0xff3b8a, { roughness: 0.5 }), gelb = M(0xffd23b, { roughness: 0.5 }), cyan = M(0x2fd6e8, { roughness: 0.5 }), stahl = M(0xd8dde3, { metalness: 0.6, roughness: 0.3 }), weiss = M(0xf5f5f5);
+  add(new THREE.BoxGeometry(46, 0.12, 46), M(0x4c7a34, { roughness: 1 }), 0, 0.06, 0, false);
+  for (let k = 0; k < 6; k++) add(new THREE.BoxGeometry(2.5, 0.03, 14), M(0xb9a07a), 0, 0.14, -16 + k * 2.6 - 6, false);
+  // Eingangstor
+  for (const x of [-6, 6]) add(new THREE.BoxGeometry(1.2, 8, 1.2), pink, x, 4, -21);
+  const tex = textTexture(name, { w: 1024, h: 200, bg: '#ff3b8a', color: '#ffffff', font: '900 110px Montserrat' });
+  const sign = new THREE.Mesh(new THREE.PlaneGeometry(13, 2.5), new THREE.MeshStandardMaterial({ map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.5 }));
+  sign.position.set(0, 8.6, -21.65); sign.rotation.y = Math.PI; g.add(sign);
+  add(new THREE.BoxGeometry(13.4, 2.9, 0.5), gelb, 0, 8.6, -21.2);
+  // Riesenrad (dreht sich)
+  const radG = new THREE.Group(); radG.position.set(-9, 15, 8); g.add(radG);
+  for (const sx of [-1.6, 1.6]) { const st = add(new THREE.BoxGeometry(0.6, 17, 0.6), stahl, -9 + sx, 7.5, 8 - 3); st.rotation.x = 0.28; const st2 = add(new THREE.BoxGeometry(0.6, 17, 0.6), stahl, -9 + sx, 7.5, 8 + 3); st2.rotation.x = -0.28; }
+  const rad = new THREE.Group(); radG.add(rad); radG.rotation.y = Math.PI / 2;
+  rad.add(Object.assign(new THREE.Mesh(new THREE.TorusGeometry(12, 0.25, 8, 64), cyan), { castShadow: true }));
+  rad.add(Object.assign(new THREE.Mesh(new THREE.TorusGeometry(11.5, 0.15, 8, 64), stahl)));
+  const gondeln = [];
+  for (let k = 0; k < 12; k++) {
+    const a = (k / 12) * Math.PI * 2; const sp = new THREE.Mesh(new THREE.BoxGeometry(0.15, 12, 0.15), stahl); sp.rotation.z = a; rad.add(sp);
+    const gd = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.5, 1.8), [pink, gelb, cyan][k % 3]); gd.castShadow = true; rad.add(gd); gondeln.push({ gd, a });
+  }
+  // Achterbahn: geschlossene Spline-Schiene mit Stützen und fahrendem Zug
+  const pts = [[8, 3, -14], [18, 9, -12], [20, 14, -2], [16, 6, 8], [8, 12, 16], [0, 4, 18], [-4, 3, 4], [2, 8, -6]].map((p) => new THREE.Vector3(...p));
+  const curve = new THREE.CatmullRomCurve3(pts, true, 'catmullrom', 0.4);
+  add(new THREE.TubeGeometry(curve, 200, 0.35, 8, true), M(0xff6a1a, { metalness: 0.4, roughness: 0.4 }), 0, 0, 0);
+  for (let k = 0; k < 24; k++) { const p = curve.getPoint(k / 24); add(new THREE.CylinderGeometry(0.15, 0.2, p.y, 6), stahl, p.x, p.y / 2, p.z); }
+  const wagen = []; for (let k = 0; k < 4; k++) { const w = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.9, 1.2), [gelb, pink][k % 2]); w.castShadow = true; g.add(w); wagen.push(w); }
+  // Karussell (dreht sich)
+  const kar = new THREE.Group(); kar.position.set(-10, 0, -9); g.add(kar);
+  add(new THREE.CylinderGeometry(5, 5, 0.5, 32), weiss, -10, 0.4, -9);
+  add(new THREE.CylinderGeometry(0.4, 0.4, 5, 10), gelb, -10, 2.8, -9);
+  add(new THREE.ConeGeometry(5.8, 2.2, 16), pink, -10, 6.3, -9);
+  for (let k = 0; k < 8; k++) { const a = (k / 8) * Math.PI * 2; const pf = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1, 1.4), [cyan, gelb, pink, weiss][k % 4]); pf.position.set(Math.cos(a) * 3.8, 1.6, Math.sin(a) * 3.8); pf.castShadow = true; kar.add(pf);
+    const st = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 4.6, 6), stahl); st.position.set(Math.cos(a) * 3.8, 2.8, Math.sin(a) * 3.8); kar.add(st); }
+  // Luftballons & Lichterketten-Masten
+  for (const [x, z] of [[-4, -17], [4, -17], [14, -18], [-15, 0]]) { add(new THREE.SphereGeometry(0.6, 10, 8), [pink, gelb, cyan][(x + 20) % 3 | 0], x, 3.2, z); add(new THREE.CylinderGeometry(0.02, 0.02, 2.6, 4), weiss, x, 1.6, z, false); }
+  g.userData.update = (t) => {
+    rad.rotation.z = t * 0.18;
+    for (const o of gondeln) { const a = o.a + t * 0.18; o.gd.position.set(Math.cos(a) * 12, Math.sin(a) * 12 - 1.0, 0); o.gd.rotation.z = -t * 0.18; }
+    for (let k = 0; k < wagen.length; k++) { const u = ((t * 0.07) - k * 0.012 + 10) % 1; const p = curve.getPoint(u), q = curve.getPoint((u + 0.004) % 1); wagen[k].position.set(p.x, p.y + 0.7, p.z); wagen[k].lookAt(q.x, q.y + 0.7, q.z); }
+    kar.rotation.y = t * 0.6;
+  };
+  return g;
+}
+
+// ---------------------------------------------------------------- Einzelobjekte (ohne Bauplatz): Zigarettenautomat, Panzer
+export function buildObjekt(typ, { name } = {}) {
+  const g = new THREE.Group();
+  const add = (geo, mat, x, y, z, cast = true) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = cast; m.receiveShadow = true; g.add(m); return m; };
+  if (typ === 'zigarettenautomat') {
+    add(new THREE.BoxGeometry(0.95, 1.85, 0.5), M(0x9aa3ad, { metalness: 0.7, roughness: 0.35 }), 0, 0.93, 0);
+    const c = document.createElement('canvas'); c.width = 256; c.height = 512; const x = c.getContext('2d');
+    x.fillStyle = '#0d0f12'; x.fillRect(0, 0, 256, 512); x.fillStyle = '#ff3b3b'; x.font = '900 34px Montserrat'; x.textAlign = 'center'; x.fillText('ZIGARETTEN', 128, 52);
+    const cols = ['#e33', '#fff', '#2a6', '#fc3', '#36c', '#eee', '#c33', '#999'];
+    for (let r2 = 0; r2 < 5; r2++) for (let k = 0; k < 4; k++) { x.fillStyle = cols[(r2 * 4 + k) % cols.length]; x.fillRect(22 + k * 56, 80 + r2 * 62, 44, 50); x.fillStyle = '#ffd84a'; x.font = '700 16px Montserrat'; x.fillText((7 + r2) + ' €', 44 + k * 56, 146 + r2 * 62); }
+    x.fillStyle = '#2bff88'; x.fillRect(80, 410, 96, 40); x.fillStyle = '#000'; x.font = '900 22px Montserrat'; x.fillText('AB 18', 128, 438);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+    const front = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 1.6), new THREE.MeshStandardMaterial({ map: t, emissive: 0xffffff, emissiveMap: t, emissiveIntensity: 0.55 }));
+    front.position.set(0, 0.98, 0.26); g.add(front);
+    add(new THREE.BoxGeometry(1.05, 0.12, 0.6), M(0x5a6068), 0, 1.92, 0);
+  } else if (typ === 'panzer') {
+    const oliv = M(0x4f5a34, { roughness: 0.75 }), olivD = M(0x353d22), kette = M(0x1c1c1c, { roughness: 0.9 });
+    add(new THREE.BoxGeometry(3.6, 1.3, 7.4), oliv, 0, 1.25, 0);
+    add(new THREE.BoxGeometry(3.4, 0.6, 1.2), olivD, 0, 1.6, 3.6).rotation.x = 0.5;
+    for (const sx of [-1, 1]) { add(new THREE.BoxGeometry(0.9, 1.0, 7.8), kette, sx * 2.1, 0.55, 0); for (let k = 0; k < 6; k++) add(new THREE.CylinderGeometry(0.42, 0.42, 0.95, 12).rotateZ(Math.PI / 2), olivD, sx * 2.1, 0.5, -3.1 + k * 1.24); }
+    const turm = new THREE.Group(); turm.position.set(0, 2.4, -0.4); g.add(turm);
+    const tm = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.8, 1.0, 10), oliv); tm.castShadow = true; turm.add(tm);
+    const rohr = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.2, 5.2, 10).rotateX(Math.PI / 2), olivD); rohr.position.set(0, 0.1, 3.4); rohr.castShadow = true; turm.add(rohr);
+    const luke = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 0.15, 12), olivD); luke.position.set(0.5, 0.58, -0.4); turm.add(luke);
+    // Tarnflecken
+    for (let k = 0; k < 8; k++) add(new THREE.BoxGeometry(0.9, 0.05, 1.2), olivD, (k % 2 ? 1 : -1) * 0.8, 1.92, -3 + k * 0.8, false);
+    if (name) { const tx = textTexture(name, { w: 512, h: 128, color: '#f2f2f2', font: '900 96px Montserrat' }); const pl = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 0.55), new THREE.MeshStandardMaterial({ map: tx, transparent: true })); pl.position.set(1.81, 1.35, 0); pl.rotation.y = Math.PI / 2; g.add(pl); }
+    g.userData.update = (t) => { turm.rotation.y = Math.sin(t * 0.4) * 0.35; };
+  }
   return g;
 }
