@@ -80,7 +80,7 @@ async function openPage(browser, port) {
   }));
   const list = path.join(OUT, 'segmente.txt');
   fs.writeFileSync(list, segs.filter(Boolean).map((s) => `file '${s}'`).join('\n'));
-  execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', list, '-c', 'copy', path.join(OUT, 'video_stumm.mp4')]);
+  execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', list, '-c', 'copy', path.join(OUT, opt('ausgabe', 'video_stumm.mp4'))]);
   segs.filter(Boolean).forEach((s) => fs.unlinkSync(s));
   console.log(`Video (stumm) fertig in ${((Date.now() - tStart) / 60000).toFixed(1)} min -> ${path.join(OUT, 'video_stumm.mp4')}`);
   await browser.close(); srv.close();

@@ -265,7 +265,6 @@ function buildStadion(g, add, name, r) {
   };
   stufen(38, 0, -1, true); stufen(38, 0, 1, true); stufen(24, 0, -1, false); stufen(24, 0, 1, false);
   // Gold-Band "07" in den Sitzen der Gegentribüne
-  add(new THREE.BoxGeometry(10, 0.05, 6), gold, 0, 3.9, 16.4, false).rotation.x = 0;
   // Dach über der Haupttribüne + Rückwand
   add(new THREE.BoxGeometry(40, 7, 0.6), dunkel, 0, 3.5, -20);
   const roof = add(new THREE.BoxGeometry(40, 0.4, 8), M(0xdddddd, { metalness: 0.5, roughness: 0.4 }), 0, 8.2, -16.5); roof.rotation.x = -0.08;
