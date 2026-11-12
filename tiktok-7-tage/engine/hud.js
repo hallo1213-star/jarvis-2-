@@ -522,7 +522,9 @@ export class HUD {
     const lines = [[]]; let lw = 0;
     for (const w of words) { const ww = g.measureText(w.s).width * (w.farbe ? 1.1 : 1); if (lw + ww > 900 && lines[lines.length - 1].length) { lines.push([]); lw = 0; } lines[lines.length - 1].push({ ...w, ww }); lw += ww + space; }
     const baseY = sub.y || 1340; const lh = size * 1.12;
-    g.translate(W / 2, baseY); g.scale(lerp(0.82, 1, pop), lerp(0.82, 1, pop)); g.globalAlpha = fade * clamp(lt / 0.06);
+    const maxW = Math.max(...lines.map((ln) => ln.reduce((s2, w) => s2 + w.ww, 0) + space * (ln.length - 1)));
+    const fitS = Math.min(1, 980 / maxW);
+    g.translate(W / 2, baseY); g.scale(lerp(0.82, 1, pop) * fitS, lerp(0.82, 1, pop) * fitS); g.globalAlpha = fade * clamp(lt / 0.06);
     lines.forEach((ln, li) => {
       const total = ln.reduce((s, w) => s + w.ww, 0) + space * (ln.length - 1);
       let x = -total / 2; const y = (li - (lines.length - 1) / 2) * lh;
