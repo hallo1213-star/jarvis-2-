@@ -2,14 +2,14 @@
   "_info": "Fortlaufender Stand der Serie. Wird nach jeder Folge mit 'node pipeline/folge-abschliessen.js <nr>' fortgeschrieben. Werte hier kannst du auch von Hand anpassen (z. B. echte Follower-Zahl).",
   "stadt": "VALENHEIM",
   "welt_seed": 7071,
-  "letzte_folge": 5,
+  "letzte_folge": 6,
   "tag": 2,
   "verbleibende_tage": 6,
-  "einwohner": 29,
+  "einwohner": 30,
   "stadtkasse": 10000,
   "waehrung": "€",
-  "entwicklung_prozent": 60,
-  "entwicklung_stufe": "KLEINSTADT",
+  "entwicklung_prozent": 77,
+  "entwicklung_stufe": "STADT",
   "gebaeude": [
     {
       "status": "fertig",
@@ -80,6 +80,46 @@
       "name": "POLIZEI",
       "chef": "t.h.169",
       "seit_folge": 5
+    },
+    {
+      "status": "fertig",
+      "typ": "notfallkrankenhaus",
+      "platz": "B12",
+      "name": "NOTFALLKRANKENHAUS",
+      "projekt": "Notfallprojekt",
+      "seit_folge": 6
+    },
+    {
+      "status": "fertig",
+      "typ": "rettungsdienst",
+      "platz": "B13",
+      "name": "RETTUNGSDIENST",
+      "projekt": "Notfallprojekt",
+      "seit_folge": 6
+    },
+    {
+      "status": "fertig",
+      "typ": "krisenzentrum",
+      "platz": "B10",
+      "name": "KRISENZENTRUM",
+      "projekt": "Notfallprojekt",
+      "seit_folge": 6
+    },
+    {
+      "status": "fertig",
+      "typ": "versorgungslager",
+      "platz": "B11",
+      "name": "VERSORGUNGSLAGER",
+      "projekt": "Notfallprojekt",
+      "seit_folge": 6
+    },
+    {
+      "status": "fertig",
+      "typ": "tankstelle",
+      "platz": "B14",
+      "name": "LEVYS TANKSTELLE",
+      "besitzer": "Levy",
+      "seit_folge": 6
     }
   ],
   "verlauf": [
@@ -122,6 +162,14 @@
       "tag": 2,
       "einwohner": 29,
       "gebaeude": 9
+    },
+    {
+      "folge": 6,
+      "titel": "Das Notfallprojekt",
+      "abgeschlossen": "2026-11-12",
+      "tag": 2,
+      "einwohner": 30,
+      "gebaeude": 14
     }
   ],
   "bewohner": [
@@ -753,6 +801,29 @@
         "hut": "helm"
       },
       "seit_folge": 5
+    },
+    {
+      "name": "RealLukas",
+      "nr": 30,
+      "pos": [
+        17,
+        9
+      ],
+      "richtung": -106,
+      "avatar": "folgen/assets/reallukas.jpg",
+      "look": {
+        "jacke": "0x111111",
+        "kragen": "0xffd200",
+        "hose": "0x111111",
+        "haut": "0xe8c0a0",
+        "haare": "0x111111",
+        "schuhe": "0xffd200",
+        "hut": "helm",
+        "helmFarbe": "0x111111",
+        "rucksack": "0xffd200",
+        "gurt": "0x111111"
+      },
+      "seit_folge": 6
     }
   ],
   "ziel": {
@@ -802,8 +873,81 @@
       "richtung": 90,
       "besitzer": "Max",
       "seit_folge": 5
+    },
+    {
+      "typ": "ehrentafel",
+      "pos": [
+        19.5,
+        0
+      ],
+      "richtung": -90,
+      "name": "ROBLOX_FAN",
+      "seit_folge": 6
+    },
+    {
+      "typ": "sirene",
+      "pos": [
+        26,
+        -26
+      ],
+      "richtung": 0,
+      "seit_folge": 6
+    },
+    {
+      "typ": "sirene",
+      "pos": [
+        -26,
+        26
+      ],
+      "richtung": 0,
+      "seit_folge": 6
+    },
+    {
+      "typ": "sirene",
+      "pos": [
+        26,
+        26
+      ],
+      "richtung": 0,
+      "seit_folge": 6
+    },
+    {
+      "typ": "sirene",
+      "pos": [
+        -26,
+        -26
+      ],
+      "richtung": 0,
+      "seit_folge": 6
+    },
+    {
+      "typ": "schutzraum",
+      "pos": [
+        -25.5,
+        0
+      ],
+      "richtung": 90,
+      "seit_folge": 6
+    },
+    {
+      "typ": "schutzraum",
+      "pos": [
+        -24,
+        12
+      ],
+      "richtung": 90,
+      "seit_folge": 6
+    },
+    {
+      "typ": "schutzraum",
+      "pos": [
+        -24,
+        -12
+      ],
+      "richtung": 90,
+      "seit_folge": 6
     }
   ],
-  "follower": 26,
+  "follower": 27,
   "supermarkt_offen": true
 }
