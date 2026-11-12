@@ -32,6 +32,7 @@ export const KATALOG = {
   rettungsdienst: { name: 'RETTUNGSDIENST', farbe: 0xf2f2f2, akzent: 0xff6a00, h: 8, w: 34, d: 20, spezial: true },
   krisenzentrum: { name: 'KRISENZENTRUM', farbe: 0x1c2430, akzent: 0x45e3ff, h: 18, w: 30, d: 24, spezial: true },
   versorgungslager: { name: 'VERSORGUNGSLAGER', farbe: 0x6d6a60, akzent: 0xf2994a, h: 11, w: 40, d: 26, spezial: true },
+  tankstelle:   { name: 'TANKSTELLE', farbe: 0x5a2a8a, akzent: 0xffd23b, h: 6, w: 30, d: 20, spezial: true },
   militaer:     { name: 'MILITÄRSTATION',farbe: 0x4a5236, akzent: 0xc9a227, h: 7,  w: 30, d: 18, spezial: true },
   park:         { name: 'PARK',          farbe: 0x3f5a2a, akzent: 0x6fcf97, h: 0,  w: 44, d: 44, park: true },
 };
@@ -49,6 +50,7 @@ export function buildBuilding(typ, { status = 'fertig', name, seed = 1, fortschr
   if (typ === 'militaer') return buildMilitaer(g, add, name || def.name, r);
   if (typ === 'stadion') return buildStadion(g, add, name || def.name, r);
   if (typ === 'bank') return buildBank(g, add, name || def.name, r);
+  if (typ === 'tankstelle') return buildTankstelle(g, add, name || def.name, r);
   if (typ === 'notfallkrankenhaus') return buildNotfallKH(g, add, name || def.name, r);
   if (typ === 'rettungsdienst') return buildRettung(g, add, name || def.name, r);
   if (typ === 'krisenzentrum') return buildKrise(g, add, name || def.name, r);
@@ -650,5 +652,31 @@ function buildLager(g, add, name, r) {
   for (let k = 0; k < 30; k++) add(new THREE.BoxGeometry(1.8, 1.4, 1.8), M(cols[k % 4]), -18 + (k % 10) * 2.0, 0.8 + Math.floor(k / 10) * 1.45, -6.5);
   for (const x of [12, 17]) add(new THREE.CylinderGeometry(2, 2, 6, 16), M(0x2d6fd1, { metalness: 0.3 }), x, 3, -10);
   for (const x of [-12, -4]) { add(new THREE.BoxGeometry(2.6, 3.2, 7), M(0xdddddd), x, 2.0, -13); add(new THREE.BoxGeometry(2.6, 2.4, 2.4), orange, x, 1.6, -17.8); }
+  return g;
+}
+
+// Tankstelle: Dach mit Licht, Zapfsäulen, kleiner Shop, Preis-Pylon
+function buildTankstelle(g, add, name, r) {
+  const lila = M(0x5a2a8a, { roughness: 0.5 }), gelb = M(0xffd23b, { roughness: 0.5 }), weiss = M(0xf2f2f2), dunkel = M(0x202226);
+  add(new THREE.BoxGeometry(44, 0.12, 40), M(0x2c2e33), 0, 0.06, 0, false);
+  for (const [x, z] of [[-9, -10], [9, -10], [-9, 0], [9, 0]]) add(new THREE.BoxGeometry(0.7, 6, 0.7), weiss, x, 3, z);
+  add(new THREE.BoxGeometry(24, 1.0, 16), lila, 0, 6.4, -5);
+  add(new THREE.BoxGeometry(24.2, 0.3, 16.2), gelb, 0, 5.8, -5, false);
+  const licht = new THREE.MeshStandardMaterial({ color: 0x111111, emissive: 0xfff6e0, emissiveIntensity: 2.2 });
+  for (const x of [-6, 0, 6]) for (const z of [-10, -5, 0]) add(new THREE.BoxGeometry(2, 0.05, 1), licht, x, 5.84, z, false);
+  const tex = textTexture(name, { w: 1024, h: 160, bg: '#5a2a8a', color: '#ffd23b', font: '900 104px Montserrat' });
+  const s1 = new THREE.Mesh(new THREE.PlaneGeometry(20, 1.0), new THREE.MeshStandardMaterial({ map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.7 })); s1.position.set(0, 6.4, -13.05); s1.rotation.y = Math.PI; g.add(s1);
+  for (const x of [-4.5, 4.5]) for (const z of [-7.5, -2.5]) {
+    add(new THREE.BoxGeometry(1.2, 0.3, 2.6), M(0x8a8a8a), x, 0.15, z);
+    add(new THREE.BoxGeometry(0.9, 2.0, 0.6), weiss, x, 1.3, z);
+    add(new THREE.BoxGeometry(0.92, 0.5, 0.62), lila, x, 2.1, z, false);
+    add(new THREE.BoxGeometry(0.5, 0.3, 0.05), new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0x45e3ff, emissiveIntensity: 1.2 }), x, 1.6, z - 0.33, false);
+  }
+  add(new THREE.BoxGeometry(14, 4.2, 8), weiss, 0, 2.1, 9);
+  add(new THREE.BoxGeometry(14.2, 0.6, 8.2), lila, 0, 4.4, 9);
+  add(new THREE.BoxGeometry(10, 2.6, 0.1), new THREE.MeshStandardMaterial({ color: 0x0a1018, emissive: 0xffe0b0, emissiveIntensity: 0.8 }), 0, 1.8, 4.95, false);
+  add(new THREE.BoxGeometry(0.5, 9, 0.5), dunkel, 15, 4.5, -15);
+  const pr = textTexture(['TANKEN', 'SUPER  1,89', 'DIESEL 1,79'], { w: 512, h: 640, bg: '#5a2a8a', color: '#ffd23b', font: '900 80px Montserrat' });
+  const pm = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 4.2), new THREE.MeshStandardMaterial({ map: pr, emissive: 0xffffff, emissiveMap: pr, emissiveIntensity: 0.8 })); pm.position.set(15, 7.5, -15.3); pm.rotation.y = Math.PI; g.add(pm);
   return g;
 }

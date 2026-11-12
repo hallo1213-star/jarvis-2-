@@ -3,8 +3,8 @@
 Offene Wünsche (Bauliste):
 - **Flughafen** – Wunsch von Mark (#18)
 - **Autohaus** – Wunsch von jannik (#25)
-- **Tankstelle für die Autos** – Wunsch von Levy (#21), Kommentar: folgen/assets/kommentar-levy-tankstelle.jpg
-  Idee: Tankstelle direkt neben jannik's Autohaus.
+- (erledigt in Folge 6: Levys Tankstelle auf B14, RealLukas #30)
+  Idee: Autohaus von jannik neben Levys Tankstelle (B14).
 
 Weitere Notizen:
 - Zielbalken: Überraschung bei 50 Followern = Schutzschild über der Stadt (geheim).

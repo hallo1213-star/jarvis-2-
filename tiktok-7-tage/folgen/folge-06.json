@@ -2,7 +2,7 @@
  "folge": 6,
  "titel": "Das Notfallprojekt",
  "licht": "nacht",
- "_hinweis": "Folge 6 (TikTok: Valenheim Part 3) – Tag 2 Nacht. Roblox_Fan als Hauptperson: Ernennung zum offiziellen Unterstützer & Ehrenmitglied des Notfallprojekts, Ehrentafel auf dem Zentralplatz. Notfallprojekt: Notfallkrankenhaus (B12), Schutzräume (3 Eingänge), Warnsystem (4 Sirenen), Rettungsdienst (B13), Krisenzentrum (B10), Versorgungslager (B11). Stadtkasse unverändert.",
+ "_hinweis": "Folge 6 (TikTok: Valenheim Part 3) – Tag 2 Nacht. Roblox_Fan als Hauptperson: Ernennung zum offiziellen Unterstützer & Ehrenmitglied des Notfallprojekts, Ehrentafel auf dem Zentralplatz. Notfallprojekt: Notfallkrankenhaus (B12), Schutzräume (3 Eingänge), Warnsystem (4 Sirenen), Rettungsdienst (B13), Krisenzentrum (B10), Versorgungslager (B11). Stadtkasse unverändert. Dazu: RealLukas (#30, 'Wo bin ich?') und Levys Tankstelle (B14, selbst bezahlt).",
  "stimme": {
   "modell": "de_DE-thorsten-high",
   "tempo": 1.06,
@@ -12,7 +12,8 @@
  },
  "aussprache": {
   "Roblox_Fan": "Robloksfän",
-  "Valenheims": "Valenheims"
+  "Valenheims": "Valenheims",
+  "RealLukas": "Riellukas"
  },
  "musik": {
   "stil": "dramatisch",
@@ -985,6 +986,233 @@
    ]
   },
   {
+   "id": "s5b_meldungen",
+   "name": "Weitere Meldungen",
+   "uebergang": "blitz",
+   "vorlauf": 0.3,
+   "nachlauf": 0.6,
+   "sprecher": "Weitere Meldungen aus Valenheim: |0.35| RealLukas fragt: | *Wo* *bin* *ich?* |0.4| Hier bist du! | Willkommen, Einwohner Nummer *dreißig*! |0.4| Und Levy bekommt eine *Tankstelle* für die Autos.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      40,
+      34
+     ],
+     "wackeln": 0.2,
+     "keys": [
+      {
+       "pos": [
+        7.0,
+        2.4,
+        5.0
+       ],
+       "ziel": [
+        17,
+        0.6,
+        9
+       ]
+      },
+      {
+       "pos": [
+        10.0,
+        2.0,
+        6.6
+       ],
+       "ziel": [
+        17,
+        0.7,
+        9
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "orbit",
+     "ab_wort": "Levy",
+     "offset": -0.2,
+     "anteil": 1,
+     "ziel": [
+      148,
+      4,
+      148
+     ],
+     "radius": [
+      66,
+      50
+     ],
+     "hoehe": [
+      32,
+      18
+     ],
+     "winkel": [
+      -155,
+      -120
+     ],
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.2
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "eilmeldung",
+     "zeit": 0.0,
+     "dauer": 2.8,
+     "text": "WEITERE MELDUNGEN AUS VALENHEIM",
+     "laufband": "NEUER EINWOHNER: REALLUKAS · NEUE TANKSTELLE VON LEVY · NOTFALLPROJEKT LÄUFT",
+     "sender": "VALENHEIM NEWS"
+    },
+    {
+     "typ": "kommentare",
+     "wort": "RealLukas",
+     "offset": -0.1,
+     "dauer": 3.0,
+     "liste": [
+      {
+       "name": "RealLukas",
+       "anzeige": "RealLukas · Freund*innen",
+       "text": "Wo bin ich",
+       "avatar": "folgen/assets/reallukas.jpg",
+       "likes": 1
+      }
+     ]
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Hier",
+     "offset": -0.1,
+     "name": "RealLukas",
+     "nr": 30,
+     "pos": [
+      17,
+      9
+     ],
+     "richtung": -106,
+     "avatar": "folgen/assets/reallukas.jpg",
+     "look": {
+      "jacke": "0x111111",
+      "kragen": "0xffd200",
+      "hose": "0x111111",
+      "haut": "0xe8c0a0",
+      "haare": "0x111111",
+      "schuhe": "0xffd200",
+      "hut": "helm",
+      "helmFarbe": "0x111111",
+      "rucksack": "0xffd200",
+      "gurt": "0x111111"
+     }
+    },
+    {
+     "typ": "follower_karte",
+     "wort": "Willkommen",
+     "offset": -0.1,
+     "dauer": 2.2,
+     "name": "RealLukas",
+     "avatar": "folgen/assets/reallukas.jpg",
+     "text": "HIER BIST DU!",
+     "unter": "EINWOHNER #30"
+    },
+    {
+     "typ": "werte",
+     "wort": "Willkommen",
+     "offset": 0.2,
+     "follower": 27,
+     "dauer": 0.8
+    },
+    {
+     "typ": "kommentare",
+     "wort": "Levy",
+     "offset": -0.2,
+     "dauer": 3.0,
+     "liste": [
+      {
+       "name": "Levy",
+       "anzeige": "Levy · Freund*innen",
+       "text": "Kann ich eine Tankstelle für die autos",
+       "avatar": "folgen/assets/levy.jpg",
+       "likes": 1
+      }
+     ]
+    },
+    {
+     "typ": "bau",
+     "wort": "Tankstelle",
+     "offset": -0.6,
+     "dauer": 2.2,
+     "platz": "B14",
+     "gebaeude": "tankstelle",
+     "name": "LEVYS TANKSTELLE",
+     "form": "halle"
+    },
+    {
+     "typ": "bewohner_pos",
+     "wort": "Levy",
+     "offset": -0.2,
+     "dauer": 20,
+     "name": "Levy",
+     "pos": [
+      134.56,
+      138.81
+     ],
+     "richtung": 45.0
+    },
+    {
+     "typ": "werte",
+     "wort": "Tankstelle",
+     "offset": 1.0,
+     "gebaeude": 14,
+     "entwicklung_prozent": 77
+    },
+    {
+     "typ": "callout",
+     "wort": "Autos",
+     "offset": 0.0,
+     "dauer": 2.0,
+     "anker": [
+      148,
+      9,
+      148
+     ],
+     "titel": "LEVYS TANKSTELLE",
+     "unter": "BEZAHLT VON LEVY"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "blip",
+     "zeit": 0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "RealLukas",
+     "offset": -0.1
+    },
+    {
+     "typ": "spawn",
+     "wort": "Hier",
+     "offset": -0.1
+    },
+    {
+     "typ": "shimmer",
+     "wort": "Willkommen"
+    },
+    {
+     "typ": "build",
+     "wort": "Tankstelle",
+     "offset": -0.6
+    },
+    {
+     "typ": "kasse",
+     "wort": "Autos",
+     "offset": 0.0
+    }
+   ]
+  },
+  {
    "id": "s6_finale",
    "name": "Finale",
    "uebergang": "schwarz",
@@ -1052,10 +1280,10 @@
  "ergebnis": {
   "tag": 2,
   "verbleibende_tage": 6,
-  "einwohner": 29,
-  "follower": 26,
+  "einwohner": 30,
+  "follower": 27,
   "stadtkasse": 10000,
-  "entwicklung_prozent": 75,
+  "entwicklung_prozent": 77,
   "entwicklung_stufe": "STADT",
   "neue_gebaeude": [
    {
@@ -1085,6 +1313,13 @@
     "name": "VERSORGUNGSLAGER",
     "status": "fertig",
     "projekt": "Notfallprojekt"
+   },
+   {
+    "typ": "tankstelle",
+    "platz": "B14",
+    "name": "LEVYS TANKSTELLE",
+    "status": "fertig",
+    "besitzer": "Levy"
    }
   ],
   "neue_objekte": [
@@ -1158,6 +1393,30 @@
    {
     "name": "Roblox_Fan",
     "titel": "Offizieller Unterstützer & Ehrenmitglied des Notfallprojekts"
+   }
+  ],
+  "neue_bewohner": [
+   {
+    "name": "RealLukas",
+    "nr": 30,
+    "pos": [
+     17,
+     9
+    ],
+    "richtung": -106,
+    "avatar": "folgen/assets/reallukas.jpg",
+    "look": {
+     "jacke": "0x111111",
+     "kragen": "0xffd200",
+     "hose": "0x111111",
+     "haut": "0xe8c0a0",
+     "haare": "0x111111",
+     "schuhe": "0xffd200",
+     "hut": "helm",
+     "helmFarbe": "0x111111",
+     "rucksack": "0xffd200",
+     "gurt": "0x111111"
+    }
    }
   ]
  }
