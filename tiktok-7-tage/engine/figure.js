@@ -92,6 +92,11 @@ export class Figure {
       add(this.head, new THREE.CylinderGeometry(0.115, 0.125, 0.12, 20), stroh, 0, 0.27, -0.005);
       add(this.head, new THREE.CylinderGeometry(0.127, 0.127, 0.04, 20), band, 0, 0.225, -0.005);
     }
+    if (look.hut === 'helm') {
+      const hm = M(look.helmFarbe || 0x4f5a34, 0.8);
+      add(this.head, new THREE.SphereGeometry(0.135, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.52).scale(1.02, 0.9, 1.1), hm, 0, 0.15, -0.005);
+      add(this.head, new THREE.CylinderGeometry(0.145, 0.15, 0.02, 18), hm, 0, 0.16, 0);
+    }
     if (look.hut === 'cap') {
       const cm = M(look.capFarbe || 0x161616, 0.7);
       add(this.head, new THREE.SphereGeometry(0.124, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.5).scale(1, 0.85, 1.05), cm, 0, 0.165, -0.008);

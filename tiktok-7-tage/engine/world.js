@@ -14,6 +14,11 @@ export const BAUPLAETZE = {
   B5: [-2, 0], B6: [2, 0], B7: [0, 2], B8: [-2, 1],
 };
 
+// Zusätzliche Bauplätze (ab Folge 5). Dort stehende Altbauten werden abgerissen, ohne den Zufallsgenerator
+// der Stadt zu verändern – alle anderen Gebäude bleiben dadurch exakt gleich.
+export const ZUSATZ_PLAETZE = { B9: [2, 1] };
+const inZusatz = (x, z) => Object.values(ZUSATZ_PLAETZE).some(([i, j]) => Math.abs(x - i * P) < HB - 3.5 && Math.abs(z - j * P) < HB - 3.5);
+
 export const ANKER = {
   platz: [0, SLAB, 0],
   figur: [7, SLAB, 14],
@@ -234,6 +239,7 @@ class BoxBatch {
   constructor() { this.pos = []; this.nor = []; this.col = []; this.par = []; this.idx = []; this.n = 0; }
   // Quader: Mittelpunkt x/z, Unterkante y0, Größe sx/sy/sz, optional Drehung ry
   add(x, y0, z, sx, sy, sz, color, params, ry = 0) {
+    if (this.filter && this.filter(x, z)) return;
     const hx = sx / 2, hz = sz / 2, y1 = y0 + sy;
     const c = Math.cos(ry), s = Math.sin(ry);
     const T = (px, pz) => [x + px * c + pz * s, z - px * s + pz * c];
@@ -475,11 +481,28 @@ function makeSupermarket(sceneRoot) {
     const m = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.1, 3.2), new THREE.MeshStandardMaterial({ color: 0x111111, emissive: 0xd8f0ff, emissiveIntensity: 1.6 }));
     m.position.set(x, 7.55, z); grp.add(m); tubes.push({ m, seed: hash1(x * 3 + z), base: hash1(x + z * 7) < 0.3 ? 0 : 1 });
   }
+  // Wiedereröffnung: volle Regale, alle Lampen an, Banner
+  const full = [];
+  for (const x of [-18, -10, -2, 6, 14]) for (const y of [0.35, 0.9, 1.45, 2.0]) for (const side of [-1, 1]) for (let z = -9.6; z <= 15.6; z += 0.45)
+    full.push({ x: x + side * 0.95, y: y + 0.03, z, ry: 0, c: prodCols[Math.floor(hash1(x * 7 + y * 13 + z * 3 + side) * prodCols.length)] });
+  const fullMesh = instanced(new THREE.BoxGeometry(0.34, 0.42, 0.36).translate(0, 0.21, 0), new THREE.MeshStandardMaterial({ roughness: 0.6, emissive: 0x333333 }), full, { colorFn: (p) => p.c, shadow: false });
+  fullMesh.visible = false; grp.add(fullMesh);
+  const ban = new THREE.Mesh(new THREE.PlaneGeometry(18, 2.2), new THREE.MeshStandardMaterial({ map: textTexture('WIEDER GEÖFFNET', { w: 1024, h: 128, bg: '#2fbf71', color: '#ffffff', font: '900 96px Montserrat' }), emissive: 0xffffff, emissiveIntensity: 0.25 }));
+  ban.material.emissiveMap = ban.material.map; ban.position.set(0, 4.4, -20.5); ban.rotation.y = Math.PI; ban.visible = false; grp.add(ban);
+  const glowFront = new THREE.Mesh(new THREE.BoxGeometry(47.5, 5.4, 0.05), new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0xfff2d6, emissiveIntensity: 0.0, transparent: true, opacity: 0.0 }));
+  glowFront.position.set(0, 2.8, -19.7); grp.add(glowFront);
+  let offenAb = null;
   sceneRoot.add(grp);
   return {
+    setOffen(t0) { offenAb = t0; },
     update(t) {
+      const offen = offenAb !== null && t >= offenAb;
+      fullMesh.visible = offen; ban.visible = offen;
+      sign.material.emissiveIntensity = offen ? 1.1 : 0.25;
+      glowFront.material.opacity = offen ? 0.35 : 0; glowFront.material.emissiveIntensity = offen ? 0.8 : 0;
       for (const tb of tubes) {
         let v = tb.base * 1.6;
+        if (offen) { tb.m.material.emissiveIntensity = 2.0; continue; }
         if (tb.seed > 0.75) { const f = Math.sin(t * 37 * (0.5 + tb.seed)) * Math.sin(t * 13.7 + tb.seed * 40); v = f > 0.2 ? 1.8 : 0.05; }
         tb.m.material.emissiveIntensity = v;
       }
@@ -569,7 +592,7 @@ export function buildWorld(scene, { seed = 7071, licht = 'standard' } = {}) {
   const slabMesh = new THREE.Mesh(slabGeo, gMat); slabMesh.receiveShadow = true; scene.add(slabMesh);
 
   // Gebäude
-  const bb = new BoxBatch(); const bMat = buildingMaterial();
+  const bb = new BoxBatch(); bb.filter = inZusatz; const bMat = buildingMaterial();
   const roofUnits = []; const antennas = []; const awnings = [];
   let bid = 1;
   const pal = {
@@ -646,21 +669,21 @@ export function buildWorld(scene, { seed = 7071, licht = 'standard' } = {}) {
       }
     }
   }
-  const bMesh = new THREE.Mesh(bb.geometry(), bMat); bMesh.castShadow = true; bMesh.receiveShadow = true; scene.add(bMesh);
+  const bMesh = new THREE.Mesh((bb.filter = null, bb.geometry()), bMat); bMesh.castShadow = true; bMesh.receiveShadow = true; scene.add(bMesh);
 
   // Dachaufbauten & Antennen
   const units = [];
   for (const r of roofUnits) { const n = rng.int(1, 4); for (let k = 0; k < n; k++) units.push({ x: r.x + rng.range(-r.w / 3, r.w / 3), z: r.z + rng.range(-r.d / 3, r.d / 3), y: r.y, s: rng.range(1.5, 3.6), sy: rng.range(1.2, 3), ry: r.ry || 0 }); }
   const roofMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8 });
-  scene.add(instanced(acGeometry(), roofMat, units));
+  scene.add(instanced(acGeometry(), roofMat, units.filter((u) => !inZusatz(u.x, u.z))));
   const antMat = new THREE.MeshStandardMaterial({ color: 0x2f3236, roughness: 0.5, metalness: 0.7 });
-  scene.add(instanced(new THREE.CylinderGeometry(0.18, 0.35, 1, 6).translate(0, 0.5, 0), antMat, antennas.map((a) => ({ x: a.x, z: a.z, y: a.y, sy: a.h }))));
+  scene.add(instanced(new THREE.CylinderGeometry(0.18, 0.35, 1, 6).translate(0, 0.5, 0), antMat, antennas.filter((a) => !inZusatz(a.x, a.z)).map((a) => ({ x: a.x, z: a.z, y: a.y, sy: a.h }))));
   const beaconMat = new THREE.MeshStandardMaterial({ color: 0x220000, emissive: 0xff1a10, emissiveIntensity: 3 });
-  const beacons = instanced(new THREE.SphereGeometry(0.45, 8, 6), beaconMat, antennas.map((a) => ({ x: a.x, z: a.z, y: a.y + a.h })), { shadow: false });
+  const beacons = instanced(new THREE.SphereGeometry(0.45, 8, 6), beaconMat, antennas.filter((a) => !inZusatz(a.x, a.z)).map((a) => ({ x: a.x, z: a.z, y: a.y + a.h })), { shadow: false });
   scene.add(beacons);
 
   // Markisen
-  const awnList = awnings.map((a) => {
+  const awnList = awnings.filter((a) => !inZusatz(a.x, a.z)).map((a) => {
     const off = 0; const d = HB - 4.5;
     const o = { y: SLAB + 3.9, c: a.c, s: 1 };
     if (a.side === 0) Object.assign(o, { x: a.x, z: a.z - 7.5 - 0.8, ry: 0 }); else if (a.side === 1) Object.assign(o, { x: a.x, z: a.z + 7.5 + 0.8, ry: Math.PI });
@@ -729,13 +752,16 @@ export function buildWorld(scene, { seed = 7071, licht = 'standard' } = {}) {
     const poolMat = new THREE.MeshBasicMaterial({ color: 0xffb060, transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, depthWrite: false });
     scene.add(instanced(new THREE.CircleGeometry(4.5, 20).rotateX(-Math.PI / 2).translate(1.65, 0.05, 0), poolMat, lamps.map((l) => ({ ...l, y: SLAB })), { shadow: false, receive: false }));
   }
-  scene.add(instanced(treeGeometry(), treeMat, trees, { colorFn: (p) => p.c }));
+  scene.add(instanced(treeGeometry(), treeMat, trees.filter((p) => !inZusatz(p.x, p.z)), { colorFn: (p) => p.c }));
   scene.add(instanced(carGeometry(), carMat, carsF.map((c) => ({ ...c, y: 0 })), { colorFn: (p) => p.c }));
-  scene.add(instanced(benchGeometry(), propMat, benches));
+  scene.add(instanced(benchGeometry(), propMat, benches.filter((p) => !inZusatz(p.x, p.z))));
   scene.add(instanced(trafficLightGeometry(), propMat, lights));
-  scene.add(instanced(bagGeometry(), propMat, bags));
+  scene.add(instanced(bagGeometry(), propMat, bags.filter((p) => !inZusatz(p.x, p.z))));
   scene.add(instanced(paperGeometry(), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, side: THREE.DoubleSide }), papers, { shadow: false }));
 
+  // Zusatz-Bauplätze aktivieren (Boden, Zäune, Schilder)
+  for (const [k, [i, j]] of Object.entries(ZUSATZ_PLAETZE)) { BAUPLAETZE[k] = [i, j]; const kk = ((j + 16) * 32 + (i + 16)) * 4; data[kk] = TYPE_CODE.bauplatz; }
+  bm.needsUpdate = true;
   const lotDecor = makeLotDecor(scene, BAUPLAETZE);
   const fenceGeo = fenceGeometry(); const lotObjs = {};
   for (const name of Object.keys(BAUPLAETZE)) {

@@ -46,6 +46,7 @@ async function init() {
   const bildUrls = new Set();
   for (const sz of TL.szenen) for (const e of sz.effekte || []) {
     if (e.avatar) bildUrls.add(e.avatar);
+    for (const c of e.eintraege || []) if (c.avatar) bildUrls.add(c.avatar);
     for (const c of e.liste || []) if (c.avatar) bildUrls.add(c.avatar);
   }
   for (const b of STATUS.bewohner || []) if (b.avatar) bildUrls.add(b.avatar);
@@ -127,6 +128,8 @@ async function init() {
   });
 
   for (const e of TL_events) if (e.typ === 'objekt') mkObjekt(e, e.t);
+  if (STATUS.supermarkt_offen) world.market.setOffen(-1);
+  { const sm = TL_events.find((e) => e.typ === 'supermarkt_offen'); if (sm) world.market.setOffen(sm.t); }
   // Lokale Bauplatz-Koordinaten -> Welt (Front des Gebäudes zeigt zum Platz)
   const lotToWorld = (platz, x, z) => { const [bi, bj] = BAUPLAETZE[platz]; const th = Math.atan2(-bi, -bj) + Math.PI; const c = Math.cos(th), s2 = Math.sin(th);
     return { x: bi * P + x * c + z * s2, z: bj * P - x * s2 + z * c, yaw: th }; };
@@ -231,7 +234,7 @@ async function init() {
 
   function state(t) {
     const S = { ...base, stadt: STATUS.stadt, hudOn, callouts: [], plusOnes: [], project };
-    S.verbleibend = base.verbleibend;
+    S.verbleibend = base.verbleibend; S.followerZahl = STATUS.follower ?? ((STATUS.einwohner || 0) - (STATUS.bewohner || []).filter((b) => b.follower === false).length);
     // Einwohner-Zähler (Simulation in Folge 1)
     let ew = base.einwohner, sim = false, pulse = 0;
     for (const e of events) {
@@ -248,13 +251,17 @@ async function init() {
     // Namensschilder benannter Einwohner
     S.namen = benannt.filter((o) => o.arrive === null || t >= o.arrive + 0.5).map((o) => { const pp = o.cur || o.b.pos; return { name: o.b.name, avatar: o.b.avatar, nr: o.b.nr, pos: [pp[0], SLAB + 2.15, pp[1]], t0: o.arrive ?? -9 }; });
     for (const tm of teams) for (const sp of tm.spieler) if (sp.f.root.visible && t > tm.e.t + sp.delay + (tm.e.lauf || 2.4) * 0.8) S.namen.push({ name: sp.sp.name, avatar: sp.sp.avatar, nr: sp.sp.nr, pos: [sp.f.root.position.x, SLAB + 2.3, sp.f.root.position.z], t0: tm.e.t + sp.delay + (tm.e.lauf || 2.4) * 0.8 - 0.5 });
+    const szEnde = (e) => (TL.szenen.find((z) => z.id === e.szene) || {}).ende ?? 1e9;
+    S.wand = events.find((e) => e.typ === 'wand' && t >= e.t && t <= Math.min(e.t + (e.dauer || 6), szEnde(e))) || null;
+    if (S.wand) for (const p of S.wand.liste) { const be = events.find((e) => e.typ === 'bewohner' && e.name === p.name); if (be) p.t = be.t; }
+    S.bauliste = events.find((e) => e.typ === 'bauliste' && t >= e.t && t <= Math.min(e.t + (e.dauer || 4), szEnde(e))) || null;
     S.ausweis = null; for (const e of events) if (e.typ === 'ausweis' && t >= e.t && t < e.t + (e.dauer || 1.1)) S.ausweis = e;
     S.nichtFollower = benannt.filter((o) => o.b.follower === false && (o.arrive === null || t >= o.arrive + 0.6)).length;
     S.ziel = STATUS.ziel || null; for (const e of events) if (e.typ === 'ziel' && t >= e.t) S.ziel = { ...e, t0: e.t };
     // 'werte': HUD-Werte zählen animiert auf neue Werte (z. B. Stadtkasse, Gebäude, Entwicklung, Tag)
     for (const e of events) if (e.typ === 'werte' && t >= e.t) {
       const k = ease.outCubic(clamp((t - e.t) / (e.dauer || 1.2)));
-      const map = { stadtkasse: 'kasse', gebaeude: 'gebaeude', entwicklung_prozent: 'entwicklung', tag: 'tag', verbleibende_tage: 'verbleibend', einwohner: 'einwohner' };
+      const map = { follower: 'followerZahl', stadtkasse: 'kasse', gebaeude: 'gebaeude', entwicklung_prozent: 'entwicklung', tag: 'tag', verbleibende_tage: 'verbleibend', einwohner: 'einwohner' };
       for (const [k2, sk] of Object.entries(map)) if (e[k2] !== undefined) S[sk] = (k2 === 'tag' || k2 === 'verbleibende_tage') ? (k > 0.5 ? e[k2] : S[sk]) : S[sk] + (e[k2] - S[sk]) * k;
       if (e.entwicklung_stufe && k > 0.5) S.stufe = e.entwicklung_stufe;
     }

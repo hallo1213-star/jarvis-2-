@@ -1,0 +1,1753 @@
+{
+ "folge": 5,
+ "titel": "Tag 3: Valenheim wächst",
+ "licht": "morgen",
+ "_hinweis": "Folge 5 – Tag 3 Morgen. 13 neue Follower (#16–#28) als Profilbild-Wand, Max (#29, kein Follower) an der Luftabwehr. Supermarkt wiedereröffnet (Baum), 50.000 € Geschenk, Krankenhaus (SK|DANI, 15.000 €) auf B8, Polizei (t.h.169, 10.000 €) auf neuem Bauplatz B9, Kampfjet (Neutromind, 15.000 €), Luftabwehr (Max, 5.000 €), Lukas Soldat. Bauliste: Flughafen (Mark), Autohaus (jannik).",
+ "stimme": {
+  "modell": "de_DE-thorsten-high",
+  "tempo": 1.03,
+  "lebendigkeit": 0.72,
+  "rhythmus": 0.85,
+  "tonhoehe_halbtoene": 1.0
+ },
+ "aussprache": {
+  "Follower": "Follohuer",
+  "sbpgae": "Esbepege",
+  "JR3": "Dscheiardrei",
+  "t.h.169": "Teha",
+  "Neutromind": "Njutromeind",
+  "wiam": "Wiam",
+  "jannik": "Jannik",
+  "assi": "Assi"
+ },
+ "musik": {
+  "stil": "dunkel-hoffnungsvoll",
+  "tonart": "d-moll",
+  "bpm": 84
+ },
+ "szenen": [
+  {
+   "id": "s1_tag3",
+   "name": "Tag 3",
+   "vorlauf": 0.8,
+   "nachlauf": 0.3,
+   "sprecher": "*Tag* *drei*. | Noch !fünf! !Tage! bis zum Krieg. |0.3| Und Valenheim *wächst* und wächst:",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      48
+     ],
+     "wackeln": 0.25,
+     "keys": [
+      {
+       "pos": [
+        -420,
+        320,
+        -380
+       ],
+       "ziel": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "pos": [
+        -200,
+        180,
+        -170
+       ],
+       "ziel": [
+        0,
+        0,
+        10
+       ]
+      },
+      {
+       "pos": [
+        -70,
+        60,
+        -40
+       ],
+       "ziel": [
+        10,
+        2,
+        20
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "titel",
+     "zeit": 0.15,
+     "dauer": 2.3,
+     "text": "TAG 3",
+     "unter": "FOLGE 5 · DIE LETZTEN 7 TAGE"
+    },
+    {
+     "typ": "werte",
+     "zeit": 0.9,
+     "tag": 3,
+     "verbleibende_tage": 5
+    }
+   ],
+   "toene": [
+    {
+     "typ": "boom",
+     "zeit": 0.05
+    },
+    {
+     "typ": "wind_swell",
+     "zeit": 0
+    },
+    {
+     "typ": "riser",
+     "wort": "wächst",
+     "offset": -0.3,
+     "dauer": 1.2
+    }
+   ]
+  },
+  {
+   "id": "s2_wand",
+   "name": "13 neue Einwohner",
+   "uebergang": "blitz",
+   "vorlauf": 0.25,
+   "nachlauf": 0.5,
+   "sprecher": "*Dreizehn* neue Einwohner auf einmal! |0.3| Lauri, | sbpgae, | Mark, | JR3, | assi, | Levy, | Neutromind, | t.h.169, | Dani, | jannik, | wiam, | Lukas, | und Mika! |0.3| Willkommen!",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      -10,
+      0,
+      8
+     ],
+     "radius": [
+      60,
+      48
+     ],
+     "hoehe": [
+      55,
+      40
+     ],
+     "winkel": [
+      60,
+      100
+     ],
+     "fov": [
+      46,
+      44
+     ],
+     "wackeln": 0.15
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "wand",
+     "wort": "Dreizehn",
+     "offset": 0.2,
+     "dauer": 99,
+     "titel": "13 NEUE EINWOHNER",
+     "liste": [
+      {
+       "name": "Lauri",
+       "avatar": "folgen/assets/lauri.jpg",
+       "nr": 16
+      },
+      {
+       "name": "sbpgae",
+       "avatar": "folgen/assets/sbpgae.jpg",
+       "nr": 17
+      },
+      {
+       "name": "Mark",
+       "avatar": "folgen/assets/mark.jpg",
+       "nr": 18
+      },
+      {
+       "name": "JR3",
+       "avatar": "folgen/assets/jr3.jpg",
+       "nr": 19
+      },
+      {
+       "name": "assi",
+       "avatar": "folgen/assets/assi.jpg",
+       "nr": 20
+      },
+      {
+       "name": "Levy",
+       "avatar": "folgen/assets/levy.jpg",
+       "nr": 21
+      },
+      {
+       "name": "Neutromind",
+       "avatar": "folgen/assets/neutromind.jpg",
+       "nr": 22
+      },
+      {
+       "name": "t.h.169",
+       "avatar": "folgen/assets/th169.jpg",
+       "nr": 23
+      },
+      {
+       "name": "SK|DANI",
+       "avatar": "folgen/assets/skdani.jpg",
+       "nr": 24
+      },
+      {
+       "name": "jannik",
+       "avatar": "folgen/assets/jannik.jpg",
+       "nr": 25
+      },
+      {
+       "name": "wiam",
+       "avatar": "folgen/assets/wiam.jpg",
+       "nr": 26
+      },
+      {
+       "name": "Lukas Daron",
+       "avatar": "folgen/assets/lukas.jpg",
+       "nr": 27
+      },
+      {
+       "name": "Mika",
+       "avatar": "folgen/assets/mika.jpg",
+       "nr": 28
+      }
+     ]
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Lauri",
+     "offset": -0.1,
+     "name": "Lauri",
+     "nr": 16,
+     "pos": [
+      -17,
+      8
+     ],
+     "richtung": 70,
+     "avatar": "folgen/assets/lauri.jpg",
+     "look": {
+      "jacke": "0x2a2a3a",
+      "kragen": "0xff9a4a",
+      "hose": "0x2a3040",
+      "haare": "0x8a6a4a",
+      "haut": "0xe8c0a0",
+      "schuhe": "0xe6e6e6",
+      "rucksack": "0x2a2a3a",
+      "gurt": "0xff9a4a"
+     }
+    },
+    {
+     "typ": "bewohner",
+     "wort": "sbpgae",
+     "offset": -0.1,
+     "name": "sbpgae",
+     "nr": 17,
+     "pos": [
+      -13,
+      14
+     ],
+     "richtung": 80,
+     "avatar": "folgen/assets/sbpgae.jpg",
+     "look": {
+      "jacke": "0xf2d8e0",
+      "kragen": "0xd8a0b8",
+      "hose": "0xf2d8e0",
+      "haare": "0x2a1a10",
+      "haut": "0xe8c0a0",
+      "schuhe": "0xe6e6e6",
+      "rucksack": "0xf2d8e0",
+      "gurt": "0xd8a0b8",
+      "langeHaare": true
+     }
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Mark",
+     "offset": -0.1,
+     "name": "Mark",
+     "nr": 18,
+     "pos": [
+      -18,
+      15
+     ],
+     "richtung": 70,
+     "avatar": "folgen/assets/mark.jpg",
+     "look": {
+      "jacke": "0x0c0c0e",
+      "kragen": "0x1a1a1e",
+      "hose": "0x333336",
+      "haare": "0x0c0c0e",
+      "haut": "0xe8c0a0",
+      "schuhe": "0xe6e6e6",
+      "rucksack": "0x0c0c0e",
+      "gurt": "0x1a1a1e"
+     }
+    },
+    {
+     "typ": "bewohner",
+     "wort": "JR3",
+     "offset": -0.1,
+     "name": "JR3",
+     "nr": 19,
+     "pos": [
+      -10,
+      20
+     ],
+     "richtung": 90,
+     "avatar": "folgen/assets/jr3.jpg",
+     "look": {
+      "jacke": "0x1a1a1a",
+      "kragen": "0xd4a017",
+      "hose": "0x1a1a1a",
+      "haare": "0x111111",
+      "haut": "0xb07a55",
+      "schuhe": "0xe6e6e6",
+      "rucksack": "0x1a1a1a",
+      "gurt": "0xd4a017"
+     }
+    },
+    {
+     "typ": "bewohner",
+     "wort": "assi",
+     "offset": -0.1,
+     "name": "assi",
+     "nr": 20,
+     "pos": [
+      -15,
+      21
+     ],
+     "richtung": 90,
+     "avatar": "folgen/assets/assi.jpg",
+     "look": {
+      "jacke": "0x4a5a3a",
+      "kragen": "0x2a3a2a",
+      "hose": "0x3a3020",
+      "haare": "0xe8c860",
+      "haut": "0xe8c0a0",
+      "schuhe": "0xe6e6e6",
+      "rucksack": "0x4a5a3a",
+      "gurt": "0x2a3a2a",
+      "langeHaare": true
+     }
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Levy",
+     "offset": -0.1,
+     "name": "Levy",
+     "nr": 21,
+     "pos": [
+      -20,
+      3
+     ],
+     "richtung": 60,
+     "avatar": "folgen/assets/levy.jpg",
+     "look": {
+      "jacke": "0x5a2a8a",
+      "kragen": "0x2a1a4a",
+      "hose": "0x222222",
+      "haare": "0x222222",
+      "haut": "0xe8c0a0",
+      "schuhe": "0xe6e6e6",
+      "rucksack": "0x5a2a8a",
+      "gurt": "0x2a1a4a",
+      "hut": "weihnacht"
+     }
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Neutromind",
+     "offset": -0.1,
+     "name": "Neutromind",
+     "nr": 22,
+     "pos": [
+      -76,
+      14.5
+     ],
+     "richtung": 60,
+     "avatar": "folgen/assets/neutromind.jpg",
+     "look": {
+      "jacke": "0x2a3440",
+      "kragen": "0x1a2028",
+      "hose": "0x1a2028",
+      "haare": "0x111111",
+      "haut": "0xe8c0a0",
+      "schuhe": "0xe6e6e6",
+      "rucksack": "0x2a3440",
+      "gurt": "0x1a2028"
+     }
+    },
+    {
+     "typ": "bewohner",
+     "wort": "t.h.169",
+     "offset": -0.1,
+     "name": "t.h.169",
+     "nr": 23,
+     "pos": [
+      135.25,
+      63.71
+     ],
+     "richtung": 63.4,
+     "avatar": "folgen/assets/th169.jpg",
+     "look": {
+      "jacke": "0x1d3a6a",
+      "kragen": "0xf2f2f2",
+      "hose": "0x1d2a40",
+      "haare": "0x111111",
+      "haut": "0xe8c0a0",
+      "schuhe": "0xe6e6e6",
+      "rucksack": "0x1d3a6a",
+      "gurt": "0xf2f2f2",
+      "hut": "cap",
+      "capFarbe": "0x1d3a6a"
+     }
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Dani",
+     "offset": -0.1,
+     "name": "SK|DANI",
+     "nr": 24,
+     "pos": [
+      -132.12,
+      69.98
+     ],
+     "richtung": 296.6,
+     "avatar": "folgen/assets/skdani.jpg",
+     "look": {
+      "jacke": "0xc8102e",
+      "kragen": "0xf2f2f2",
+      "hose": "0x111111",
+      "haare": "0x6a4a2a",
+      "haut": "0xe8c0a0",
+      "schuhe": "0xe6e6e6",
+      "rucksack": "0xc8102e",
+      "gurt": "0xf2f2f2"
+     }
+    },
+    {
+     "typ": "bewohner",
+     "wort": "jannik",
+     "offset": -0.1,
+     "name": "jannik",
+     "nr": 25,
+     "pos": [
+      -9,
+      4.5
+     ],
+     "richtung": 60,
+     "avatar": "folgen/assets/jannik.jpg",
+     "look": {
+      "jacke": "0x3a3aa0",
+      "kragen": "0x1a1a50",
+      "hose": "0x222222",
+      "haare": "0x3a2a1a",
+      "haut": "0xe8c0a0",
+      "schuhe": "0xe6e6e6",
+      "rucksack": "0x3a3aa0",
+      "gurt": "0x1a1a50",
+      "hut": "weihnacht"
+     }
+    },
+    {
+     "typ": "bewohner",
+     "wort": "wiam",
+     "offset": -0.1,
+     "name": "wiam",
+     "nr": 26,
+     "pos": [
+      -21,
+      10
+     ],
+     "richtung": 80,
+     "avatar": "folgen/assets/wiam.jpg",
+     "look": {
+      "jacke": "0xf2f2f2",
+      "kragen": "0xdddddd",
+      "hose": "0x8a8a9a",
+      "haare": "0x1a1410",
+      "haut": "0xe8c0a0",
+      "schuhe": "0xe6e6e6",
+      "rucksack": "0xf2f2f2",
+      "gurt": "0xdddddd",
+      "langeHaare": true
+     }
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Lukas",
+     "offset": -0.1,
+     "name": "Lukas Daron",
+     "nr": 27,
+     "pos": [
+      -62,
+      -17
+     ],
+     "richtung": 60,
+     "avatar": "folgen/assets/lukas.jpg",
+     "look": {
+      "jacke": "0x4f5a34",
+      "kragen": "0x3a4126",
+      "hose": "0x4f5a34",
+      "haare": "0x2a1a10",
+      "haut": "0xe8c0a0",
+      "schuhe": "0xe6e6e6",
+      "rucksack": "0x4f5a34",
+      "gurt": "0x3a4126",
+      "hut": "helm"
+     }
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Mika",
+     "offset": -0.1,
+     "name": "Mika",
+     "nr": 28,
+     "pos": [
+      -19,
+      -6
+     ],
+     "richtung": 50,
+     "avatar": "folgen/assets/mika.jpg",
+     "look": {
+      "jacke": "0x6a3a8a",
+      "kragen": "0xff7a5a",
+      "hose": "0x2a2a3a",
+      "haare": "0x2a1a10",
+      "haut": "0xe8c0a0",
+      "schuhe": "0xe6e6e6",
+      "rucksack": "0x6a3a8a",
+      "gurt": "0xff7a5a"
+     }
+    },
+    {
+     "typ": "werte",
+     "wort": "Willkommen",
+     "offset": 0,
+     "follower": 26,
+     "dauer": 0.8
+    }
+   ],
+   "toene": [
+    {
+     "typ": "impact",
+     "wort": "Dreizehn",
+     "offset": -0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "Lauri",
+     "offset": -0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "sbpgae",
+     "offset": -0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "Mark",
+     "offset": -0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "JR3",
+     "offset": -0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "assi",
+     "offset": -0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "Levy",
+     "offset": -0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "Neutromind",
+     "offset": -0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "t.h.169",
+     "offset": -0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "Dani",
+     "offset": -0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "jannik",
+     "offset": -0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "wiam",
+     "offset": -0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "Lukas",
+     "offset": -0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "Mika",
+     "offset": -0.1
+    },
+    {
+     "typ": "shimmer",
+     "wort": "Willkommen"
+    }
+   ]
+  },
+  {
+   "id": "s3_supermarkt",
+   "name": "Supermarkt",
+   "uebergang": "schnitt",
+   "vorlauf": 0.25,
+   "nachlauf": 0.45,
+   "sprecher": "Baum wollte einen *Supermarkt*. |0.3| Erinnert ihr euch an den *leeren* Supermarkt vom ersten Tag? |0.3| Ab heute: | *wieder* *geöffnet*!",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.2,
+     "keys": [
+      {
+       "pos": [
+        -12,
+        4,
+        33
+       ],
+       "ziel": [
+        1,
+        3.5,
+        54
+       ]
+      },
+      {
+       "pos": [
+        -4,
+        2.2,
+        42
+       ],
+       "ziel": [
+        2,
+        2.8,
+        54
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "pfad",
+     "ab_wort": "wieder",
+     "offset": -0.15,
+     "anteil": 1,
+     "fov": [
+      52,
+      48
+     ],
+     "wackeln": 0.25,
+     "keys": [
+      {
+       "pos": [
+        -14,
+        1.9,
+        58.5
+       ],
+       "ziel": [
+        -14,
+        1.4,
+        90
+       ]
+      },
+      {
+       "pos": [
+        -14,
+        1.9,
+        70
+       ],
+       "ziel": [
+        -13,
+        1.2,
+        100
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "kommentare",
+     "zeit": 0.15,
+     "dauer": 3.0,
+     "liste": [
+      {
+       "name": "Baum",
+       "anzeige": "Baum · Freund*innen",
+       "text": "bekomme ich ein Supermarkt",
+       "avatar": "folgen/assets/baum.jpg",
+       "likes": 1
+      }
+     ]
+    },
+    {
+     "typ": "bewohner_pos",
+     "zeit": 0,
+     "dauer": 20,
+     "name": "Baum",
+     "pos": [
+      4,
+      50
+     ],
+     "richtung": 180
+    },
+    {
+     "typ": "supermarkt_offen",
+     "wort": "wieder",
+     "offset": -0.15
+    },
+    {
+     "typ": "callout",
+     "wort": "wieder",
+     "offset": 0.4,
+     "dauer": 2.0,
+     "anker": [
+      -6,
+      2.6,
+      82
+     ],
+     "titel": "SUPERMARKT",
+     "unter": "WIEDER GEÖFFNET · INHABER: BAUM"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "blip",
+     "zeit": 0.15
+    },
+    {
+     "typ": "neon_flicker",
+     "wort": "wieder",
+     "offset": -0.3
+    },
+    {
+     "typ": "shimmer",
+     "wort": "wieder",
+     "offset": -0.1
+    },
+    {
+     "typ": "jubel",
+     "wort": "geöffnet",
+     "dauer": 2.5
+    }
+   ]
+  },
+  {
+   "id": "s4_aufbau",
+   "name": "Geld, Krankenhaus, Polizei",
+   "uebergang": "schnitt",
+   "vorlauf": 0.25,
+   "nachlauf": 0.5,
+   "sprecher": "Dann mein *Geschenk*: | *fünfzigtausend* *Euro* für die Stadtkasse! |0.35| Davon bauen wir ein *Krankenhaus* für Dani, |0.25| und eine *Polizeistation* für t.h.169.",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      0,
+      0,
+      0
+     ],
+     "radius": [
+      150,
+      120
+     ],
+     "hoehe": [
+      100,
+      80
+     ],
+     "winkel": [
+      -25,
+      15
+     ],
+     "fov": [
+      42,
+      40
+     ],
+     "wackeln": 0.15
+    },
+    {
+     "typ": "orbit",
+     "ab_wort": "Davon",
+     "offset": -0.2,
+     "anteil": 1,
+     "ziel": [
+      -148,
+      9,
+      74
+     ],
+     "radius": [
+      78,
+      60
+     ],
+     "hoehe": [
+      40,
+      24
+     ],
+     "winkel": [
+      91.6,
+      136.6
+     ],
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.2
+    },
+    {
+     "typ": "orbit",
+     "ab_wort": "und",
+     "offset": -0.15,
+     "anteil": 1,
+     "ziel": [
+      148,
+      7,
+      74
+     ],
+     "radius": [
+      72,
+      56
+     ],
+     "hoehe": [
+      36,
+      22
+     ],
+     "winkel": [
+      -141.6,
+      -96.6
+     ],
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.2
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "geld",
+     "wort": "fünfzigtausend",
+     "offset": 0.05,
+     "betrag": 50000,
+     "text": "GESCHENK"
+    },
+    {
+     "typ": "werte",
+     "wort": "fünfzigtausend",
+     "offset": 0.15,
+     "dauer": 1.4,
+     "stadtkasse": 55000
+    },
+    {
+     "typ": "bau",
+     "wort": "Krankenhaus",
+     "offset": -0.4,
+     "dauer": 2.4,
+     "platz": "B8",
+     "gebaeude": "krankenhaus",
+     "name": "KRANKENHAUS",
+     "form": "turm"
+    },
+    {
+     "typ": "geld",
+     "wort": "Krankenhaus",
+     "offset": 0.8,
+     "betrag": -15000,
+     "text": "KRANKENHAUS"
+    },
+    {
+     "typ": "werte",
+     "wort": "Krankenhaus",
+     "offset": 0.9,
+     "dauer": 1.2,
+     "stadtkasse": 40000,
+     "gebaeude": 8,
+     "entwicklung_prozent": 50
+    },
+    {
+     "typ": "callout",
+     "wort": "Dani",
+     "offset": 0.0,
+     "dauer": 1.8,
+     "anker": [
+      -148,
+      20,
+      74
+     ],
+     "titel": "KRANKENHAUS",
+     "unter": "LEITUNG: SK|DANI"
+    },
+    {
+     "typ": "bau",
+     "wort": "Polizeistation",
+     "offset": -0.4,
+     "dauer": 2.4,
+     "platz": "B9",
+     "gebaeude": "polizei",
+     "name": "POLIZEI",
+     "form": "halle"
+    },
+    {
+     "typ": "geld",
+     "wort": "Polizeistation",
+     "offset": 0.8,
+     "betrag": -10000,
+     "text": "POLIZEI"
+    },
+    {
+     "typ": "werte",
+     "wort": "Polizeistation",
+     "offset": 0.9,
+     "dauer": 1.2,
+     "stadtkasse": 30000,
+     "gebaeude": 9,
+     "entwicklung_prozent": 55
+    },
+    {
+     "typ": "callout",
+     "wort": "t.h.169",
+     "offset": 0.0,
+     "dauer": 1.8,
+     "anker": [
+      148,
+      12,
+      74
+     ],
+     "titel": "POLIZEI",
+     "unter": "CHEF: T.H.169"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "kasse",
+     "wort": "fünfzigtausend",
+     "offset": 0.05
+    },
+    {
+     "typ": "build",
+     "wort": "Krankenhaus",
+     "offset": -0.4
+    },
+    {
+     "typ": "kasse_minus",
+     "wort": "Krankenhaus",
+     "offset": 0.8
+    },
+    {
+     "typ": "build",
+     "wort": "Polizeistation",
+     "offset": -0.4
+    },
+    {
+     "typ": "kasse_minus",
+     "wort": "Polizeistation",
+     "offset": 0.8
+    }
+   ]
+  },
+  {
+   "id": "s5_armee",
+   "name": "Armee",
+   "uebergang": "schnitt",
+   "vorlauf": 0.25,
+   "nachlauf": 0.5,
+   "sprecher": "Und die *Armee* von Valenheim wird stärker: |0.3| Lukas wird *Soldat*, | Neutromind fliegt einen *Kampfjet*, |0.25| und Max bedient die *Luftabwehr*!",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      42,
+      38
+     ],
+     "wackeln": 0.2,
+     "keys": [
+      {
+       "pos": [
+        -50,
+        6.6,
+        -28
+       ],
+       "ziel": [
+        -62,
+        1.6,
+        -17
+       ]
+      },
+      {
+       "pos": [
+        -53,
+        5.2,
+        -24.5
+       ],
+       "ziel": [
+        -62,
+        1.5,
+        -17
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "pfad",
+     "ab_wort": "Neutromind",
+     "offset": -0.15,
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.2,
+     "keys": [
+      {
+       "pos": [
+        -64,
+        5.5,
+        21
+       ],
+       "ziel": [
+        -86,
+        2.2,
+        17
+       ]
+      },
+      {
+       "pos": [
+        -69,
+        3.8,
+        19.5
+       ],
+       "ziel": [
+        -86,
+        2.2,
+        17
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "pfad",
+     "ab_wort": "Max",
+     "offset": -0.15,
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.2,
+     "keys": [
+      {
+       "pos": [
+        -60,
+        5,
+        -6
+       ],
+       "ziel": [
+        -72,
+        2,
+        -16
+       ]
+      },
+      {
+       "pos": [
+        -62.5,
+        3.4,
+        -9
+       ],
+       "ziel": [
+        -72,
+        2,
+        -16
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "callout",
+     "wort": "Soldat",
+     "offset": 0.0,
+     "dauer": 2.0,
+     "anker": [
+      -62,
+      2.4,
+      -17
+     ],
+     "titel": "SOLDAT LUKAS",
+     "unter": "+ KAPITÄN SV VALENHEIM 07"
+    },
+    {
+     "typ": "objekt",
+     "wort": "Kampfjet",
+     "offset": -0.45,
+     "typ_obj": "kampfjet",
+     "name": "NEUTROMIND",
+     "pos": [
+      -86,
+      17
+     ],
+     "richtung": 90
+    },
+    {
+     "typ": "geld",
+     "wort": "Kampfjet",
+     "offset": 0.3,
+     "betrag": -15000,
+     "text": "KAMPFJET"
+    },
+    {
+     "typ": "werte",
+     "wort": "Kampfjet",
+     "offset": 0.4,
+     "dauer": 1.0,
+     "stadtkasse": 15000
+    },
+    {
+     "typ": "objekt",
+     "wort": "Luftabwehr",
+     "offset": -0.45,
+     "typ_obj": "luftabwehr",
+     "pos": [
+      -72,
+      -16
+     ],
+     "richtung": 90
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Max",
+     "offset": -0.05,
+     "name": "Max",
+     "nr": 29,
+     "follower": false,
+     "pos": [
+      -68.5,
+      -11.5
+     ],
+     "richtung": 120,
+     "avatar": "folgen/assets/max.jpg",
+     "look": {
+      "jacke": "0x9a9a9a",
+      "kragen": "0x555555",
+      "hose": "0x4f5a34",
+      "haare": "0x3a2a1a",
+      "haut": "0xe8c0a0",
+      "schuhe": "0xe6e6e6",
+      "rucksack": "0x9a9a9a",
+      "gurt": "0x555555",
+      "hut": "helm"
+     }
+    },
+    {
+     "typ": "follower_karte",
+     "wort": "Max",
+     "offset": 0.0,
+     "dauer": 1.6,
+     "name": "Max",
+     "avatar": "folgen/assets/max.jpg",
+     "text": "NEUER EINWOHNER",
+     "unter": "EINWOHNER #29"
+    },
+    {
+     "typ": "geld",
+     "wort": "Luftabwehr",
+     "offset": 0.3,
+     "betrag": -5000,
+     "text": "LUFTABWEHR"
+    },
+    {
+     "typ": "werte",
+     "wort": "Luftabwehr",
+     "offset": 0.4,
+     "dauer": 1.0,
+     "stadtkasse": 10000,
+     "entwicklung_prozent": 60
+    }
+   ],
+   "toene": [
+    {
+     "typ": "impact",
+     "wort": "Armee",
+     "offset": -0.1
+    },
+    {
+     "typ": "build",
+     "wort": "Kampfjet",
+     "offset": -0.45
+    },
+    {
+     "typ": "kasse_minus",
+     "wort": "Kampfjet",
+     "offset": 0.3
+    },
+    {
+     "typ": "spawn",
+     "wort": "Max",
+     "offset": -0.05
+    },
+    {
+     "typ": "build",
+     "wort": "Luftabwehr",
+     "offset": -0.45
+    },
+    {
+     "typ": "kasse_minus",
+     "wort": "Luftabwehr",
+     "offset": 0.3
+    }
+   ]
+  },
+  {
+   "id": "s6_bauliste",
+   "name": "Bauliste",
+   "uebergang": "schnitt",
+   "vorlauf": 0.25,
+   "nachlauf": 0.6,
+   "sprecher": "Mark will einen *Flughafen*, | und jannik ein *Autohaus*. |0.3| Beides kommt auf unsere *Bauliste*!",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      0,
+      0,
+      0
+     ],
+     "radius": [
+      420,
+      380
+     ],
+     "hoehe": [
+      240,
+      200
+     ],
+     "winkel": [
+      150,
+      185
+     ],
+     "fov": [
+      46,
+      44
+     ],
+     "wackeln": 0.15
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "bauliste",
+     "zeit": 0.2,
+     "dauer": 99,
+     "liste": [
+      {
+       "was": "FLUGHAFEN",
+       "wer": "Mark",
+       "avatar": "folgen/assets/mark.jpg"
+      },
+      {
+       "was": "AUTOHAUS",
+       "wer": "jannik",
+       "avatar": "folgen/assets/jannik.jpg"
+      }
+     ]
+    }
+   ],
+   "toene": [
+    {
+     "typ": "blip",
+     "zeit": 0.5
+    },
+    {
+     "typ": "blip",
+     "zeit": 0.75
+    },
+    {
+     "typ": "whoosh",
+     "ende": -0.3
+    }
+   ]
+  },
+  {
+   "id": "s7_ende",
+   "name": "Ende",
+   "uebergang": "schnitt",
+   "vorlauf": 0.35,
+   "nachlauf": 2.3,
+   "sprecher": "In der Kasse bleiben *zehntausend* *Euro*. |0.3| Noch *vierundzwanzig* Follower bis zur *Überraschung*! |0.3| Schreibt eure Wünsche in die *Kommentare*!",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      40,
+      46
+     ],
+     "wackeln": 0.12,
+     "ease": "inOutSine",
+     "keys": [
+      {
+       "pos": "figur+-2.6,1.7,-3.6",
+       "ziel": "figur+0,1.4,0"
+      },
+      {
+       "pos": "figur+-14,12,-18",
+       "ziel": "figur+0,1,0"
+      },
+      {
+       "pos": [
+        -160,
+        260,
+        -300
+       ],
+       "ziel": [
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "pos": [
+        -260,
+        620,
+        -470
+       ],
+       "ziel": [
+        0,
+        0,
+        20
+       ]
+      }
+     ]
+    }
+   ],
+   "figur": [
+    {
+     "zeit": 0,
+     "aktion": "winken",
+     "richtung": 180
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "hinweis",
+     "wort": "vierundzwanzig",
+     "offset": -0.1,
+     "dauer": 2.6,
+     "text": "NOCH 24 BIS ZUR ÜBERRASCHUNG"
+    },
+    {
+     "typ": "endkarte",
+     "wort": "Schreibt",
+     "offset": -0.2,
+     "kasse": true
+    },
+    {
+     "typ": "kommentar_cta",
+     "wort": "Kommentare",
+     "offset": -0.3
+    }
+   ],
+   "toene": [
+    {
+     "typ": "whoosh_up",
+     "zeit": 0
+    },
+    {
+     "typ": "riser",
+     "wort": "vierundzwanzig",
+     "offset": -0.3,
+     "dauer": 1.2
+    },
+    {
+     "typ": "boom",
+     "wort": "Schreibt",
+     "offset": -0.2
+    },
+    {
+     "typ": "final_hit",
+     "ende": -1.9
+    }
+   ]
+  }
+ ],
+ "ergebnis": {
+  "tag": 3,
+  "verbleibende_tage": 5,
+  "einwohner": 29,
+  "follower": 26,
+  "stadtkasse": 10000,
+  "entwicklung_prozent": 60,
+  "entwicklung_stufe": "KLEINSTADT",
+  "supermarkt_offen": true,
+  "neue_gebaeude": [
+   {
+    "typ": "krankenhaus",
+    "platz": "B8",
+    "name": "KRANKENHAUS",
+    "status": "fertig",
+    "leitung": "SK|DANI"
+   },
+   {
+    "typ": "polizei",
+    "platz": "B9",
+    "name": "POLIZEI",
+    "status": "fertig",
+    "chef": "t.h.169"
+   }
+  ],
+  "neue_objekte": [
+   {
+    "typ": "kampfjet",
+    "pos": [
+     -86,
+     17
+    ],
+    "richtung": 90,
+    "name": "NEUTROMIND",
+    "besitzer": "Neutromind"
+   },
+   {
+    "typ": "luftabwehr",
+    "pos": [
+     -72,
+     -16
+    ],
+    "richtung": 90,
+    "besitzer": "Max"
+   }
+  ],
+  "neue_bewohner": [
+   {
+    "name": "Lauri",
+    "nr": 16,
+    "pos": [
+     -17,
+     8
+    ],
+    "richtung": 70,
+    "avatar": "folgen/assets/lauri.jpg",
+    "look": {
+     "jacke": "0x2a2a3a",
+     "kragen": "0xff9a4a",
+     "hose": "0x2a3040",
+     "haare": "0x8a6a4a",
+     "haut": "0xe8c0a0",
+     "schuhe": "0xe6e6e6",
+     "rucksack": "0x2a2a3a",
+     "gurt": "0xff9a4a"
+    }
+   },
+   {
+    "name": "sbpgae",
+    "nr": 17,
+    "pos": [
+     -13,
+     14
+    ],
+    "richtung": 80,
+    "avatar": "folgen/assets/sbpgae.jpg",
+    "look": {
+     "jacke": "0xf2d8e0",
+     "kragen": "0xd8a0b8",
+     "hose": "0xf2d8e0",
+     "haare": "0x2a1a10",
+     "haut": "0xe8c0a0",
+     "schuhe": "0xe6e6e6",
+     "rucksack": "0xf2d8e0",
+     "gurt": "0xd8a0b8",
+     "langeHaare": true
+    }
+   },
+   {
+    "name": "Mark",
+    "nr": 18,
+    "pos": [
+     -18,
+     15
+    ],
+    "richtung": 70,
+    "avatar": "folgen/assets/mark.jpg",
+    "look": {
+     "jacke": "0x0c0c0e",
+     "kragen": "0x1a1a1e",
+     "hose": "0x333336",
+     "haare": "0x0c0c0e",
+     "haut": "0xe8c0a0",
+     "schuhe": "0xe6e6e6",
+     "rucksack": "0x0c0c0e",
+     "gurt": "0x1a1a1e"
+    }
+   },
+   {
+    "name": "JR3",
+    "nr": 19,
+    "pos": [
+     -10,
+     20
+    ],
+    "richtung": 90,
+    "avatar": "folgen/assets/jr3.jpg",
+    "look": {
+     "jacke": "0x1a1a1a",
+     "kragen": "0xd4a017",
+     "hose": "0x1a1a1a",
+     "haare": "0x111111",
+     "haut": "0xb07a55",
+     "schuhe": "0xe6e6e6",
+     "rucksack": "0x1a1a1a",
+     "gurt": "0xd4a017"
+    }
+   },
+   {
+    "name": "assi",
+    "nr": 20,
+    "pos": [
+     -15,
+     21
+    ],
+    "richtung": 90,
+    "avatar": "folgen/assets/assi.jpg",
+    "look": {
+     "jacke": "0x4a5a3a",
+     "kragen": "0x2a3a2a",
+     "hose": "0x3a3020",
+     "haare": "0xe8c860",
+     "haut": "0xe8c0a0",
+     "schuhe": "0xe6e6e6",
+     "rucksack": "0x4a5a3a",
+     "gurt": "0x2a3a2a",
+     "langeHaare": true
+    }
+   },
+   {
+    "name": "Levy",
+    "nr": 21,
+    "pos": [
+     -20,
+     3
+    ],
+    "richtung": 60,
+    "avatar": "folgen/assets/levy.jpg",
+    "look": {
+     "jacke": "0x5a2a8a",
+     "kragen": "0x2a1a4a",
+     "hose": "0x222222",
+     "haare": "0x222222",
+     "haut": "0xe8c0a0",
+     "schuhe": "0xe6e6e6",
+     "rucksack": "0x5a2a8a",
+     "gurt": "0x2a1a4a",
+     "hut": "weihnacht"
+    }
+   },
+   {
+    "name": "Neutromind",
+    "nr": 22,
+    "pos": [
+     -76,
+     14.5
+    ],
+    "richtung": 60,
+    "avatar": "folgen/assets/neutromind.jpg",
+    "look": {
+     "jacke": "0x2a3440",
+     "kragen": "0x1a2028",
+     "hose": "0x1a2028",
+     "haare": "0x111111",
+     "haut": "0xe8c0a0",
+     "schuhe": "0xe6e6e6",
+     "rucksack": "0x2a3440",
+     "gurt": "0x1a2028"
+    }
+   },
+   {
+    "name": "t.h.169",
+    "nr": 23,
+    "pos": [
+     135.25,
+     63.71
+    ],
+    "richtung": 63.4,
+    "avatar": "folgen/assets/th169.jpg",
+    "look": {
+     "jacke": "0x1d3a6a",
+     "kragen": "0xf2f2f2",
+     "hose": "0x1d2a40",
+     "haare": "0x111111",
+     "haut": "0xe8c0a0",
+     "schuhe": "0xe6e6e6",
+     "rucksack": "0x1d3a6a",
+     "gurt": "0xf2f2f2",
+     "hut": "cap",
+     "capFarbe": "0x1d3a6a"
+    }
+   },
+   {
+    "name": "SK|DANI",
+    "nr": 24,
+    "pos": [
+     -132.12,
+     69.98
+    ],
+    "richtung": 296.6,
+    "avatar": "folgen/assets/skdani.jpg",
+    "look": {
+     "jacke": "0xc8102e",
+     "kragen": "0xf2f2f2",
+     "hose": "0x111111",
+     "haare": "0x6a4a2a",
+     "haut": "0xe8c0a0",
+     "schuhe": "0xe6e6e6",
+     "rucksack": "0xc8102e",
+     "gurt": "0xf2f2f2"
+    }
+   },
+   {
+    "name": "jannik",
+    "nr": 25,
+    "pos": [
+     -9,
+     4.5
+    ],
+    "richtung": 60,
+    "avatar": "folgen/assets/jannik.jpg",
+    "look": {
+     "jacke": "0x3a3aa0",
+     "kragen": "0x1a1a50",
+     "hose": "0x222222",
+     "haare": "0x3a2a1a",
+     "haut": "0xe8c0a0",
+     "schuhe": "0xe6e6e6",
+     "rucksack": "0x3a3aa0",
+     "gurt": "0x1a1a50",
+     "hut": "weihnacht"
+    }
+   },
+   {
+    "name": "wiam",
+    "nr": 26,
+    "pos": [
+     -21,
+     10
+    ],
+    "richtung": 80,
+    "avatar": "folgen/assets/wiam.jpg",
+    "look": {
+     "jacke": "0xf2f2f2",
+     "kragen": "0xdddddd",
+     "hose": "0x8a8a9a",
+     "haare": "0x1a1410",
+     "haut": "0xe8c0a0",
+     "schuhe": "0xe6e6e6",
+     "rucksack": "0xf2f2f2",
+     "gurt": "0xdddddd",
+     "langeHaare": true
+    }
+   },
+   {
+    "name": "Lukas Daron",
+    "nr": 27,
+    "pos": [
+     -62,
+     -17
+    ],
+    "richtung": 60,
+    "avatar": "folgen/assets/lukas.jpg",
+    "look": {
+     "jacke": "0x4f5a34",
+     "kragen": "0x3a4126",
+     "hose": "0x4f5a34",
+     "haare": "0x2a1a10",
+     "haut": "0xe8c0a0",
+     "schuhe": "0xe6e6e6",
+     "rucksack": "0x4f5a34",
+     "gurt": "0x3a4126",
+     "hut": "helm"
+    }
+   },
+   {
+    "name": "Mika",
+    "nr": 28,
+    "pos": [
+     -19,
+     -6
+    ],
+    "richtung": 50,
+    "avatar": "folgen/assets/mika.jpg",
+    "look": {
+     "jacke": "0x6a3a8a",
+     "kragen": "0xff7a5a",
+     "hose": "0x2a2a3a",
+     "haare": "0x2a1a10",
+     "haut": "0xe8c0a0",
+     "schuhe": "0xe6e6e6",
+     "rucksack": "0x6a3a8a",
+     "gurt": "0xff7a5a"
+    }
+   },
+   {
+    "name": "Max",
+    "nr": 29,
+    "follower": false,
+    "pos": [
+     -68.5,
+     -11.5
+    ],
+    "richtung": 120,
+    "avatar": "folgen/assets/max.jpg",
+    "look": {
+     "jacke": "0x9a9a9a",
+     "kragen": "0x555555",
+     "hose": "0x4f5a34",
+     "haare": "0x3a2a1a",
+     "haut": "0xe8c0a0",
+     "schuhe": "0xe6e6e6",
+     "rucksack": "0x9a9a9a",
+     "gurt": "0x555555",
+     "hut": "helm"
+    }
+   }
+  ],
+  "bauliste": [
+   {
+    "was": "Flughafen",
+    "wer": "Mark"
+   },
+   {
+    "was": "Autohaus",
+    "wer": "jannik"
+   }
+  ]
+ }
+}

@@ -93,6 +93,8 @@ export class HUD {
     if (S.geld && S.hudOn !== null && t >= S.hudOn) for (const e of S.geld) this.drawMoney(g, t, e);
     if (S.follower) this.drawFollower(g, t, S.follower, S);
     if (S.ausweis) this.drawAusweis(g, t, S.ausweis, S);
+    if (S.wand) this.drawWand(g, t, S.wand, S);
+    if (S.bauliste) this.drawBauliste(g, t, S.bauliste, S);
     if (S.ziel && S.hudOn !== null && t >= S.hudOn && !S.endkarte) this.drawZiel(g, t, S.ziel, S);
     if (S.frage) this.drawQuestion(g, t, S.frage);
     if (S.endkarte) this.drawEndcard(g, t, S.endkarte, S);
@@ -447,7 +449,7 @@ export class HUD {
   // Zielbalken unter der Karte: Überraschung bei X Followern
   drawZiel(g, t, z, S) {
     const a = clamp((t - (z.t0 ?? -9)) / 0.4); if (a <= 0) return;
-    const x = 784, y = 652, w = 256, h = 96; const cur = Math.round(S.einwohner) - (S.nichtFollower || 0), ziel = z.ziel || 50;
+    const x = 784, y = 652, w = 256, h = 96; const cur = S.followerZahl != null ? Math.round(S.followerZahl) : Math.round(S.einwohner) - (S.nichtFollower || 0), ziel = z.ziel || 50;
     g.save(); g.globalAlpha = a;
     panel(g, x, y, w, h, 1, C.yellow);
     text(g, z.text || '🎁 ÜBERRASCHUNG', x + 16, y + 30, { size: 19, weight: 700, color: C.yellow, spacing: 1.5 });
@@ -455,6 +457,53 @@ export class HUD {
     const k = clamp(cur / ziel); const pulse = 0.75 + 0.25 * Math.sin(t * 4);
     g.fillStyle = `rgba(255,216,74,${pulse})`; rr(g, x + 16, y + 46, Math.max(16, (w - 32) * k), 16, 8); g.fill();
     text(g, `${cur} / ${ziel} FOLLOWER`, x + 16, y + 84, { size: 20, weight: 700, color: C.white, spacing: 1 });
+    g.restore();
+  }
+
+  // Wand mit Profilbildern neuer Follower (für viele neue Einwohner auf einmal)
+  drawWand(g, t, e, S) {
+    const lt = t - e.t; const d = e.dauer || 6; const n = e.liste.length; const step = e.schritt || 0.35;
+    const a = clamp(lt / 0.3) * (1 - smooth(d - 0.4, d, lt)); if (a <= 0) return;
+    const cols = n > 12 ? 4 : n > 6 ? 3 : 2; const rows = Math.ceil(n / cols);
+    const cw = 940 / cols, ch = Math.min(250, 900 / rows); const x0 = W / 2 - (cw * cols) / 2, y0 = 1180 - ch * rows;
+    g.save(); g.globalAlpha = a;
+    rr(g, x0 - 24, y0 - 110, cw * cols + 48, ch * rows + 140, 30); g.fillStyle = 'rgba(6,12,18,0.78)'; g.fill(); g.strokeStyle = C.cyan; g.lineWidth = 3; g.stroke();
+    text(g, e.titel || 'NEUE EINWOHNER', W / 2, y0 - 50, { size: 44, weight: 900, font: F.big, align: 'center', color: C.yellow, spacing: 2 });
+    e.liste.forEach((p, i) => {
+      const li = p.t != null ? t - p.t : lt - 0.4 - i * step; if (li < 0) return;
+      const k = ease.outBack(clamp(li / 0.35));
+      const cx = x0 + (i % cols) * cw + cw / 2, cy = y0 + Math.floor(i / cols) * ch + ch * 0.42;
+      const r = Math.min(cw, ch) * 0.3;
+      g.save(); g.translate(cx, cy); g.scale(k, k);
+      if (li < 0.3) { g.fillStyle = `rgba(69,227,255,${0.5 * (1 - li / 0.3)})`; g.beginPath(); g.arc(0, 0, r * 1.5, 0, 7); g.fill(); }
+      avatar(g, S.bilder[p.avatar], 0, 0, r, C.cyan);
+      g.font = `800 26px ${F.big}`; const nf = Math.min(1, (cw - 16) / g.measureText(p.name).width);
+      g.save(); g.translate(0, r + 34); g.scale(nf, nf); text(g, p.name, 0, 0, { size: 26, weight: 800, font: F.big, align: 'center' }); g.restore();
+      text(g, '#' + p.nr, r * 0.85, -r * 0.7, { size: 22, weight: 800, align: 'center', color: C.orange });
+      g.restore();
+    });
+    g.restore();
+  }
+
+  // Bauliste: Wünsche, die in den nächsten Folgen kommen
+  drawBauliste(g, t, e, S) {
+    const lt = t - e.t; const d = e.dauer || 4;
+    const a = clamp(lt / 0.3) * (1 - smooth(d - 0.35, d, lt)); if (a <= 0) return;
+    const n = e.liste.length; const h = 140 + n * 104; const y0 = 1240 - h;
+    g.save(); g.globalAlpha = a; const k = ease.outCubic(clamp(lt / 0.4)); g.translate((1 - k) * 200, 0);
+    panel(g, 90, y0, 900, h, 1, C.yellow);
+    text(g, e.titel || 'BAULISTE · KOMMT BALD', 130, y0 + 66, { size: 40, weight: 900, font: F.big, color: C.yellow, spacing: 2 });
+    e.liste.forEach((it, i) => {
+      const li = clamp((lt - 0.3 - i * 0.25) / 0.3); if (li <= 0) return;
+      const y = y0 + 110 + i * 104;
+      g.save(); g.globalAlpha *= li;
+      avatar(g, S.bilder[it.avatar], 160, y + 40, 36, C.yellow);
+      text(g, it.was, 220, y + 36, { size: 40, weight: 900, font: F.big });
+      text(g, 'Wunsch von ' + it.wer, 220, y + 74, { size: 24, weight: 600, color: C.mute, spacing: 1 });
+      rr(g, 770, y + 14, 190, 52, 26); g.fillStyle = 'rgba(255,216,74,0.18)'; g.fill(); g.strokeStyle = C.yellow; g.lineWidth = 2; g.stroke();
+      text(g, 'GEPLANT', 865, y + 50, { size: 24, weight: 800, align: 'center', color: C.yellow, spacing: 2 });
+      g.restore();
+    });
     g.restore();
   }
 

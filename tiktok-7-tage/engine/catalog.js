@@ -483,6 +483,33 @@ export function buildObjekt(typ, { name } = {}) {
     const front = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 1.6), new THREE.MeshStandardMaterial({ map: t, emissive: 0xffffff, emissiveMap: t, emissiveIntensity: 0.55 }));
     front.position.set(0, 0.98, 0.26); g.add(front);
     add(new THREE.BoxGeometry(1.05, 0.12, 0.6), M(0x5a6068), 0, 1.92, 0);
+  } else if (typ === 'kampfjet') {
+    const grau = M(0x7d8590, { metalness: 0.5, roughness: 0.45 }), dunkel = M(0x3a3f46, { metalness: 0.5 }), glas = M(0x1a2a3a, { metalness: 0.8, roughness: 0.1, emissive: 0x1a3a5a, emissiveIntensity: 0.4 });
+    const rumpf = add(new THREE.CylinderGeometry(0.55, 0.85, 13, 14).rotateX(Math.PI / 2), grau, 0, 1.9, 0);
+    add(new THREE.ConeGeometry(0.55, 3.2, 14).rotateX(Math.PI / 2), grau, 0, 1.9, 8.1);
+    add(new THREE.SphereGeometry(0.62, 14, 10).scale(1, 0.85, 2.4), glas, 0, 2.55, 4.0);
+    const fl = new THREE.Shape(); fl.moveTo(0, 3.5); fl.lineTo(5.5, -2.2); fl.lineTo(5.5, -3.2); fl.lineTo(0, -3.0); fl.lineTo(-5.5, -3.2); fl.lineTo(-5.5, -2.2); fl.closePath();
+    const wing = new THREE.Mesh(new THREE.ExtrudeGeometry(fl, { depth: 0.18, bevelEnabled: false }).rotateX(-Math.PI / 2), grau); wing.position.set(0, 1.7, -1.0); wing.castShadow = true; g.add(wing);
+    for (const sx of [-0.9, 0.9]) { const f = add(new THREE.BoxGeometry(0.12, 2.4, 2.2), grau, sx, 3.2, -5.2); f.rotation.z = sx * 0.35; }
+    add(new THREE.CylinderGeometry(0.75, 0.6, 1.0, 14).rotateX(Math.PI / 2), dunkel, 0, 1.9, -6.9);
+    add(new THREE.CylinderGeometry(0.55, 0.55, 0.15, 14).rotateX(Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0x220800, emissive: 0xff6a20, emissiveIntensity: 1.2 }), 0, 1.9, -7.45, false);
+    for (const [x, z] of [[0, 5.5], [-1.6, -1.5], [1.6, -1.5]]) { add(new THREE.CylinderGeometry(0.06, 0.06, 1.3, 6), dunkel, x, 0.65, z); add(new THREE.CylinderGeometry(0.28, 0.28, 0.2, 10).rotateZ(Math.PI / 2), M(0x111111), x, 0.28, z); }
+    for (const sx of [-3, 3]) add(new THREE.CylinderGeometry(0.16, 0.16, 2.4, 8).rotateX(Math.PI / 2), M(0xe8e8e8), sx, 1.45, -1.2);
+    if (name) { const tx = textTexture(name, { w: 512, h: 128, color: '#1d1d1d', font: '900 90px Montserrat' }); const pl = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 0.65), new THREE.MeshStandardMaterial({ map: tx, transparent: true })); pl.position.set(0.86, 2.0, 1.5); pl.rotation.y = Math.PI / 2; g.add(pl); }
+  } else if (typ === 'luftabwehr') {
+    const oliv = M(0x56603a, { roughness: 0.75 }), olivD = M(0x3a4126), kette = M(0x1c1c1c);
+    add(new THREE.BoxGeometry(3.0, 1.4, 7.0), oliv, 0, 1.3, 0);
+    for (const sx of [-1, 1]) { add(new THREE.BoxGeometry(0.4, 0.5, 6.4), kette, sx * 1.35, 0.6, 0); for (let k = 0; k < 4; k++) add(new THREE.CylinderGeometry(0.48, 0.48, 0.4, 12).rotateZ(Math.PI / 2), M(0x151515), sx * 1.55, 0.5, -2.4 + k * 1.6); }
+    add(new THREE.BoxGeometry(2.6, 1.6, 2.0), olivD, 0, 2.6, 2.4);
+    const rack = new THREE.Group(); rack.position.set(0, 2.4, -1.0); rack.rotation.x = -0.65; g.add(rack);
+    for (let r2 = 0; r2 < 2; r2++) for (let k = 0; k < 3; k++) {
+      const tube = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 4.6), olivD); tube.position.set(-0.8 + k * 0.8, r2 * 0.8, 1.2); tube.castShadow = true; rack.add(tube);
+      const cap = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.05), M(0xc81e1e)); cap.position.set(-0.8 + k * 0.8, r2 * 0.8, 3.53); rack.add(cap);
+    }
+    const radar = new THREE.Group(); radar.position.set(0, 3.6, 2.6); g.add(radar);
+    const dish = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.2, 0.12), M(0xc9cbc4, { metalness: 0.5 })); dish.position.y = 0.6; dish.rotation.x = -0.3; dish.castShadow = true; radar.add(dish);
+    add(new THREE.CylinderGeometry(0.1, 0.1, 0.8, 6), olivD, 0, 3.4, 2.6);
+    g.userData.update = (t) => { radar.rotation.y = t * 1.2; rack.rotation.y = Math.sin(t * 0.3) * 0.25; };
   } else if (typ === 'panzer') {
     const oliv = M(0x4f5a34, { roughness: 0.75 }), olivD = M(0x353d22), kette = M(0x1c1c1c, { roughness: 0.9 });
     add(new THREE.BoxGeometry(3.6, 1.3, 7.4), oliv, 0, 1.25, 0);
