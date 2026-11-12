@@ -239,7 +239,7 @@ def main():
         b["t1"] = round(min(nxt, b["t1"] + 0.55), 3)
 
     tl = {"folge": nr, "titel": ep.get("titel"), "dauer": round(gesamt, 3), "szenen": szenen,
-          "untertitel": blöcke, "musik": ep.get("musik", {}), "ergebnis": ep.get("ergebnis", {}), "licht": ep.get("licht", "standard")}
+          "untertitel": blöcke, "musik": ep.get("musik", {}), "ergebnis": ep.get("ergebnis", {}), "licht": ep.get("licht", "standard"), "republik": ep.get("republik", False)}
     (out / "timeline.json").write_text(json.dumps(tl, ensure_ascii=False, indent=1))
     # Untertitel zusätzlich als SRT (z. B. für TikTok-Untertitel-Upload)
     def ts(x):

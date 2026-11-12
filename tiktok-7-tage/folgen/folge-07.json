@@ -1,0 +1,1885 @@
+{
+ "folge": 7,
+ "titel": "Die Gründung der Republik Valenheim",
+ "licht": "abend",
+ "republik": true,
+ "_hinweis": "Folge 7 – Tag 3 Abend. Staatsgründung: Rückblick, Sondersendung Valenheim TV, 5 neue Bürger (#31–#35), Flagge (gehisst mit Nationalhymne), Staatswappen, neue Gebiete, Regierungssitz/Parlament/Palast, Bahnhof/Klinikum/TV, Verfassung + Gründung mit Feuerwerk, Ansprache des Präsidenten (ICH), Ausblick Weltlage (kein Kriegsausbruch, kein genannter Gegner).",
+ "stimme": {
+  "modell": "de_DE-thorsten-high",
+  "tempo": 1.05,
+  "lebendigkeit": 0.7,
+  "rhythmus": 0.84,
+  "tonhoehe_halbtoene": 0.8
+ },
+ "aussprache": {
+  "ihatemylife9975": "Eiheitmeilaif",
+  "Angelique": "Anschelik",
+  "emstil12": "Emstil",
+  "xXTENSEIGANXx": "Tenseigan",
+  "1965": "Neunzehnfünfundsechzig",
+  "TV": "Tiwi",
+  "Valenheims": "Valenheims"
+ },
+ "musik": {
+  "stil": "dramatisch",
+  "tonart": "d-moll",
+  "bpm": 84
+ },
+ "szenen": [
+  {
+   "id": "s1_rueckblick",
+   "name": "Die bisherige Stadt",
+   "vorlauf": 0.9,
+   "nachlauf": 0.3,
+   "sprecher": "Vor drei Tagen war Valenheim eine *leere* Stadt. |0.3| Kein Mensch. | Keine Hoffnung. |0.35| Heute leben hier *fünfunddreißig* Menschen.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      46,
+      44
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        37,
+        4,
+        300
+       ],
+       "ziel": [
+        0,
+        8,
+        40
+       ]
+      },
+      {
+       "pos": [
+        30,
+        3,
+        140
+       ],
+       "ziel": [
+        0,
+        6,
+        0
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      42,
+      38
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        22,
+        3.2,
+        30
+       ],
+       "ziel": [
+        0,
+        1.8,
+        10
+       ]
+      },
+      {
+       "pos": [
+        16,
+        2.6,
+        25
+       ],
+       "ziel": [
+        0,
+        1.6,
+        8
+       ]
+      }
+     ],
+     "ab_wort": "Heute",
+     "offset": -0.2
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "titel",
+     "zeit": 0.2,
+     "dauer": 2.4,
+     "text": "DIE GRÜNDUNG",
+     "unter": "VALENHEIM · TAG 3"
+    },
+    {
+     "typ": "werte",
+     "zeit": 0.6,
+     "tag": 3,
+     "verbleibende_tage": 5
+    }
+   ],
+   "toene": [
+    {
+     "typ": "boom",
+     "zeit": 0.05
+    },
+    {
+     "typ": "wind_swell",
+     "zeit": 0
+    }
+   ]
+  },
+  {
+   "id": "s2_sondersendung",
+   "name": "Die Ankündigung",
+   "uebergang": "schnitt",
+   "vorlauf": 2.6,
+   "nachlauf": 0.4,
+   "sprecher": "*Sondersendung* auf Valenheim TV. |0.4| Heute Abend ändert sich *alles*. |0.3| Aus unserer Stadt | wird ein eigener *Staat*.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      46,
+      44
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        430,
+        80,
+        -430
+       ],
+       "ziel": [
+        518,
+        150,
+        -518
+       ]
+      },
+      {
+       "pos": [
+        460,
+        110,
+        -470
+       ],
+       "ziel": [
+        518,
+        160,
+        -518
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "sondersendung",
+     "zeit": 0.0,
+     "dauer": 2.6,
+     "text": "SONDERSENDUNG",
+     "unter": "STAATSGRÜNDUNG · LIVE"
+    },
+    {
+     "typ": "tv",
+     "zeit": 2.4,
+     "dauer": 60,
+     "text": "STAATSGRÜNDUNG · LIVE"
+    },
+    {
+     "typ": "eilmeldung",
+     "wort": "Staat",
+     "offset": -0.8,
+     "dauer": 30,
+     "text": "HEUTE: GRÜNDUNG DER REPUBLIK VALENHEIM",
+     "laufband": "VALENHEIM TV · SONDERSENDUNG · AUS DER STADT WIRD EIN STAAT · 35 BÜRGER · NOCH 5 TAGE",
+     "sender": "VALENHEIM TV"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "whoosh",
+     "zeit": 0.0
+    },
+    {
+     "typ": "impact",
+     "zeit": 0.5
+    },
+    {
+     "typ": "riser",
+     "wort": "alles",
+     "offset": -0.6,
+     "dauer": 1.0
+    },
+    {
+     "typ": "impact",
+     "wort": "Staat"
+    }
+   ]
+  },
+  {
+   "id": "s3_buerger",
+   "name": "Neue Bürger",
+   "uebergang": "blitz",
+   "vorlauf": 0.3,
+   "nachlauf": 0.4,
+   "sprecher": "Und pünktlich dazu | begrüßen wir fünf *neue* Bürger: |0.3| ihatemylife9975, | Angelique, | emstil12, | xXTENSEIGANXx, | und 1965!",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      0,
+      0,
+      8
+     ],
+     "radius": [
+      60,
+      48
+     ],
+     "hoehe": [
+      50,
+      38
+     ],
+     "winkel": [
+      140,
+      175
+     ],
+     "fov": [
+      46,
+      44
+     ],
+     "wackeln": 0.15
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "wand",
+     "wort": "fünf",
+     "offset": 0.2,
+     "dauer": 99,
+     "titel": "5 NEUE BÜRGER",
+     "liste": [
+      {
+       "name": "ihatemylife9975",
+       "avatar": "folgen/assets/ihatemylife.jpg",
+       "nr": 31
+      },
+      {
+       "name": "Angelique Lemmer",
+       "avatar": "folgen/assets/angelique.jpg",
+       "nr": 32
+      },
+      {
+       "name": "emstil12",
+       "avatar": "folgen/assets/emstil.jpg",
+       "nr": 33
+      },
+      {
+       "name": "xXTENSEIGANXx",
+       "avatar": "folgen/assets/xxtenseiganxx.jpg",
+       "nr": 34
+      },
+      {
+       "name": "1965",
+       "avatar": "folgen/assets/1965.jpg",
+       "nr": 35
+      }
+     ]
+    },
+    {
+     "typ": "bewohner",
+     "wort": "ihatemylife9975",
+     "offset": -0.12,
+     "name": "ihatemylife9975",
+     "nr": 31,
+     "pos": [
+      12,
+      21
+     ],
+     "richtung": 200,
+     "avatar": "folgen/assets/ihatemylife.jpg",
+     "look": {
+      "jacke": "0x101010",
+      "kragen": "0x2a2a2a",
+      "hose": "0x101010",
+      "haare": "0x111111",
+      "haut": "0xe8c0a0",
+      "schuhe": "0x1a1a1a",
+      "rucksack": "0x101010",
+      "gurt": "0x2a2a2a"
+     }
+    },
+    {
+     "typ": "bewohner",
+     "wort": "Angelique",
+     "offset": -0.12,
+     "name": "Angelique Lemmer",
+     "nr": 32,
+     "pos": [
+      15,
+      16.5
+     ],
+     "richtung": 230,
+     "avatar": "folgen/assets/angelique.jpg",
+     "look": {
+      "jacke": "0x2a2a3a",
+      "kragen": "0x4a4a5a",
+      "hose": "0x2a3040",
+      "haare": "0x6a4a2a",
+      "haut": "0xe8c0a0",
+      "schuhe": "0x1a1a1a",
+      "rucksack": "0x2a2a3a",
+      "gurt": "0x4a4a5a",
+      "langeHaare": true
+     }
+    },
+    {
+     "typ": "bewohner",
+     "wort": "emstil12",
+     "offset": -0.12,
+     "name": "emstil12",
+     "nr": 33,
+     "pos": [
+      -5,
+      26
+     ],
+     "richtung": 170,
+     "avatar": "folgen/assets/emstil.jpg",
+     "look": {
+      "jacke": "0xf2b23a",
+      "kragen": "0x6aa8a0",
+      "hose": "0x3a4a4a",
+      "haare": "0x3a2a1a",
+      "haut": "0xe8c0a0",
+      "schuhe": "0x1a1a1a",
+      "rucksack": "0xf2b23a",
+      "gurt": "0x6aa8a0"
+     }
+    },
+    {
+     "typ": "bewohner",
+     "wort": "xXTENSEIGANXx",
+     "offset": -0.12,
+     "name": "xXTENSEIGANXx",
+     "nr": 34,
+     "pos": [
+      -25,
+      -5
+     ],
+     "richtung": 80,
+     "avatar": "folgen/assets/xxtenseiganxx.jpg",
+     "look": {
+      "jacke": "0x1c1028",
+      "kragen": "0x3a2050",
+      "hose": "0x1c1028",
+      "haare": "0x111111",
+      "haut": "0xe8c0a0",
+      "schuhe": "0x1a1a1a",
+      "rucksack": "0x1c1028",
+      "gurt": "0x3a2050"
+     }
+    },
+    {
+     "typ": "bewohner",
+     "wort": "1965",
+     "offset": -0.12,
+     "name": "1965",
+     "nr": 35,
+     "pos": [
+      24,
+      -5
+     ],
+     "richtung": -80,
+     "avatar": "folgen/assets/1965.jpg",
+     "look": {
+      "jacke": "0x0c0c0e",
+      "kragen": "0x1a1a1e",
+      "hose": "0x2a2a2e",
+      "haare": "0x0c0c0e",
+      "haut": "0xe8c0a0",
+      "schuhe": "0x1a1a1a",
+      "rucksack": "0x0c0c0e",
+      "gurt": "0x1a1a1e"
+     }
+    },
+    {
+     "typ": "werte",
+     "wort": "1965",
+     "offset": 0.3,
+     "follower": 32,
+     "dauer": 0.6
+    }
+   ],
+   "toene": [
+    {
+     "typ": "blip",
+     "wort": "ihatemylife9975",
+     "offset": -0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "Angelique",
+     "offset": -0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "emstil12",
+     "offset": -0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "xXTENSEIGANXx",
+     "offset": -0.1
+    },
+    {
+     "typ": "blip",
+     "wort": "1965",
+     "offset": -0.1
+    },
+    {
+     "typ": "shimmer",
+     "wort": "1965"
+    }
+   ]
+  },
+  {
+   "id": "s4_flagge",
+   "name": "Die Nationalflagge",
+   "uebergang": "schwarz",
+   "vorlauf": 0.6,
+   "nachlauf": 0.6,
+   "sprecher": "Bürgerinnen und Bürger: |0.4| Das ist unsere neue *Nationalflagge*. |0.5| Ein goldenes V für *Valenheim*. |0.3| Und sieben Zacken | für *sieben* *Tage*.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      46,
+      40
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        6,
+        2.2,
+        12
+       ],
+       "ziel": [
+        2,
+        10,
+        -19.5
+       ]
+      },
+      {
+       "pos": [
+        5,
+        3.0,
+        8
+       ],
+       "ziel": [
+        2,
+        14,
+        -19.5
+       ]
+      }
+     ],
+     "ease": "inOutSine"
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      30,
+      28
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        4.5,
+        19,
+        16
+       ],
+       "ziel": [
+        4.5,
+        21.5,
+        -19.5
+       ]
+      },
+      {
+       "pos": [
+        4.5,
+        20,
+        14
+       ],
+       "ziel": [
+        4.5,
+        21.5,
+        -19.5
+       ]
+      }
+     ],
+     "ab_wort": "Ein",
+     "offset": -0.2
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "hud_aus",
+     "zeit": 0,
+     "dauer": 200,
+     "global": true
+    },
+    {
+     "typ": "flagge_hissen",
+     "zeit": 0.4,
+     "dauer": 7.5
+    },
+    {
+     "typ": "callout",
+     "wort": "Valenheim",
+     "offset": -0.2,
+     "dauer": 2.0,
+     "anker": [
+      4.5,
+      20.2,
+      -19.5
+     ],
+     "titel": "GOLDENES V",
+     "unter": "FÜR VALENHEIM",
+     "farbe": "#f2c230"
+    },
+    {
+     "typ": "callout",
+     "wort": "sieben",
+     "offset": 0.0,
+     "dauer": 2.2,
+     "anker": [
+      4.5,
+      22.0,
+      -19.5
+     ],
+     "titel": "7 ZACKEN",
+     "unter": "FÜR 7 TAGE",
+     "farbe": "#ffffff"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "hymne",
+     "zeit": 0.3,
+     "dauer": 22,
+     "bpm": 76
+    }
+   ]
+  },
+  {
+   "id": "s5_wappen",
+   "name": "Das Staatswappen",
+   "uebergang": "blitz",
+   "vorlauf": 0.3,
+   "nachlauf": 0.5,
+   "sprecher": "Dazu unser *Staatswappen*: |0.3| das Stadttor, | durch das wir gemeinsam gehen. |0.4| *Gemeinsam* *stark*.",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      0,
+      12,
+      -19.5
+     ],
+     "radius": [
+      40,
+      30
+     ],
+     "hoehe": [
+      14,
+      10
+     ],
+     "winkel": [
+      150,
+      200
+     ],
+     "fov": [
+      44,
+      42
+     ],
+     "wackeln": 0.1
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "wappen_reveal",
+     "zeit": 0.0,
+     "dauer": 30,
+     "text": "STAATSWAPPEN DER REPUBLIK VALENHEIM"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "shimmer",
+     "zeit": 0.1
+    },
+    {
+     "typ": "boom",
+     "wort": "Gemeinsam",
+     "offset": -0.1
+    }
+   ]
+  },
+  {
+   "id": "s6_gebiete",
+   "name": "Die neuen Gebiete",
+   "uebergang": "schnitt",
+   "vorlauf": 0.3,
+   "nachlauf": 0.4,
+   "sprecher": "Valenheim wächst über sich hinaus: |0.3| das *Geschäftsviertel*, | die *Universität*, | das *Nationalstadion*, | neue *Wohngebiete*, | das *Luxusviertel*, | und für Mark: | ein *internationaler* *Flughafen*!",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      50,
+      48
+     ],
+     "wackeln": 0.05,
+     "keys": [
+      {
+       "pos": [
+        0,
+        700,
+        900
+       ],
+       "ziel": [
+        0,
+        0,
+        -100
+       ]
+      },
+      {
+       "pos": [
+        0,
+        560,
+        700
+       ],
+       "ziel": [
+        0,
+        0,
+        -150
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      48,
+      46
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        380,
+        160,
+        -380
+       ],
+       "ziel": [
+        650,
+        140,
+        -650
+       ]
+      },
+      {
+       "pos": [
+        420,
+        170,
+        -420
+       ],
+       "ziel": [
+        660,
+        150,
+        -660
+       ]
+      }
+     ],
+     "ab_wort": "Geschäftsviertel",
+     "offset": -0.2
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        480,
+        80,
+        130
+       ],
+       "ziel": [
+        650,
+        10,
+        0
+       ]
+      },
+      {
+       "pos": [
+        500,
+        70,
+        110
+       ],
+       "ziel": [
+        660,
+        10,
+        0
+       ]
+      }
+     ],
+     "ab_wort": "Universität",
+     "offset": -0.2
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        520,
+        110,
+        500
+       ],
+       "ziel": [
+        703,
+        10,
+        690
+       ]
+      },
+      {
+       "pos": [
+        540,
+        100,
+        520
+       ],
+       "ziel": [
+        703,
+        10,
+        690
+       ]
+      }
+     ],
+     "ab_wort": "Nationalstadion",
+     "offset": -0.2
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        130,
+        90,
+        520
+       ],
+       "ziel": [
+        0,
+        40,
+        760
+       ]
+      },
+      {
+       "pos": [
+        110,
+        80,
+        540
+       ],
+       "ziel": [
+        0,
+        40,
+        770
+       ]
+      }
+     ],
+     "ab_wort": "Wohngebiete",
+     "offset": -0.2
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        -500,
+        90,
+        480
+       ],
+       "ziel": [
+        -700,
+        0,
+        700
+       ]
+      },
+      {
+       "pos": [
+        -520,
+        80,
+        500
+       ],
+       "ziel": [
+        -700,
+        0,
+        700
+       ]
+      }
+     ],
+     "ab_wort": "Luxusviertel",
+     "offset": -0.2
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      46,
+      44
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        -500,
+        80,
+        -1000
+       ],
+       "ziel": [
+        -700,
+        10,
+        -720
+       ]
+      },
+      {
+       "pos": [
+        -560,
+        60,
+        -990
+       ],
+       "ziel": [
+        -720,
+        10,
+        -720
+       ]
+      }
+     ],
+     "ab_wort": "für",
+     "offset": -0.2
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "gebiet",
+     "wort": "Geschäftsviertel",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "text": "INTERNATIONALES GESCHÄFTSVIERTEL",
+     "farbe": "#45e3ff",
+     "nr": "GEBIET 1"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "Universität",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "text": "UNIVERSITÄTSVIERTEL",
+     "farbe": "#9ad7ff",
+     "nr": "GEBIET 2"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "Nationalstadion",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "text": "KULTUR & NATIONALSTADION",
+     "farbe": "#ff8acb",
+     "nr": "GEBIET 3"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "Wohngebiete",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "text": "NEUES WOHNGEBIET",
+     "farbe": "#ffd36a",
+     "nr": "GEBIET 4"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "Luxusviertel",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "text": "LUXUSVIERTEL",
+     "farbe": "#e8d29a",
+     "nr": "GEBIET 5"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "für",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "text": "FLUGHAFEN · WUNSCH VON MARK",
+     "farbe": "#b0c4ff",
+     "nr": "GEBIET 6"
+    },
+    {
+     "typ": "werte",
+     "wort": "Flughafen",
+     "offset": 0.2,
+     "dauer": 1.6,
+     "gebaeude": 40,
+     "entwicklung_prozent": 92,
+     "entwicklung_stufe": "REPUBLIK"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "whoosh",
+     "zeit": 0.0
+    },
+    {
+     "typ": "whoosh",
+     "wort": "Geschäftsviertel",
+     "offset": -0.25
+    },
+    {
+     "typ": "whoosh",
+     "wort": "Universität",
+     "offset": -0.25
+    },
+    {
+     "typ": "whoosh",
+     "wort": "Nationalstadion",
+     "offset": -0.25
+    },
+    {
+     "typ": "whoosh",
+     "wort": "Wohngebiete",
+     "offset": -0.25
+    },
+    {
+     "typ": "whoosh",
+     "wort": "Luxusviertel",
+     "offset": -0.25
+    },
+    {
+     "typ": "whoosh",
+     "wort": "für",
+     "offset": -0.25
+    }
+   ]
+  },
+  {
+   "id": "s7_regierung",
+   "name": "Der Regierungssitz",
+   "uebergang": "schnitt",
+   "vorlauf": 0.3,
+   "nachlauf": 0.4,
+   "sprecher": "Im Herzen des Staates: |0.3| der neue *Regierungssitz*, | das *Parlament*, | und der *Präsidentenpalast*.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      46,
+      40
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        0,
+        24,
+        -500
+       ],
+       "ziel": [
+        0,
+        22,
+        -900
+       ]
+      },
+      {
+       "pos": [
+        0,
+        30,
+        -720
+       ],
+       "ziel": [
+        0,
+        26,
+        -900
+       ]
+      }
+     ],
+     "ease": "inOutSine"
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        -80,
+        28,
+        -640
+       ],
+       "ziel": [
+        -185,
+        18,
+        -705
+       ]
+      },
+      {
+       "pos": [
+        -90,
+        24,
+        -660
+       ],
+       "ziel": [
+        -185,
+        18,
+        -705
+       ]
+      }
+     ],
+     "ab_wort": "Parlament",
+     "offset": -0.2
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        110,
+        24,
+        -650
+       ],
+       "ziel": [
+        205,
+        12,
+        -705
+       ]
+      },
+      {
+       "pos": [
+        120,
+        20,
+        -670
+       ],
+       "ziel": [
+        205,
+        12,
+        -705
+       ]
+      }
+     ],
+     "ab_wort": "Präsidentenpalast",
+     "offset": -0.2
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "gebiet",
+     "wort": "Regierungssitz",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "text": "REGIERUNGSVIERTEL",
+     "farbe": "#f2c230"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "Parlament",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "text": "NATIONALPARLAMENT",
+     "farbe": "#9fd2ff"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "Präsidentenpalast",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "text": "PRÄSIDENTENPALAST",
+     "farbe": "#f2c230"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "boom",
+     "wort": "Regierungssitz",
+     "offset": -0.2
+    }
+   ]
+  },
+  {
+   "id": "s8_gebaeude",
+   "name": "Neue Gebäude",
+   "uebergang": "schnitt",
+   "vorlauf": 0.3,
+   "nachlauf": 0.4,
+   "sprecher": "Dazu ein *Hauptbahnhof*, | ein *Zentralklinikum*, | und unser eigener Sender: | *Valenheim* *TV*.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        -480,
+        40,
+        70
+       ],
+       "ziel": [
+        -600,
+        12,
+        0
+       ]
+      },
+      {
+       "pos": [
+        -490,
+        34,
+        50
+       ],
+       "ziel": [
+        -600,
+        12,
+        0
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        700,
+        50,
+        70
+       ],
+       "ziel": [
+        814,
+        25,
+        0
+       ]
+      },
+      {
+       "pos": [
+        710,
+        44,
+        55
+       ],
+       "ziel": [
+        814,
+        25,
+        0
+       ]
+      }
+     ],
+     "ab_wort": "Zentralklinikum",
+     "offset": -0.2
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      46,
+      50
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        400,
+        120,
+        -470
+       ],
+       "ziel": [
+        518,
+        150,
+        -518
+       ]
+      },
+      {
+       "pos": [
+        420,
+        180,
+        -500
+       ],
+       "ziel": [
+        518,
+        210,
+        -518
+       ]
+      }
+     ],
+     "ab_wort": "unser",
+     "offset": -0.2
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "gebiet",
+     "wort": "Hauptbahnhof",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "text": "HAUPTBAHNHOF VALENHEIM",
+     "farbe": "#7fe0b6"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "Zentralklinikum",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "text": "ZENTRALKLINIKUM",
+     "farbe": "#ff6a6a"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "unser",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "text": "VALENHEIM TV · MEDIENZENTRUM",
+     "farbe": "#f2c230"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "whoosh",
+     "wort": "Zentralklinikum",
+     "offset": -0.25
+    },
+    {
+     "typ": "whoosh",
+     "wort": "unser",
+     "offset": -0.25
+    }
+   ]
+  },
+  {
+   "id": "s9_gruendung",
+   "name": "Die Staatsgründung",
+   "uebergang": "schwarz",
+   "vorlauf": 0.4,
+   "nachlauf": 3.4,
+   "sprecher": "Und dann: |0.4| Die Verfassung ist *unterzeichnet*. |0.5| Hiermit wird die *Republik* *Valenheim* | gegründet!",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      42
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        0,
+        8,
+        -760
+       ],
+       "ziel": [
+        0,
+        4,
+        -818
+       ]
+      },
+      {
+       "pos": [
+        0,
+        7,
+        -772
+       ],
+       "ziel": [
+        0,
+        4,
+        -818
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      50,
+      52
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        60,
+        40,
+        -640
+       ],
+       "ziel": [
+        0,
+        40,
+        -860
+       ]
+      },
+      {
+       "pos": [
+        30,
+        70,
+        -600
+       ],
+       "ziel": [
+        0,
+        60,
+        -860
+       ]
+      }
+     ],
+     "ab_wort": "Hiermit",
+     "offset": -0.2
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "versammlung",
+     "zeit": 0,
+     "dauer": 200,
+     "zentrum": [
+      0,
+      -801
+     ],
+     "richtung": 180,
+     "proReihe": 9,
+     "abstand": 2.4
+    },
+    {
+     "typ": "spieler_pos",
+     "zeit": 0,
+     "dauer": 200,
+     "pos": [
+      0,
+      -818.2
+     ],
+     "richtung": 0
+    },
+    {
+     "typ": "urkunde",
+     "zeit": 0.2,
+     "dauer": 4.8,
+     "siegel": 2.2,
+     "artikel": [
+      "Art. 1  Valenheim ist eine freie, friedliche Republik.",
+      "Art. 2  Die Würde jedes Menschen ist unantastbar.",
+      "Art. 3  Bürger ist, wer in Valenheim lebt.",
+      "Art. 7  Die Bürger bestimmen mit – in den Kommentaren.",
+      "Art. 9  Valenheim strebt nach Frieden."
+     ]
+    },
+    {
+     "typ": "feuerwerk",
+     "wort": "gegründet",
+     "offset": -0.3,
+     "dauer": 6,
+     "anzahl": 34,
+     "zentrum": [
+      0,
+      0,
+      -880
+     ],
+     "radius": 110,
+     "hoehe": 50
+    }
+   ],
+   "toene": [
+    {
+     "typ": "riser",
+     "wort": "Hiermit",
+     "offset": -1.2,
+     "dauer": 1.2
+    },
+    {
+     "typ": "final_hit",
+     "wort": "gegründet",
+     "offset": -0.2
+    },
+    {
+     "typ": "jubel",
+     "wort": "gegründet",
+     "offset": 0.0,
+     "dauer": 6.0
+    },
+    {
+     "typ": "boom",
+     "wort": "gegründet",
+     "offset": 1.2
+    },
+    {
+     "typ": "boom",
+     "wort": "gegründet",
+     "offset": 2.6
+    }
+   ]
+  },
+  {
+   "id": "s10_ansprache",
+   "name": "Ansprache des Präsidenten",
+   "uebergang": "schnitt",
+   "vorlauf": 0.4,
+   "nachlauf": 0.5,
+   "stimme": {
+    "tempo": 1.12
+   },
+   "sprecher": "Liebe Bürgerinnen und Bürger. |0.5| Vor drei Tagen war ich *allein*. |0.4| Heute stehen wir hier: | als *Republik*. |0.5| Ich verspreche euch: | Wir halten *zusammen*. |0.3| Was auch kommt.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      34,
+      32
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        2.6,
+        2.0,
+        -812.5
+       ],
+       "ziel": [
+        0,
+        2.1,
+        -818.2
+       ]
+      },
+      {
+       "pos": [
+        2.2,
+        2.0,
+        -813.3
+       ],
+       "ziel": [
+        0,
+        2.15,
+        -818.2
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      42,
+      38
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        0,
+        5,
+        -772
+       ],
+       "ziel": [
+        0,
+        3,
+        -818
+       ]
+      },
+      {
+       "pos": [
+        0,
+        4.2,
+        -780
+       ],
+       "ziel": [
+        0,
+        2.8,
+        -818
+       ]
+      }
+     ],
+     "ab_wort": "Heute",
+     "offset": -0.2
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      32,
+      30
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        1.8,
+        2.0,
+        -813.6
+       ],
+       "ziel": [
+        0,
+        2.15,
+        -818.2
+       ]
+      },
+      {
+       "pos": [
+        1.6,
+        2.0,
+        -814.2
+       ],
+       "ziel": [
+        0,
+        2.15,
+        -818.2
+       ]
+      }
+     ],
+     "ab_wort": "Ich",
+     "offset": -0.2
+    }
+   ],
+   "figur": [
+    {
+     "zeit": 0.0,
+     "aktion": "blick_stadt",
+     "richtung": 0
+    },
+    {
+     "wort": "zusammen",
+     "offset": 0.3,
+     "aktion": "winken",
+     "richtung": 0
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "bauchbinde",
+     "zeit": 0.3,
+     "dauer": 4.0,
+     "name": "ICH",
+     "titel": "PRÄSIDENT DER REPUBLIK VALENHEIM"
+    },
+    {
+     "typ": "projektliste",
+     "wort": "Heute",
+     "offset": 0.0,
+     "dauer": 30,
+     "titel": "DIE REGIERUNG",
+     "unter": "REPUBLIK VALENHEIM",
+     "avatar": "folgen/assets/ich_flagge.png",
+     "liste": [
+      {
+       "text": "PRÄSIDENT: ICH",
+       "wort": "Heute"
+      },
+      {
+       "text": "INNERES: T.H.169",
+       "wort": "Heute"
+      },
+      {
+       "text": "GESUNDHEIT: SK|DANI",
+       "wort": "Heute"
+      },
+      {
+       "text": "FINANZEN: JOSUA",
+       "wort": "Heute"
+      },
+      {
+       "text": "VERKEHR: MARK",
+       "wort": "Heute"
+      },
+      {
+       "text": "REGIERUNGSCHEF: ???",
+       "wort": "_"
+      },
+      {
+       "text": "AUSSEN & BILDUNG: ???",
+       "wort": "_"
+      }
+     ]
+    }
+   ],
+   "toene": [
+    {
+     "typ": "jubel",
+     "wort": "zusammen",
+     "offset": 0.2,
+     "dauer": 3.0
+    }
+   ]
+  },
+  {
+   "id": "s11_weltlage",
+   "name": "Ausblick Weltlage",
+   "uebergang": "schwarz",
+   "vorlauf": 0.5,
+   "nachlauf": 3.0,
+   "sprecher": "Doch die Welt da draußen | ist *angespannt*. |0.4| Noch !fünf! !Tage!. |0.4| Und niemand weiß, | was dann passiert. |0.5| Wer wird *Regierungschef*? | Schreibt es in die *Kommentare*!",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      0,
+      20,
+      -300
+     ],
+     "radius": [
+      1300,
+      1150
+     ],
+     "hoehe": [
+      520,
+      460
+     ],
+     "winkel": [
+      150,
+      175
+     ],
+     "fov": [
+      50,
+      48
+     ],
+     "wackeln": 0.08,
+     "ease": "inOutSine"
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "eilmeldung",
+     "zeit": 0.2,
+     "dauer": 7.5,
+     "text": "SONDERMELDUNG: INTERNATIONALE LAGE BLEIBT ANGESPANNT",
+     "laufband": "VALENHEIM TV · REPUBLIK GEGRÜNDET · SCHUTZRÄUME GEÖFFNET · STAATLICHE INFORMATION BEACHTEN · NOCH 5 TAGE",
+     "sender": "VALENHEIM TV"
+    },
+    {
+     "typ": "alarm",
+     "wort": "fünf",
+     "offset": -0.1,
+     "dauer": 2.2,
+     "text": "NOCH 5 TAGE",
+     "unter": "LAGE ANGESPANNT"
+    },
+    {
+     "typ": "schluss",
+     "wort": "Regierungschef",
+     "offset": -0.2,
+     "dauer": 20,
+     "text": "REPUBLIK VALENHEIM",
+     "unter": "GEMEINSAM STARK.",
+     "y": 640
+    },
+    {
+     "typ": "kommentar_cta",
+     "wort": "Kommentare",
+     "offset": -0.3
+    }
+   ],
+   "toene": [
+    {
+     "typ": "impact",
+     "wort": "angespannt",
+     "offset": -0.1
+    },
+    {
+     "typ": "alarm",
+     "wort": "fünf",
+     "offset": 0.0,
+     "dauer": 2.0
+    },
+    {
+     "typ": "final_hit",
+     "wort": "Regierungschef",
+     "offset": -0.2
+    }
+   ]
+  }
+ ],
+ "ergebnis": {
+  "tag": 3,
+  "verbleibende_tage": 5,
+  "einwohner": 35,
+  "follower": 32,
+  "stadtkasse": 10000,
+  "entwicklung_prozent": 92,
+  "entwicklung_stufe": "REPUBLIK",
+  "republik": true,
+  "neue_bewohner": [
+   {
+    "name": "ihatemylife9975",
+    "nr": 31,
+    "pos": [
+     12,
+     21
+    ],
+    "richtung": 200,
+    "avatar": "folgen/assets/ihatemylife.jpg",
+    "look": {
+     "jacke": "0x101010",
+     "kragen": "0x2a2a2a",
+     "hose": "0x101010",
+     "haare": "0x111111",
+     "haut": "0xe8c0a0",
+     "schuhe": "0x1a1a1a",
+     "rucksack": "0x101010",
+     "gurt": "0x2a2a2a"
+    }
+   },
+   {
+    "name": "Angelique Lemmer",
+    "nr": 32,
+    "pos": [
+     15,
+     16.5
+    ],
+    "richtung": 230,
+    "avatar": "folgen/assets/angelique.jpg",
+    "look": {
+     "jacke": "0x2a2a3a",
+     "kragen": "0x4a4a5a",
+     "hose": "0x2a3040",
+     "haare": "0x6a4a2a",
+     "haut": "0xe8c0a0",
+     "schuhe": "0x1a1a1a",
+     "rucksack": "0x2a2a3a",
+     "gurt": "0x4a4a5a",
+     "langeHaare": true
+    }
+   },
+   {
+    "name": "emstil12",
+    "nr": 33,
+    "pos": [
+     -5,
+     26
+    ],
+    "richtung": 170,
+    "avatar": "folgen/assets/emstil.jpg",
+    "look": {
+     "jacke": "0xf2b23a",
+     "kragen": "0x6aa8a0",
+     "hose": "0x3a4a4a",
+     "haare": "0x3a2a1a",
+     "haut": "0xe8c0a0",
+     "schuhe": "0x1a1a1a",
+     "rucksack": "0xf2b23a",
+     "gurt": "0x6aa8a0"
+    }
+   },
+   {
+    "name": "xXTENSEIGANXx",
+    "nr": 34,
+    "pos": [
+     -25,
+     -5
+    ],
+    "richtung": 80,
+    "avatar": "folgen/assets/xxtenseiganxx.jpg",
+    "look": {
+     "jacke": "0x1c1028",
+     "kragen": "0x3a2050",
+     "hose": "0x1c1028",
+     "haare": "0x111111",
+     "haut": "0xe8c0a0",
+     "schuhe": "0x1a1a1a",
+     "rucksack": "0x1c1028",
+     "gurt": "0x3a2050"
+    }
+   },
+   {
+    "name": "1965",
+    "nr": 35,
+    "pos": [
+     24,
+     -5
+    ],
+    "richtung": -80,
+    "avatar": "folgen/assets/1965.jpg",
+    "look": {
+     "jacke": "0x0c0c0e",
+     "kragen": "0x1a1a1e",
+     "hose": "0x2a2a2e",
+     "haare": "0x0c0c0e",
+     "haut": "0xe8c0a0",
+     "schuhe": "0x1a1a1a",
+     "rucksack": "0x0c0c0e",
+     "gurt": "0x1a1a1e"
+    }
+   }
+  ],
+  "regierung": {
+   "praesident": "ICH (Spielfigur)",
+   "inneres": "t.h.169",
+   "gesundheit": "SK|DANI",
+   "finanzen": "Josua",
+   "verkehr": "Mark",
+   "regierungschef": "offen (Kommentar-Abstimmung)",
+   "aussen": "offen",
+   "bildung": "offen"
+  },
+  "bauliste": [
+   {
+    "was": "Autohaus",
+    "wer": "jannik"
+   }
+  ]
+ }
+}

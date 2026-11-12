@@ -37,6 +37,7 @@ export const U = {
   blockMap: { value: null },
   alarm: { value: 0 },
   litThr: { value: 0.972 },
+  markR: { value: 7 },
 };
 
 function blockType(i, j) {
@@ -65,7 +66,7 @@ float fbm(vec2 p){ float a=0.5, s=0.0; for(int i=0;i<5;i++){ s+=a*vnoise(p); p=p
 
 function patchStandard(mat, { vertexDecl = '', vertexBody = '', fragDecl = '', colorBody = '', roughBody = '', emisBody = '' }) {
   mat.onBeforeCompile = (sh) => {
-    Object.assign(sh.uniforms, { uLitThr: U.litThr, uTime: U.time, uSkyTop: U.skyTop, uSkyHor: U.skyHor, uSunCol: U.sunCol, uSunDir: U.sunDir, uBlockMap: U.blockMap, uAlarm: U.alarm });
+    Object.assign(sh.uniforms, { uMarkR: U.markR, uLitThr: U.litThr, uTime: U.time, uSkyTop: U.skyTop, uSkyHor: U.skyHor, uSunCol: U.sunCol, uSunDir: U.sunDir, uBlockMap: U.blockMap, uAlarm: U.alarm });
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', `#include <common>\nvarying vec3 vWP; varying vec3 vWN;\n${vertexDecl}`)
       .replace('#include <begin_vertex>', `#include <begin_vertex>
@@ -79,7 +80,7 @@ function patchStandard(mat, { vertexDecl = '', vertexBody = '', fragDecl = '', c
         ${vertexBody}`);
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', `#include <common>
-        uniform float uLitThr; uniform float uTime; uniform float uAlarm; uniform vec3 uSkyTop; uniform vec3 uSkyHor; uniform vec3 uSunCol; uniform vec3 uSunDir;
+        uniform float uMarkR; uniform float uLitThr; uniform float uTime; uniform float uAlarm; uniform vec3 uSkyTop; uniform vec3 uSkyHor; uniform vec3 uSunCol; uniform vec3 uSunDir;
         uniform sampler2D uBlockMap;
         varying vec3 vWP; varying vec3 vWN;
         ${NOISE}
@@ -214,7 +215,7 @@ function groundMaterial() {
         col *= 1.0 - crack;
         bool rZ = abs(f.x) > HB, rX = abs(f.y) > HB;
         vec3 paint = vec3(0.55,0.54,0.5) * (0.55 + 0.45*smoothstep(0.3,0.7,fbm(w*1.3)));
-        if (abs(bi.x) <= 7.0 && abs(bi.y) <= 7.0) {
+        if (abs(bi.x) <= uMarkR && abs(bi.y) <= uMarkR) {
           if (rZ && !rX) {
             float c = P*0.5 - abs(f.x);
             if (c < 0.13 && fract(w.y/7.0) < 0.5 && abs(f.y) < HB-6.5) col = mix(col, paint, 0.9);
@@ -565,7 +566,8 @@ export const LICHT = {
   abend: { sunDir: [-1, 0.2, -0.3], sunCol: 0xff9a5c, skyTop: 0x1a2a4c, skyHor: 0xe0784e, fog: 0x7a5a58, hemiSky: 0x8096c8, hemiI: 1.15, sunI: 3.4, lit: 0.93, laternen: true, exposure: 1.25 },
 };
 
-export function buildWorld(scene, { seed = 7071, licht = 'standard', zusatz = [] } = {}) {
+export function buildWorld(scene, { seed = 7071, licht = 'standard', zusatz = [], republik = false } = {}) {
+  U.markR.value = republik ? 14 : 7;
   AKTIVE_ZUSATZ = zusatz.filter((k) => ZUSATZ_PLAETZE[k]);
   const L = LICHT[licht] || LICHT.standard;
   U.sunDir.value.set(...L.sunDir).normalize(); U.sunCol.value.set(L.sunCol); U.skyTop.value.set(L.skyTop); U.skyHor.value.set(L.skyHor); U.litThr.value = L.lit;
@@ -599,7 +601,7 @@ export function buildWorld(scene, { seed = 7071, licht = 'standard', zusatz = []
   const slabMesh = new THREE.Mesh(slabGeo, gMat); slabMesh.receiveShadow = true; scene.add(slabMesh);
 
   // Gebäude
-  const bb = new BoxBatch(); bb.filter = inZusatz; const bMat = buildingMaterial();
+  const bb = new BoxBatch(); bb.filter = republik ? (x, z) => inZusatz(x, z) || Math.max(Math.abs(x), Math.abs(z)) > (INNER + 0.5) * P : inZusatz; const bMat = buildingMaterial();
   const roofUnits = []; const antennas = []; const awnings = [];
   let bid = 1;
   const pal = {
@@ -676,17 +678,18 @@ export function buildWorld(scene, { seed = 7071, licht = 'standard', zusatz = []
       }
     }
   }
+  const bb2filter = bb.filter || (() => false);
   const bMesh = new THREE.Mesh((bb.filter = null, bb.geometry()), bMat); bMesh.castShadow = true; bMesh.receiveShadow = true; scene.add(bMesh);
 
   // Dachaufbauten & Antennen
   const units = [];
   for (const r of roofUnits) { const n = rng.int(1, 4); for (let k = 0; k < n; k++) units.push({ x: r.x + rng.range(-r.w / 3, r.w / 3), z: r.z + rng.range(-r.d / 3, r.d / 3), y: r.y, s: rng.range(1.5, 3.6), sy: rng.range(1.2, 3), ry: r.ry || 0 }); }
   const roofMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8 });
-  scene.add(instanced(acGeometry(), roofMat, units.filter((u) => !inZusatz(u.x, u.z))));
+  scene.add(instanced(acGeometry(), roofMat, units.filter((u) => !bb2filter(u.x, u.z))));
   const antMat = new THREE.MeshStandardMaterial({ color: 0x2f3236, roughness: 0.5, metalness: 0.7 });
-  scene.add(instanced(new THREE.CylinderGeometry(0.18, 0.35, 1, 6).translate(0, 0.5, 0), antMat, antennas.filter((a) => !inZusatz(a.x, a.z)).map((a) => ({ x: a.x, z: a.z, y: a.y, sy: a.h }))));
+  scene.add(instanced(new THREE.CylinderGeometry(0.18, 0.35, 1, 6).translate(0, 0.5, 0), antMat, antennas.filter((a) => !bb2filter(a.x, a.z)).map((a) => ({ x: a.x, z: a.z, y: a.y, sy: a.h }))));
   const beaconMat = new THREE.MeshStandardMaterial({ color: 0x220000, emissive: 0xff1a10, emissiveIntensity: 3 });
-  const beacons = instanced(new THREE.SphereGeometry(0.45, 8, 6), beaconMat, antennas.filter((a) => !inZusatz(a.x, a.z)).map((a) => ({ x: a.x, z: a.z, y: a.y + a.h })), { shadow: false });
+  const beacons = instanced(new THREE.SphereGeometry(0.45, 8, 6), beaconMat, antennas.filter((a) => !bb2filter(a.x, a.z)).map((a) => ({ x: a.x, z: a.z, y: a.y + a.h })), { shadow: false });
   scene.add(beacons);
 
   // Markisen
@@ -782,7 +785,7 @@ export function buildWorld(scene, { seed = 7071, licht = 'standard', zusatz = []
 
   const tmpV = new THREE.Vector3(); const ray = new THREE.Vector3();
   return {
-    sun, hemi, plaza, dust, market, exposure: L.exposure,
+    sun, hemi, plaza, dust, market, exposure: L.exposure, gMat, bMat, propMat, treeMat, carMat,
     setLotFree(name, frei) { for (const o of lotObjs[name] || []) o.visible = frei; },
     lotPos(name) { const [i, j] = BAUPLAETZE[name]; return new THREE.Vector3(i * P, SLAB, j * P); },
     update(t, camera) {
@@ -808,3 +811,5 @@ export function buildWorld(scene, { seed = 7071, licht = 'standard', zusatz = []
 }
 
 export const blockTypeOf = blockType;
+
+export { BoxBatch, buildingMaterial, instanced, merge, treeGeometry, lampGeometry, carGeometry, benchGeometry };

@@ -59,6 +59,12 @@ function avatar(g, img, x, y, r, ring = '#fff') {
   g.lineWidth = Math.max(3, r * 0.08); g.strokeStyle = ring; g.stroke(); g.restore();
 }
 
+import { wappenCanvas as staatsWappen, tvLogoCanvas, flaggeCanvas } from './identitaet.js';
+let _wappen = null, _tv = null, _flagge = null;
+const WAPPEN = () => _wappen || (_wappen = staatsWappen(768));
+const TVLOGO = () => _tv || (_tv = tvLogoCanvas());
+const FLAGGE = () => _flagge || (_flagge = flaggeCanvas(600));
+
 export class HUD {
   constructor(layout) { this.layout = layout; this.minimap = null; }
 
@@ -95,6 +101,12 @@ export class HUD {
     if (S.ausweis) this.drawAusweis(g, t, S.ausweis, S);
     if (S.wand) this.drawWand(g, t, S.wand, S);
     if (S.eilmeldung) this.drawEilmeldung(g, t, S.eilmeldung);
+    if (S.tv) this.drawTV(g, t, S.tv);
+    if (S.sondersendung) this.drawSondersendung(g, t, S.sondersendung);
+    if (S.gebiet) this.drawGebiet(g, t, S.gebiet);
+    if (S.wappen_reveal) this.drawWappenReveal(g, t, S.wappen_reveal);
+    if (S.urkunde) this.drawUrkunde(g, t, S.urkunde);
+    if (S.bauchbinde) this.drawBauchbinde(g, t, S.bauchbinde);
     if (S.ernennung) this.drawErnennung(g, t, S.ernennung, S);
     if (S.projektliste) this.drawProjektliste(g, t, S.projektliste, S);
     if (S.schluss) this.drawSchluss(g, t, S.schluss);
@@ -595,7 +607,7 @@ export class HUD {
     g.save(); g.globalAlpha = a;
     g.fillStyle = `rgba(0,0,0,${0.5 * a})`; g.fillRect(0, 0, W, H);
     const k = ease.outCubic(clamp(lt / 1.0));
-    g.translate(W / 2, 880);
+    g.translate(W / 2, e.y || 880);
     g.font = `900 140px ${F.big}`; const f1 = Math.min(1, 980 / g.measureText(e.text).width);
     g.save(); g.scale(f1 * (0.9 + 0.1 * k), f1 * (0.9 + 0.1 * k));
     const gr = g.createLinearGradient(-450, -100, 450, 20); gr.addColorStop(0, '#ffffff'); gr.addColorStop(1, '#bfe9ff');
@@ -604,6 +616,102 @@ export class HUD {
     const a2 = clamp((lt - 0.8) / 0.6); g.globalAlpha = a * a2;
     g.font = `900 92px ${F.big}`; const f2 = Math.min(1, 980 / (g.measureText(e.unter).width + 12 * e.unter.length));
     g.save(); g.translate(0, 170); g.scale(f2, f2); text(g, e.unter, 0, 0, { size: 92, weight: 900, font: F.big, align: 'center', color: C.yellow, spacing: 12, shadow: 30 }); g.restore();
+    g.restore();
+  }
+
+  // VALENHEIM TV: Senderlogo + LIVE oben links (unter der TikTok-Leiste)
+  drawTV(g, t, e) {
+    const lt = t - e.t; const a = clamp(lt / 0.3); if (a <= 0) return;
+    g.save(); g.globalAlpha = a;
+    g.drawImage(TVLOGO(), 48, 200, 350, 80);
+    rr(g, 410, 216, 110, 48, 10); g.fillStyle = '#c8102e'; g.fill();
+    if (Math.sin(t * 5) > -0.3) { g.fillStyle = '#fff'; g.beginPath(); g.arc(434, 240, 8, 0, 7); g.fill(); }
+    text(g, 'LIVE', 450, 252, { size: 30, weight: 900, font: F.big });
+    if (e.text) text(g, e.text, 48, 316, { size: 26, weight: 700, color: '#f2c230', spacing: 3, shadow: 10 });
+    g.restore();
+  }
+
+  // Sondersendungs-Intro (Vollbild-Wischer mit Logo)
+  drawSondersendung(g, t, e) {
+    const lt = t - e.t; const d = e.dauer || 3; if (lt < 0 || lt > d) return;
+    const kin = ease.inOutCubic(clamp(lt / 0.5)); const kout = ease.inOutCubic(clamp((lt - (d - 0.5)) / 0.5));
+    g.save();
+    const x0 = -W + kin * W + kout * W;
+    g.fillStyle = '#14244a'; g.fillRect(x0, 0, W, H);
+    g.fillStyle = '#f2c230'; g.fillRect(x0, H * 0.5 - 6, W, 12);
+    g.globalAlpha = clamp((lt - 0.3) / 0.3) * (1 - kout);
+    g.drawImage(TVLOGO(), W / 2 - 350, H * 0.5 - 300, 700, 160);
+    text(g, e.text || 'SONDERSENDUNG', W / 2, H * 0.5 + 110, { size: 88, weight: 900, font: F.big, align: 'center', spacing: 6 });
+    if (e.unter) text(g, e.unter, W / 2, H * 0.5 + 180, { size: 36, weight: 700, align: 'center', color: '#f2c230', spacing: 4 });
+    g.restore();
+  }
+
+  // Gebiets-Titel während des Drohnenflugs
+  drawGebiet(g, t, e) {
+    const lt = t - e.t; const d = e.dauer || 2.5; const a = clamp(lt / 0.25) * (1 - smooth(d - 0.3, d, lt)); if (a <= 0) return;
+    const k = ease.outCubic(clamp(lt / 0.5));
+    g.save(); g.globalAlpha = a;
+    const y = 1080; g.fillStyle = 'rgba(8,14,28,0.72)'; g.fillRect(0, y - 70, W * k, 140);
+    g.fillStyle = e.farbe || '#f2c230'; g.fillRect(0, y - 70, 14, 140);
+    if (e.nr) text(g, e.nr, 60, y - 20, { size: 30, weight: 700, color: e.farbe || '#f2c230', spacing: 4 });
+    g.font = `900 64px ${F.big}`; const fit = Math.min(1, 960 / g.measureText(e.text).width);
+    g.save(); g.translate(60, y + 44); g.scale(fit, fit); text(g, e.text, 0, 0, { size: 64, weight: 900, font: F.big }); g.restore();
+    g.restore();
+  }
+
+  // Staatswappen baut sich auf (mit Lichtstrahlen und Glanz)
+  drawWappenReveal(g, t, e) {
+    const lt = t - e.t; const d = e.dauer || 4; const a = clamp(lt / 0.3) * (1 - smooth(d - 0.4, d, lt)); if (a <= 0) return;
+    g.save(); g.globalAlpha = a;
+    g.fillStyle = `rgba(4,8,20,${0.6 * a})`; g.fillRect(0, 0, W, H);
+    const cy = 820;
+    g.save(); g.translate(W / 2, cy); g.rotate(lt * 0.2);
+    for (let i = 0; i < 18; i++) { g.rotate(Math.PI / 9); const gr = g.createLinearGradient(0, 0, 800, 0); gr.addColorStop(0, 'rgba(242,194,48,0.32)'); gr.addColorStop(1, 'rgba(242,194,48,0)'); g.fillStyle = gr; g.beginPath(); g.moveTo(0, 0); g.lineTo(800, -45); g.lineTo(800, 45); g.closePath(); g.fill(); }
+    g.restore();
+    const k = ease.outBack(clamp(lt / 0.8)); const sz = 820 * k;
+    g.drawImage(WAPPEN(), W / 2 - sz / 2, cy - sz / 2, sz, sz);
+    // Glanzstreifen
+    const sx = -400 + ((lt * 600) % 1600);
+    g.save(); g.beginPath(); g.rect(W / 2 - sz / 2, cy - sz / 2, sz, sz); g.clip(); g.globalCompositeOperation = 'lighter';
+    const gr = g.createLinearGradient(W / 2 + sx - 80, 0, W / 2 + sx + 80, 0); gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.5, 'rgba(255,240,200,0.35)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = gr; g.fillRect(W / 2 - sz / 2, cy - sz / 2, sz, sz); g.restore();
+    const k2 = clamp((lt - 0.8) / 0.5); g.globalAlpha = a * k2;
+    g.font = `900 48px ${F.big}`; const wf = Math.min(1, 960 / (g.measureText(e.text || '').width + 4 * (e.text || '').length));
+    g.save(); g.translate(W / 2, cy + 470); g.scale(wf, wf); text(g, e.text || 'DAS STAATSWAPPEN', 0, 0, { size: 48, weight: 900, font: F.big, align: 'center', color: '#f2c230', spacing: 4, shadow: 20 }); g.restore();
+    g.restore();
+  }
+
+  // Verfassungsurkunde mit Siegel
+  drawUrkunde(g, t, e) {
+    const lt = t - e.t; const d = e.dauer || 5; const a = clamp(lt / 0.3) * (1 - smooth(d - 0.4, d, lt)); if (a <= 0) return;
+    const k = ease.outCubic(clamp(lt / 0.6));
+    g.save(); g.globalAlpha = a; g.fillStyle = `rgba(0,0,0,${0.5 * a})`; g.fillRect(0, 0, W, H);
+    g.translate(W / 2, 860 + (1 - k) * 200); g.rotate(-0.02);
+    const w = 860, h = 1000;
+    const gr = g.createLinearGradient(-w / 2, -h / 2, w / 2, h / 2); gr.addColorStop(0, '#f6eed8'); gr.addColorStop(1, '#e6d8b4');
+    g.fillStyle = gr; g.fillRect(-w / 2, -h / 2, w, h); g.strokeStyle = '#b8901e'; g.lineWidth = 10; g.strokeRect(-w / 2 + 20, -h / 2 + 20, w - 40, h - 40); g.lineWidth = 2; g.strokeRect(-w / 2 + 34, -h / 2 + 34, w - 68, h - 68);
+    g.drawImage(WAPPEN(), -90, -h / 2 + 50, 180, 180);
+    text(g, 'VERFASSUNG', 0, -h / 2 + 300, { size: 64, weight: 900, font: F.big, align: 'center', color: '#14244a', spacing: 6 });
+    text(g, 'DER REPUBLIK VALENHEIM', 0, -h / 2 + 352, { size: 34, weight: 800, font: F.big, align: 'center', color: '#14244a', spacing: 3 });
+    (e.artikel || []).forEach((ln, i) => { const ka = clamp((lt - 0.6 - i * 0.35) / 0.3); text(g, ln, -w / 2 + 70, -h / 2 + 440 + i * 62, { size: 28, weight: 700, color: '#2a2418', alpha: ka }); });
+    // Siegel
+    const st = e.siegel != null ? lt - e.siegel : -1;
+    if (st > 0) { const sk = ease.outBack(clamp(st / 0.3)); g.save(); g.translate(w / 2 - 160, h / 2 - 160); g.scale(2.2 - 1.2 * sk, 2.2 - 1.2 * sk); g.rotate(-0.2);
+      g.fillStyle = '#9a1a1a'; g.beginPath(); for (let i = 0; i < 24; i++) { const r = i % 2 ? 100 : 110; const an = (i / 24) * Math.PI * 2; g[i ? 'lineTo' : 'moveTo'](Math.cos(an) * r, Math.sin(an) * r); } g.closePath(); g.fill();
+      g.drawImage(WAPPEN(), -80, -80, 160, 160); g.restore(); }
+    g.restore();
+  }
+
+  // Bauchbinde (Name + Funktion), Valenheim-TV-Stil
+  drawBauchbinde(g, t, e) {
+    const lt = t - e.t; const d = e.dauer || 4; const a = clamp(lt / 0.25) * (1 - smooth(d - 0.3, d, lt)); if (a <= 0) return;
+    const k = ease.outCubic(clamp(lt / 0.45)); const y = 1150;
+    g.save(); g.globalAlpha = a; g.translate(-(1 - k) * 700, 0);
+    g.fillStyle = '#14244a'; g.fillRect(40, y, 780, 86); g.fillStyle = '#f2c230'; g.fillRect(40, y, 12, 86);
+    g.font = `900 52px ${F.big}`; const f = Math.min(1, 720 / g.measureText(e.name).width);
+    g.save(); g.translate(76, y + 62); g.scale(f, f); text(g, e.name, 0, 0, { size: 52, weight: 900, font: F.big }); g.restore();
+    g.fillStyle = '#f2c230'; g.fillRect(40, y + 86, 640, 50); text(g, e.titel, 76, y + 122, { size: 30, weight: 800, color: '#14244a', spacing: 2 });
+    g.drawImage(FLAGGE(), 700, y + 92, 60, 40);
     g.restore();
   }
 

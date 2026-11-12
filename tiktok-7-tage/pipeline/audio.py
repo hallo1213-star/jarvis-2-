@@ -258,6 +258,55 @@ def sfx_schild(dur=2.0, vol=0.25):
     return reverb(stereo(lp(hum * (0.5 + 0.5 * glitch), 1800) * 0.6 + sweep) * vol, 0.45, 2.5)
 
 
+# ---------------------------------------------------------------- Nationalhymne der Republik Valenheim (Originalkomposition)
+HYMNE_MELODIE = [  # B-Dur, 4/4, je Takt 4 Viertel (MIDI)
+    [65, 65, 70, 74], [67, 70, 75, 74], [72, 69, 65, 69], [70, 70, 74, 77],
+    [79, 77, 74, 70], [75, 74, 72, 70], [72, 75, 74, 72], [69, 72, 77, 77],
+    [77, 74, 70, 74], [77, 81, 77, 74], [75, 79, 77, 75], [74, 74, 74, 74],
+    [75, 77, 79, 75], [77, 75, 74, 72], [70, 74, 77, 82], [82, 82, 82, 82]]
+HYMNE_AKKORDE = [[46, 58, 62, 65], [51, 58, 63, 67], [53, 57, 60, 65], [46, 58, 62, 65],
+    [43, 55, 58, 62], [51, 58, 63, 67], [48, 55, 60, 63], [53, 57, 60, 65],
+    [46, 58, 62, 65], [50, 57, 62, 65], [51, 58, 63, 67], [46, 58, 62, 65],
+    [51, 58, 63, 67], [53, 57, 60, 65], [46, 58, 62, 65], [46, 58, 62, 70]]
+
+
+def blech(n, dur, vol=0.2):
+    t = t_arr(dur); f = midi(n) * (1 + 0.004 * np.sin(2 * np.pi * 5.2 * t) * np.minimum(1, t / 0.4))
+    ph = 2 * np.pi * np.cumsum(f) / SR
+    x = sum(np.sin(ph * h) * a for h, a in ((1, 1), (2, 0.6), (3, 0.42), (4, 0.25), (5, 0.15), (6, 0.08)))
+    e = env_adsr(len(t), 0.06, 0.15, 0.8, min(0.35, dur * 0.4))
+    return lp(x * e, 3500) * vol
+
+
+def pauke(vol=0.5):
+    t = t_arr(1.6); f = 58 + 18 * np.exp(-t * 8)
+    x = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 2.4) + lp(noise(1.6), 400) * np.exp(-t * 12) * 0.4
+    return x * vol
+
+
+def hymne(dauer, bpm=76, vol=0.5):
+    beat = 60 / bpm; takt = beat * 4
+    out = np.zeros((int((dauer + 3) * SR), 2))
+    for b in range(16):
+        t0 = b * takt
+        if t0 > dauer: break
+        ak = HYMNE_AKKORDE[b]
+        add(out, pad_chord(ak, takt + 0.6, 2400, 0.16), t0)                      # Streicher
+        for k, n in enumerate(ak[1:]): add(out, stereo(blech(n - 12 if k == 0 else n, takt * 0.98, 0.05), -0.4 + k * 0.4), t0)  # Blechsatz
+        add(out, stereo(pauke(0.45 if b % 4 == 0 else 0.25)), t0)
+        if b % 4 == 3: [add(out, stereo(pauke(0.18)), t0 + beat * (2 + 0.25 * r)) for r in range(4)]  # Wirbel
+        for k, n in enumerate(HYMNE_MELODIE[b]):
+            if k > 0 and HYMNE_MELODIE[b][k - 1] == n and b in (11, 15): continue
+            lang = beat * (4 - k) if b in (11, 15) and k == 0 else beat
+            add(out, stereo(blech(n, lang * 0.95, 0.16), 0.1), t0 + k * beat)
+    if dauer < 16 * takt:
+        n = len(out); fe = int(dauer * SR); fl = int(2.5 * SR)
+        out[fe:fe + fl] *= np.linspace(1, 0, min(fl, n - fe))[:, None]; out[fe + fl:] = 0
+    else:  # Schlussakkord + Becken
+        add(out, stereo(hp(noise(3.0), 3000) * np.exp(-t_arr(3.0) * 1.5) * 0.15), 15 * takt)
+    return reverb(out * vol, 0.38, 3.0, 1.6)
+
+
 def sfx_flicker(vol=0.06):
     t = t_arr(1.6); buzz = np.sign(np.sin(2 * np.pi * 100 * t)) * 0.5 + np.sin(2 * np.pi * 200 * t) * 0.3
     gate = (np.sin(t * 37) * np.sin(t * 13.7 + 2) > 0.2).astype(float)
@@ -361,6 +410,7 @@ def main():
             elif ty == 'scan_nein': add(sfx, sfx_scan_nein(0.26), t0)
             elif ty == 'jubel': add(sfx, sfx_jubel(e.get('dauer', 4.0), 0.3), t0)
             elif ty == 'schild': add(sfx, sfx_schild(e.get('dauer', 2.0), 0.3), t0)
+            elif ty == 'hymne': add(sfx, hymne(e.get('dauer', 20), e.get('bpm', 76), 0.55), t0)
             elif ty == 'neon_flicker': add(sfx, stereo(sfx_flicker(0.05), -0.3), t0)
             elif ty == 'tick_folge': add(sfx, sfx_ticks(e.get('dauer', 4), 0.16), t0)
             elif ty == 'final_hit':
@@ -368,6 +418,15 @@ def main():
                 add(sfx, reverb(pad_chord([50, 57, 62, 65, 69], 2.5, 3000, 0.25), 0.5), t0)
             else: print('  unbekannter Ton:', ty)
 
+    # Musikbett während der Hymne fast stummschalten (Tonarten würden sich reiben)
+    for s_ in sz:
+        for e in s_.get('toene', []):
+            if e['typ'] == 'hymne':
+                a0, a1 = int(e['t'] * SR), int((e['t'] + e.get('dauer', 20) + 2) * SR)
+                env = np.ones(N); r = int(0.8 * SR)
+                env[max(0, a0 - r):a0] = np.linspace(1, 0.08, len(env[max(0, a0 - r):a0])); env[a0:a1] = 0.08
+                env[a1:a1 + r] = np.linspace(0.08, 1, len(env[a1:a1 + r]))
+                mus *= env[:, None]
     # Stimme laden
     sr, v = wavfile.read(out_dir / 'stimme.wav')
     v = v.astype(np.float32) / 32768.0

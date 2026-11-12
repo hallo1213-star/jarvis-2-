@@ -22,7 +22,7 @@ for (const b of e.neue_gebaeude || []) {
 status.bewohner = status.bewohner || [];
 for (const b of e.neue_bewohner || []) { status.bewohner = status.bewohner.filter((x) => x.name !== b.name); status.bewohner.push({ ...b, seit_folge: nr }); }
 if (e.ziel !== undefined) status.ziel = e.ziel;
-for (const k of ['follower', 'supermarkt_offen']) if (e[k] !== undefined) status[k] = e[k];
+for (const k of ['follower', 'supermarkt_offen', 'republik', 'regierung', 'bauliste']) if (e[k] !== undefined) status[k] = e[k];
 if (e.schild !== undefined) status.schild = e.schild;
 status.objekte = status.objekte || [];
 for (const o of e.neue_objekte || []) status.objekte.push({ ...o, seit_folge: nr });

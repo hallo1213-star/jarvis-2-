@@ -7,6 +7,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { buildWorld, ANKER, BAUPLAETZE, P, SLAB, U } from './world.js';
 import { Figure, holoMaterial, einwohnerLook, crowdPath, makeSpawnFx, makeSelectionRing } from './figure.js';
 import { buildBuilding, makeBlueprint, buildObjekt } from './catalog.js';
+import { baueRepublik, REP_ANKER } from './republik.js';
 import { prepareShot, evalShot } from './camera.js';
 import { HUD, W, H } from './hud.js';
 import { clamp, smooth, ease, makeRng } from './rng.js';
@@ -39,7 +40,10 @@ async function init() {
   const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 6000);
 
   const zusatzPlaetze = [...new Set([...(STATUS.gebaeude || []).map((b) => b.platz), ...TL.szenen.flatMap((z) => (z.effekte || []).filter((e) => e.typ === 'bau').map((e) => e.platz))])];
-  const world = buildWorld(scene, { seed: STATUS.welt_seed || 7071, licht: TL.licht || 'standard', zusatz: zusatzPlaetze });
+  const republikAktiv = !!(STATUS.republik || TL.republik);
+  const world = buildWorld(scene, { seed: STATUS.welt_seed || 7071, licht: TL.licht || 'standard', zusatz: zusatzPlaetze, republik: republikAktiv });
+  const rep = republikAktiv ? baueRepublik(scene, world, U) : null;
+  if (rep) scene.fog.density = 0.00042;
   renderer.toneMappingExposure = world.exposure || 1.2;
 
   // Profilbilder (Kommentare, neue Follower, benannte Einwohner)
@@ -188,8 +192,28 @@ async function init() {
     schild.position.set(0, 0, 0); schild.renderOrder = 5; schild.frustumCulled = false; scene.add(schild);
   }
 
+  // Feuerwerk: alle Raketen vorberechnet, Position rein aus der Zeit
+  let feuerwerk = null;
+  { const fw = TL_events.filter((e) => e.typ === 'feuerwerk');
+    if (fw.length) {
+      const pos = [], vel = [], tt = [], col = []; const fr = makeRng(77); const farben = [[1, 0.82, 0.25], [0.35, 0.55, 1], [1, 1, 1], [1, 0.75, 0.2]];
+      for (const e of fw) { const n = e.anzahl || 12; const z = e.zentrum || [0, 0, -700]; const R = e.radius || 160;
+        for (let b = 0; b < n; b++) { const t0 = e.t + fr() * (e.dauer || 6); const ox = z[0] + (fr() - 0.5) * R * 2, oy = (e.hoehe || 55) + fr() * 45, oz = z[2] + (fr() - 0.5) * R * 2; const c = farben[Math.floor(fr() * farben.length)]; const sp = 26 + fr() * 18;
+          for (let k = 0; k < 140; k++) { const u = fr() * 2 - 1, a = fr() * Math.PI * 2, r = Math.sqrt(1 - u * u); pos.push(ox, oy, oz); vel.push(Math.cos(a) * r * sp, u * sp, Math.sin(a) * r * sp); tt.push(t0); col.push(...c); } } }
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('aVel', new THREE.Float32BufferAttribute(vel, 3)); g.setAttribute('aT0', new THREE.Float32BufferAttribute(tt, 1)); g.setAttribute('aCol', new THREE.Float32BufferAttribute(col, 3));
+      const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: { uTime: { value: 0 } },
+        vertexShader: `attribute vec3 aVel; attribute float aT0; attribute vec3 aCol; uniform float uTime; varying vec3 vC; varying float vA;
+          void main(){ float lt = uTime - aT0; vA = (lt > 0.0 && lt < 2.6) ? (1.0 - lt / 2.6) : 0.0; vec3 p = position + aVel * lt * (1.0 - lt * 0.18) + vec3(0.0, -4.5 * lt * lt, 0.0);
+            vC = aCol; vec4 mv = modelViewMatrix * vec4(p, 1.0); gl_PointSize = vA > 0.0 ? clamp(2600.0 / -mv.z, 3.0, 22.0) : 0.0; gl_Position = projectionMatrix * mv; }`,
+        fragmentShader: `varying vec3 vC; varying float vA; void main(){ float d = length(gl_PointCoord - 0.5); if (d > 0.5) discard; gl_FragColor = vec4(vC * (1.0 - d * 1.5) * vA * 6.0, 1.0); }` });
+      feuerwerk = new THREE.Points(g, m); feuerwerk.frustumCulled = false; scene.add(feuerwerk);
+    } }
+  const hissEv = TL_events.find((e) => e.typ === 'flagge_hissen');
+  if (rep) rep.setHissen(STATUS.republik ? 1 : 0);
+
   // ---------------- Szenen / Shots / Ereignisse vorbereiten
-  const anchors = { ...ANKER };
+  const anchors = { ...ANKER, ...(rep ? REP_ANKER : {}) };
   const shots = []; const events = []; const figActs = [];
   for (const sz of TL.szenen) {
     for (const s of sz.shots || []) shots.push({ ...prepareShot(s, anchors), szene: sz.id });
@@ -260,14 +284,15 @@ async function init() {
     S.bilder = bilder;
     S.follower = events.find((e) => e.typ === 'follower_karte' && t >= e.t && t <= e.t + (e.dauer || 3)) || null;
     // Namensschilder benannter Einwohner
-    S.namen = benannt.filter((o) => o.arrive === null || t >= o.arrive + 0.5).map((o) => { const pp = o.cur || o.b.pos; return { name: o.b.name, avatar: o.b.avatar, nr: o.b.nr, pos: [pp[0], SLAB + 2.15, pp[1]], t0: o.arrive ?? -9 }; });
+    const versAktiv = events.some((e) => e.typ === 'versammlung' && t >= e.t && (!e.dauer || t < e.t + e.dauer));
+    S.namen = versAktiv ? [] : benannt.filter((o) => o.arrive === null || t >= o.arrive + 0.5).map((o) => { const pp = o.cur || o.b.pos; return { name: o.b.name, avatar: o.b.avatar, nr: o.b.nr, pos: [pp[0], SLAB + 2.15, pp[1]], t0: o.arrive ?? -9 }; });
     for (const tm of teams) for (const sp of tm.spieler) if (sp.f.root.visible && t > tm.e.t + sp.delay + (tm.e.lauf || 2.4) * 0.8) S.namen.push({ name: sp.sp.name, avatar: sp.sp.avatar, nr: sp.sp.nr, pos: [sp.f.root.position.x, SLAB + 2.3, sp.f.root.position.z], t0: tm.e.t + sp.delay + (tm.e.lauf || 2.4) * 0.8 - 0.5 });
     const szEnde = (e) => (TL.szenen.find((z) => z.id === e.szene) || {}).ende ?? 1e9;
     S.wand = events.find((e) => e.typ === 'wand' && t >= e.t && t <= Math.min(e.t + (e.dauer || 6), szEnde(e))) || null;
     if (S.wand) for (const p of S.wand.liste) { const be = events.find((e) => e.typ === 'bewohner' && e.name === p.name); if (be) p.t = be.t; }
     S.bauliste = events.find((e) => e.typ === 'bauliste' && t >= e.t && t <= Math.min(e.t + (e.dauer || 4), szEnde(e))) || null;
-    for (const ty of ['eilmeldung', 'ernennung', 'projektliste', 'schluss']) S[ty] = events.find((e) => e.typ === ty && t >= e.t && t <= Math.min(e.t + (e.dauer || 4), szEnde(e) + (e.ueberlauf || 0))) || null;
-    S.hudAus = events.some((e) => e.typ === 'hud_aus' && t >= e.t && t <= Math.min(e.t + (e.dauer || 4), szEnde(e)));
+    for (const ty of ['eilmeldung', 'ernennung', 'projektliste', 'schluss', 'tv', 'wappen_reveal', 'gebiet', 'urkunde', 'bauchbinde', 'sondersendung']) S[ty] = events.find((e) => e.typ === ty && t >= e.t && t <= Math.min(e.t + (e.dauer || 4), szEnde(e) + (e.ueberlauf || 0))) || null;
+    S.hudAus = events.some((e) => e.typ === 'hud_aus' && t >= e.t && t <= (e.global ? e.t + (e.dauer || 4) : Math.min(e.t + (e.dauer || 4), szEnde(e))));
     S.ausweis = null; for (const e of events) if (e.typ === 'ausweis' && t >= e.t && t < e.t + (e.dauer || 1.1)) S.ausweis = e;
     S.nichtFollower = benannt.filter((o) => o.b.follower === false && (o.arrive === null || t >= o.arrive + 0.6)).length;
     S.ziel = STATUS.ziel || null; for (const e of events) if (e.typ === 'ziel' && t >= e.t) S.ziel = { ...e, t0: e.t };
@@ -298,9 +323,10 @@ async function init() {
       if (e.typ === 'spieler_label' && t >= e.t) S.playerLabel = { a: clamp((t - e.t) / 0.3) };
     }
     S.subtitle = subs.find((s) => t >= s.t0 && t < s.t1) || null;
-    S.player = { x: ANKER.figur[0], z: ANKER.figur[2] };
-    S.playerHead = [ANKER.figur[0], ANKER.figur[1] + 2.1, ANKER.figur[2]];
-    S.playerFeet = [ANKER.figur[0], ANKER.figur[1] + 0.05, ANKER.figur[2]];
+    const pp0 = player.root.position;
+    S.player = { x: pp0.x, z: pp0.z };
+    S.playerHead = [pp0.x, SLAB + 2.1, pp0.z];
+    S.playerFeet = [pp0.x, SLAB + 0.05, pp0.z];
     const d = new THREE.Vector3(); camera.getWorldDirection(d);
     S.camPos = camera.position.clone();
     S.cam = { x: camera.position.x, z: camera.position.z, dx: d.x, dz: d.z };
@@ -314,6 +340,9 @@ async function init() {
     evalShot(shot, t, camera);
     // Figur
     let act = 'idle', at = 0, yaw = 180, prevYaw = 180; for (const a of figActs) if (t >= a.t) { act = a.aktion; at = a.t; prevYaw = yaw; if (a.richtung !== undefined) yaw = a.richtung; }
+    { let sp = null; for (const e of events) if (e.typ === 'spieler_pos' && t >= e.t && (!e.dauer || t < e.t + e.dauer)) sp = e;
+      if (sp) player.root.position.set(sp.pos[0], SLAB, sp.pos[1]); else player.root.position.set(...ANKER.figur);
+      ring.position.set(player.root.position.x, SLAB + 0.03, player.root.position.z); if (sp && sp.richtung !== undefined) { yaw = sp.richtung; prevYaw = sp.richtung; } }
     player.pose(t, act, at);
     player.root.rotation.y = THREE.MathUtils.degToRad(prevYaw + (yaw - prevYaw) * ease.inOutSine(clamp((t - at) / 0.01)));
     ring.material.uniforms.uTime.value = t;
@@ -326,9 +355,13 @@ async function init() {
         else if (lt >= 1.1 && f.holo) f.setNormal();
       }
     });
+    const vers = events.find((e) => e.typ === 'versammlung' && t >= e.t && (!e.dauer || t < e.t + e.dauer));
+    let versIdx = 0;
     for (const o of benannt) {
-      // Positions-Übersteuerung (z. B. Warteschlange vor dem Bunker)
+      // Positions-Übersteuerung (z. B. Warteschlange vor dem Bunker, Versammlung)
       let ov = null; for (const e of events) if (e.typ === 'bewohner_pos' && e.name === o.b.name && t >= e.t && (!e.dauer || t < e.t + e.dauer)) ov = e;
+      if (vers && (o.arrive === null || t >= o.arrive)) { const n = vers.proReihe || 9; const k = versIdx++; const reihe = Math.floor(k / n), sp2 = k % n; const ab = vers.abstand || 2.6;
+        ov = { pos: [vers.zentrum[0] + (sp2 - (n - 1) / 2) * ab + (reihe % 2) * 0.8, vers.zentrum[1] + reihe * ab], richtung: vers.richtung ?? 180, t: vers.t, aktion: vers.aktion }; }
       const pp = ov ? ov.pos : o.b.pos, ry = ov ? (ov.richtung ?? 0) : (o.b.richtung ?? 0);
       o.f.root.position.set(pp[0], SLAB, pp[1]); o.f.root.rotation.y = THREE.MathUtils.degToRad(ry); o.cur = pp;
       o.f.pose(t, (ov && ov.aktion) || o.aktion, ov ? ov.t : (o.arrive ?? 0));
@@ -358,6 +391,8 @@ async function init() {
       const ja = events.find((e) => e.typ === 'ausweis' && e.ok && t >= e.t + 0.45 && t < e.t + (e.dauer || 1.1));
       for (const m of scanner) { m.emissive.set(nein ? 0xff2020 : 0x2bff88); m.emissiveIntensity = nein ? 2.4 + Math.sin(t * 30) : ja ? 2.6 : 1.2; } }
     for (const u of updater) u(t);
+    if (feuerwerk) feuerwerk.material.uniforms.uTime.value = t;
+    if (rep) { rep.update(t); if (hissEv) rep.setHissen(STATUS.republik ? 1 : ease.inOutSine(clamp((t - hissEv.t) / (hissEv.dauer || 6)))); }
     for (const ob of objekte) if (ob.t0 !== null) {
       const lt = t - ob.t0; ob.fx.update(lt, t); ob.grp.visible = lt > 0.3;
       const k = ease.outBack(clamp((lt - 0.3) / 0.6)); ob.grp.scale.setScalar(Math.max(0.001, k));
