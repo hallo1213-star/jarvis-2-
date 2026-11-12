@@ -1,8 +1,8 @@
 {
  "folge": 5,
- "titel": "Tag 3: Valenheim wächst",
- "licht": "morgen",
- "_hinweis": "Folge 5 – Tag 3 Morgen. 13 neue Follower (#16–#28) als Profilbild-Wand, Max (#29, kein Follower) an der Luftabwehr. Supermarkt wiedereröffnet (Baum), 50.000 € Geschenk, Krankenhaus (SK|DANI, 15.000 €) auf B8, Polizei (t.h.169, 10.000 €) auf neuem Bauplatz B9, Kampfjet (Neutromind, 15.000 €), Luftabwehr (Max, 5.000 €), Lukas Soldat. Bauliste: Flughafen (Mark), Autohaus (jannik).",
+ "titel": "Tag 2: Valenheim wächst",
+ "licht": "abend",
+ "_hinweis": "Folge 5 – Tag 2 Abend. 13 neue Follower (#16–#28) als Profilbild-Wand, Max (#29, kein Follower) an der Luftabwehr. Supermarkt wiedereröffnet (Baum), 50.000 € Geschenk, Krankenhaus (SK|DANI, 15.000 €) auf B8, Polizei (t.h.169, 10.000 €) auf neuem Bauplatz B9, Kampfjet (Neutromind, 15.000 €), Luftabwehr (Max, 5.000 €), Lukas Soldat. Bauliste: Flughafen (Mark), Autohaus (jannik).",
  "stimme": {
   "modell": "de_DE-thorsten-high",
   "tempo": 1.03,
@@ -27,11 +27,11 @@
  },
  "szenen": [
   {
-   "id": "s1_tag3",
-   "name": "Tag 3",
+   "id": "s1_abend",
+   "name": "Tag 2 Abend",
    "vorlauf": 0.8,
    "nachlauf": 0.3,
-   "sprecher": "*Tag* *drei*. | Noch !fünf! !Tage! bis zum Krieg. |0.3| Und Valenheim *wächst* und wächst:",
+   "sprecher": "*Tag* *zwei*, | Abend. | Noch !sechs! !Tage! bis zum Krieg. |0.3| Und Valenheim *wächst* und wächst:",
    "shots": [
     {
      "typ": "pfad",
@@ -86,14 +86,8 @@
      "typ": "titel",
      "zeit": 0.15,
      "dauer": 2.3,
-     "text": "TAG 3",
-     "unter": "FOLGE 5 · DIE LETZTEN 7 TAGE"
-    },
-    {
-     "typ": "werte",
-     "zeit": 0.9,
-     "tag": 3,
-     "verbleibende_tage": 5
+     "text": "TAG 2",
+     "unter": "FOLGE 5 · ABEND"
     }
    ],
    "toene": [
@@ -1402,8 +1396,8 @@
   }
  ],
  "ergebnis": {
-  "tag": 3,
-  "verbleibende_tage": 5,
+  "tag": 2,
+  "verbleibende_tage": 6,
   "einwohner": 29,
   "follower": 26,
   "stadtkasse": 10000,
