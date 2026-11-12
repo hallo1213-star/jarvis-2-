@@ -2,14 +2,14 @@
   "_info": "Fortlaufender Stand der Serie. Wird nach jeder Folge mit 'node pipeline/folge-abschliessen.js <nr>' fortgeschrieben. Werte hier kannst du auch von Hand anpassen (z. B. echte Follower-Zahl).",
   "stadt": "VALENHEIM",
   "welt_seed": 7071,
-  "letzte_folge": 3,
+  "letzte_folge": 4,
   "tag": 2,
   "verbleibende_tage": 6,
-  "einwohner": 5,
-  "stadtkasse": 20000,
+  "einwohner": 15,
+  "stadtkasse": 5000,
   "waehrung": "€",
-  "entwicklung_prozent": 28,
-  "entwicklung_stufe": "SIEDLUNG",
+  "entwicklung_prozent": 45,
+  "entwicklung_stufe": "KLEINSTADT",
   "gebaeude": [
     {
       "status": "fertig",
@@ -40,6 +40,30 @@
       "name": "SCHUTZBUNKER",
       "nur_einwohner": true,
       "seit_folge": 3
+    },
+    {
+      "status": "fertig",
+      "typ": "bank",
+      "platz": "B6",
+      "name": "JOSUAS BANK",
+      "besitzer": "Josua",
+      "seit_folge": 4
+    },
+    {
+      "status": "fertig",
+      "typ": "burger",
+      "platz": "B7",
+      "name": "LOUIS' BURGER",
+      "besitzer": "Louis",
+      "seit_folge": 4
+    },
+    {
+      "status": "fertig",
+      "typ": "freizeitpark",
+      "platz": "B5",
+      "name": "ANGELS FREIZEITPARK",
+      "besitzer": "Angel",
+      "seit_folge": 4
     }
   ],
   "verlauf": [
@@ -66,6 +90,14 @@
       "tag": 2,
       "einwohner": 5,
       "gebaeude": 4
+    },
+    {
+      "folge": 4,
+      "titel": "Tag 2: Der Ansturm",
+      "abgeschlossen": "2026-11-12",
+      "tag": 2,
+      "einwohner": 15,
+      "gebaeude": 7
     }
   ],
   "bewohner": [
@@ -180,11 +212,247 @@
         "gurt": "0xff6a2a"
       },
       "seit_folge": 3
+    },
+    {
+      "name": "Baum",
+      "nr": 6,
+      "pos": [
+        -12,
+        -7
+      ],
+      "richtung": 0,
+      "avatar": "folgen/assets/baum.jpg",
+      "look": {
+        "jacke": "0x3f6b2a",
+        "kragen": "0x2a4a1a",
+        "hose": "0x5a4030",
+        "haut": "0xe8c0a0",
+        "haare": "0x4a3020",
+        "schuhe": "0x3a2a1a",
+        "rucksack": "0x3f6b2a",
+        "gurt": "0x2a4a1a"
+      },
+      "seit_folge": 4
+    },
+    {
+      "name": "Angel",
+      "nr": 7,
+      "pos": [
+        -124,
+        -3
+      ],
+      "richtung": 90,
+      "avatar": "folgen/assets/angel.jpg",
+      "look": {
+        "jacke": "0xf2f2f2",
+        "kragen": "0xdddddd",
+        "hose": "0x7a7350",
+        "haut": "0xd9a888",
+        "haare": "0x1a1410",
+        "schuhe": "0x8a8a8a",
+        "rucksack": "0x5a5a5a",
+        "gurt": "0x3a3a3a"
+      },
+      "seit_folge": 4
+    },
+    {
+      "name": "Bennet",
+      "nr": 8,
+      "pos": [
+        -6,
+        -13
+      ],
+      "richtung": 0,
+      "avatar": "folgen/assets/bennet.jpg",
+      "look": {
+        "jacke": "0xc0c6cc",
+        "kragen": "0xff5fa0",
+        "hose": "0x2a2a2a",
+        "haut": "0xf0c8a8",
+        "haare": "0x6a4a2a",
+        "schuhe": "0xd9a050",
+        "rucksack": "0x2f6fd1",
+        "gurt": "0xff5fa0"
+      },
+      "seit_folge": 4
+    },
+    {
+      "name": "Roblox",
+      "nr": 9,
+      "pos": [
+        -57.5,
+        -15.5
+      ],
+      "richtung": 160,
+      "avatar": "folgen/assets/roblox.jpg",
+      "look": {
+        "jacke": "0x0d69ac",
+        "kragen": "0x0d69ac",
+        "hose": "0x4b974b",
+        "haut": "0xf5cd30",
+        "haare": "0x3a2a1a",
+        "schuhe": "0x4b974b",
+        "rucksack": "0x0d69ac",
+        "gurt": "0x0d69ac"
+      },
+      "seit_folge": 4
+    },
+    {
+      "name": "J.m",
+      "nr": 10,
+      "pos": [
+        2,
+        -14
+      ],
+      "richtung": 0,
+      "avatar": "folgen/assets/jm.jpg",
+      "look": {
+        "jacke": "0x4a4d52",
+        "kragen": "0x2a2c30",
+        "hose": "0x3a3d42",
+        "haut": "0xc89a78",
+        "haare": "0x5a3a20",
+        "schuhe": "0x1a1a1a",
+        "hut": "weihnacht",
+        "rucksack": "0x2a2c30",
+        "gurt": "0x2a2c30"
+      },
+      "seit_folge": 4
+    },
+    {
+      "name": "Chickenman123",
+      "nr": 11,
+      "pos": [
+        9,
+        -11
+      ],
+      "richtung": 0,
+      "avatar": "folgen/assets/chickenman123.jpg",
+      "look": {
+        "jacke": "0x1f2a4a",
+        "kragen": "0xc81e1e",
+        "hose": "0x2a3a6a",
+        "haut": "0xc68a5a",
+        "haare": "0x111111",
+        "schuhe": "0x8a5a2a",
+        "hut": "stroh",
+        "rucksack": "0x1f2a4a",
+        "gurt": "0xc81e1e"
+      },
+      "seit_folge": 4
+    },
+    {
+      "name": "Nihat",
+      "nr": 12,
+      "pos": [
+        13,
+        -4
+      ],
+      "richtung": -20,
+      "avatar": "folgen/assets/nihat.jpg",
+      "look": {
+        "jacke": "0x111111",
+        "kragen": "0xf2f2f2",
+        "hose": "0x7a1a1a",
+        "haut": "0xd8b090",
+        "haare": "0x111111",
+        "schuhe": "0xf2f2f2",
+        "rucksack": "0x111111",
+        "gurt": "0x7a1a1a"
+      },
+      "seit_folge": 4
+    },
+    {
+      "name": "Louis",
+      "nr": 13,
+      "pos": [
+        3,
+        128
+      ],
+      "richtung": 180,
+      "avatar": "folgen/assets/louis.jpg",
+      "look": {
+        "jacke": "0x9cc4f2",
+        "kragen": "0xffb070",
+        "hose": "0x2a3a4a",
+        "haut": "0xf0c8a8",
+        "haare": "0x7a5a3a",
+        "schuhe": "0xf2f2f2",
+        "rucksack": "0x5a7aa2",
+        "gurt": "0xffb070"
+      },
+      "seit_folge": 4
+    },
+    {
+      "name": "Maxim",
+      "nr": 14,
+      "pos": [
+        -15,
+        -1
+      ],
+      "richtung": 30,
+      "avatar": "folgen/assets/maxim.jpg",
+      "look": {
+        "jacke": "0x0c0c0e",
+        "kragen": "0x1a1a1e",
+        "hose": "0x0c0c0e",
+        "haut": "0xe8c0a0",
+        "haare": "0x0c0c0e",
+        "schuhe": "0x0c0c0e",
+        "rucksack": "0x0c0c0e",
+        "gurt": "0x1a1a1e"
+      },
+      "seit_folge": 4
+    },
+    {
+      "name": "Josua",
+      "nr": 15,
+      "pos": [
+        135,
+        0
+      ],
+      "richtung": -90,
+      "avatar": "folgen/assets/josua.jpg",
+      "look": {
+        "jacke": "0xb8bcc2",
+        "kragen": "0x8a8e94",
+        "hose": "0x2a2e36",
+        "haut": "0xf0c8a8",
+        "haare": "0x3a2a1a",
+        "schuhe": "0xf2f2f2",
+        "rucksack": "0x5a5e66",
+        "gurt": "0x5a5e66"
+      },
+      "follower": false,
+      "seit_folge": 4
     }
   ],
   "ziel": {
     "text": "ÜBERRASCHUNG BEI 50",
     "ziel": 50,
     "was": "Schutzschild über der Stadt (geheim)"
-  }
+  },
+  "objekte": [
+    {
+      "typ": "zigarettenautomat",
+      "pos": [
+        56.2,
+        4.5
+      ],
+      "richtung": -90,
+      "besitzer": "J.Ezy",
+      "seit_folge": 4
+    },
+    {
+      "typ": "panzer",
+      "pos": [
+        -58,
+        -12
+      ],
+      "richtung": 90,
+      "name": "ROBLOX",
+      "besitzer": "Roblox",
+      "seit_folge": 4
+    }
+  ]
 }
