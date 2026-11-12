@@ -38,7 +38,8 @@ async function init() {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 6000);
 
-  const world = buildWorld(scene, { seed: STATUS.welt_seed || 7071, licht: TL.licht || 'standard' });
+  const zusatzPlaetze = [...new Set([...(STATUS.gebaeude || []).map((b) => b.platz), ...TL.szenen.flatMap((z) => (z.effekte || []).filter((e) => e.typ === 'bau').map((e) => e.platz))])];
+  const world = buildWorld(scene, { seed: STATUS.welt_seed || 7071, licht: TL.licht || 'standard', zusatz: zusatzPlaetze });
   renderer.toneMappingExposure = world.exposure || 1.2;
 
   // Profilbilder (Kommentare, neue Follower, benannte Einwohner)
@@ -54,7 +55,7 @@ async function init() {
 
   // ---------------- Spielfigur
   const player = new Figure(); player.root.position.set(...ANKER.figur); player.root.rotation.y = Math.PI; scene.add(player.root);
-  if (TL.licht === 'abend') player.setFill(0.18);
+  if (TL.licht === 'abend' || TL.licht === 'nacht') player.setFill(TL.licht === 'nacht' ? 0.3 : 0.18);
   const ring = makeSelectionRing(); ring.position.set(ANKER.figur[0], SLAB + 0.03, ANKER.figur[2]); scene.add(ring);
 
   const scanner = []; const updater = [];
@@ -76,6 +77,7 @@ async function init() {
   const mkObjekt = (o, t0) => {
     const grp = buildObjekt(o.typ_obj || o.typ, { name: o.name }); grp.position.set(o.pos[0], SLAB, o.pos[1]); grp.rotation.y = THREE.MathUtils.degToRad(o.richtung || 0); scene.add(grp);
     if (grp.userData.update) updater.push(grp.userData.update);
+    if (o.verhuellt) grp.userData.verhuellt = true;
     const ob = { o, grp, t0 };
     if (t0 !== null) { ob.fx = makeSpawnFx(); ob.fx.g.position.set(o.pos[0], SLAB, o.pos[1]); ob.fx.g.scale.set(2.5, 1, 2.5); scene.add(ob.fx.g); }
     objekte.push(ob);
@@ -106,7 +108,7 @@ async function init() {
     const look = { ...einwohnerLook(200 + benannt.length), ...(b.look || {}) };
     for (const k of Object.keys(look)) if (typeof look[k] === 'string' && /^#|^0x/.test(look[k])) look[k] = parseInt(look[k].replace('#', '0x'));
     const f = new Figure(look, { seed: 70 + benannt.length });
-    if (TL.licht === 'abend') f.setFill(0.22);
+    if (TL.licht === 'abend' || TL.licht === 'nacht') f.setFill(TL.licht === 'nacht' ? 0.32 : 0.22);
     f.root.position.set(b.pos[0], SLAB, b.pos[1]); f.root.rotation.y = THREE.MathUtils.degToRad(b.richtung ?? 0); scene.add(f.root);
     const o = { b, f, arrive, aktion: b.aktion || 'idle' };
     if (arrive !== null) { o.mat = holoMaterial(); o.fx = makeSpawnFx(); o.fx.g.position.set(b.pos[0], SLAB, b.pos[1]); scene.add(o.fx.g); }
@@ -128,6 +130,15 @@ async function init() {
   });
 
   for (const e of TL_events) if (e.typ === 'objekt') mkObjekt(e, e.t);
+  // Projektliste: Häkchen-Zeit = Zeitpunkt des Schlüsselworts in der Szene
+  for (const sz of TL.szenen) for (const e of sz.effekte || []) if (e.typ === 'projektliste') for (const it of e.liste) {
+    const cl = (w) => w.toLowerCase().replace(/[^a-zäöüß0-9]/g, '');
+    const w = (sz.woerter || []).find((x) => cl(x.text) === cl(it.wort || '')); if (w) it.t = w.t0;
+  }
+  for (const e of TL_events) {
+    if (e.typ === 'sirenen') for (const ob of objekte) if ((ob.o.typ_obj || ob.o.typ) === 'sirene') { ob.grp.userData.aktivAb = e.t; ob.grp.userData.aktivDauer = e.dauer || 3; }
+    if (e.typ === 'enthuellung') for (const ob of objekte) if ((ob.o.typ_obj || ob.o.typ) === 'ehrentafel') ob.grp.userData.enthuellAb = e.t;
+  }
   if (STATUS.supermarkt_offen) world.market.setOffen(-1);
   { const sm = TL_events.find((e) => e.typ === 'supermarkt_offen'); if (sm) world.market.setOffen(sm.t); }
   // Lokale Bauplatz-Koordinaten -> Welt (Front des Gebäudes zeigt zum Platz)
@@ -142,7 +153,7 @@ async function init() {
       look.jacke = parseInt(e.trikot || '0x1f3d8a'); look.kragen = parseInt(e.kragen || '0xf2c230'); look.hose = parseInt(e.hose || '0xf4f4f4'); look.rucksack = look.jacke; look.gurt = look.kragen;
       if (look.kapuze) look.kapuze = look.jacke;
       const f = new Figure(look, { seed: 90 + k }); f.root.visible = false; scene.add(f.root);
-      if (TL.licht === 'abend') f.setFill(0.22);
+      if (TL.licht === 'abend' || TL.licht === 'nacht') f.setFill(TL.licht === 'nacht' ? 0.32 : 0.22);
       const start = lotToWorld(e.platz, (k - (n - 1) / 2) * 1.2, -11), ziel = lotToWorld(e.platz, (k - (n - 1) / 2) * 2.0, -1.5);
       return { sp, f, start, ziel, delay: k * 0.18 };
     });
@@ -255,6 +266,8 @@ async function init() {
     S.wand = events.find((e) => e.typ === 'wand' && t >= e.t && t <= Math.min(e.t + (e.dauer || 6), szEnde(e))) || null;
     if (S.wand) for (const p of S.wand.liste) { const be = events.find((e) => e.typ === 'bewohner' && e.name === p.name); if (be) p.t = be.t; }
     S.bauliste = events.find((e) => e.typ === 'bauliste' && t >= e.t && t <= Math.min(e.t + (e.dauer || 4), szEnde(e))) || null;
+    for (const ty of ['eilmeldung', 'ernennung', 'projektliste', 'schluss']) S[ty] = events.find((e) => e.typ === ty && t >= e.t && t <= Math.min(e.t + (e.dauer || 4), szEnde(e) + (e.ueberlauf || 0))) || null;
+    S.hudAus = events.some((e) => e.typ === 'hud_aus' && t >= e.t && t <= Math.min(e.t + (e.dauer || 4), szEnde(e)));
     S.ausweis = null; for (const e of events) if (e.typ === 'ausweis' && t >= e.t && t < e.t + (e.dauer || 1.1)) S.ausweis = e;
     S.nichtFollower = benannt.filter((o) => o.b.follower === false && (o.arrive === null || t >= o.arrive + 0.6)).length;
     S.ziel = STATUS.ziel || null; for (const e of events) if (e.typ === 'ziel' && t >= e.t) S.ziel = { ...e, t0: e.t };

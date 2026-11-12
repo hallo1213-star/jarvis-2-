@@ -16,8 +16,10 @@ export const BAUPLAETZE = {
 
 // Zusätzliche Bauplätze (ab Folge 5). Dort stehende Altbauten werden abgerissen, ohne den Zufallsgenerator
 // der Stadt zu verändern – alle anderen Gebäude bleiben dadurch exakt gleich.
-export const ZUSATZ_PLAETZE = { B9: [2, 1] };
-const inZusatz = (x, z) => Object.values(ZUSATZ_PLAETZE).some(([i, j]) => Math.abs(x - i * P) < HB - 3.5 && Math.abs(z - j * P) < HB - 3.5);
+export const ZUSATZ_PLAETZE = { B9: [2, 1], B10: [2, -1], B11: [-2, -1], B12: [1, 2], B13: [-1, 2] };
+// Nur Zusatz-Plätze, die im Serienstand/der Folge benutzt werden, werden freigeräumt (ältere Folgen bleiben unverändert)
+let AKTIVE_ZUSATZ = [];
+const inZusatz = (x, z) => AKTIVE_ZUSATZ.some((k) => { const [i, j] = ZUSATZ_PLAETZE[k]; return Math.abs(x - i * P) < HB - 3.5 && Math.abs(z - j * P) < HB - 3.5; });
 
 export const ANKER = {
   platz: [0, SLAB, 0],
@@ -388,6 +390,9 @@ function makeSky() {
           cc += uSunCol * pow(sd, 18.0) * (1.0-thick) * 1.6;
           col = mix(col, cc, cov * smoothstep(-0.02, 0.12, d.y) * 0.92);
         }
+        float nacht = smoothstep(0.08, 0.01, dot(uTop, vec3(0.3, 0.6, 0.1)));
+        if (nacht > 0.0 && d.y > 0.0) { vec2 sp = d.xz / (d.y + 0.25) * 260.0; float st = h21(floor(sp)); float tw = 0.6 + 0.4*sin(uTime*3.0 + st*60.0);
+          col += vec3(0.85, 0.9, 1.0) * step(0.9965, st) * smoothstep(0.5, 0.1, length(fract(sp) - 0.5)) * tw * nacht * smoothstep(0.02, 0.2, d.y) * 1.6; }
         if (d.y < 0.0) col = mix(col, uHor*0.55, smoothstep(0.0, -0.08, d.y));
         col = mix(col, col*vec3(1.4,0.35,0.3), uAlarm*0.6);
         gl_FragColor = vec4(col, 1.0);
@@ -556,10 +561,12 @@ function makeLotDecor(root, lots, fenceMat) {
 export const LICHT = {
   standard: { sunDir: [-1, 0.36, -0.42], sunCol: 0xffbf88, skyTop: 0x22385c, skyHor: 0xe39a66, fog: 0x8a7066, hemiSky: 0x9cb6de, hemiI: 1.35, sunI: 3.8, lit: 0.972, laternen: false, exposure: 1.2 },
   morgen: { sunDir: [1, 0.24, 0.32], sunCol: 0xffc39a, skyTop: 0x3a5a8c, skyHor: 0xf2b48c, fog: 0xa89090, hemiSky: 0xaec4ea, hemiI: 1.45, sunI: 3.6, lit: 0.99, laternen: false, exposure: 1.22 },
+  nacht: { sunDir: [0.35, 0.55, -0.6], sunCol: 0xa8bcff, skyTop: 0x040814, skyHor: 0x1a2644, fog: 0x141a30, hemiSky: 0x5a6aa0, hemiI: 1.15, sunI: 1.6, lit: 0.86, laternen: true, exposure: 1.85 },
   abend: { sunDir: [-1, 0.2, -0.3], sunCol: 0xff9a5c, skyTop: 0x1a2a4c, skyHor: 0xe0784e, fog: 0x7a5a58, hemiSky: 0x8096c8, hemiI: 1.15, sunI: 3.4, lit: 0.93, laternen: true, exposure: 1.25 },
 };
 
-export function buildWorld(scene, { seed = 7071, licht = 'standard' } = {}) {
+export function buildWorld(scene, { seed = 7071, licht = 'standard', zusatz = [] } = {}) {
+  AKTIVE_ZUSATZ = zusatz.filter((k) => ZUSATZ_PLAETZE[k]);
   const L = LICHT[licht] || LICHT.standard;
   U.sunDir.value.set(...L.sunDir).normalize(); U.sunCol.value.set(L.sunCol); U.skyTop.value.set(L.skyTop); U.skyHor.value.set(L.skyHor); U.litThr.value = L.lit;
   const rng = makeRng(seed);
@@ -760,7 +767,7 @@ export function buildWorld(scene, { seed = 7071, licht = 'standard' } = {}) {
   scene.add(instanced(paperGeometry(), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, side: THREE.DoubleSide }), papers, { shadow: false }));
 
   // Zusatz-Bauplätze aktivieren (Boden, Zäune, Schilder)
-  for (const [k, [i, j]] of Object.entries(ZUSATZ_PLAETZE)) { BAUPLAETZE[k] = [i, j]; const kk = ((j + 16) * 32 + (i + 16)) * 4; data[kk] = TYPE_CODE.bauplatz; }
+  for (const [k, [i, j]] of Object.entries(ZUSATZ_PLAETZE).filter(([k]) => AKTIVE_ZUSATZ.includes(k))) { BAUPLAETZE[k] = [i, j]; const kk = ((j + 16) * 32 + (i + 16)) * 4; data[kk] = TYPE_CODE.bauplatz; }
   bm.needsUpdate = true;
   const lotDecor = makeLotDecor(scene, BAUPLAETZE);
   const fenceGeo = fenceGeometry(); const lotObjs = {};

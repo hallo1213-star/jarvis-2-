@@ -1,0 +1,1164 @@
+{
+ "folge": 6,
+ "titel": "Das Notfallprojekt",
+ "licht": "nacht",
+ "_hinweis": "Folge 6 (TikTok: Valenheim Part 3) – Tag 2 Nacht. Roblox_Fan als Hauptperson: Ernennung zum offiziellen Unterstützer & Ehrenmitglied des Notfallprojekts, Ehrentafel auf dem Zentralplatz. Notfallprojekt: Notfallkrankenhaus (B12), Schutzräume (3 Eingänge), Warnsystem (4 Sirenen), Rettungsdienst (B13), Krisenzentrum (B10), Versorgungslager (B11). Stadtkasse unverändert.",
+ "stimme": {
+  "modell": "de_DE-thorsten-high",
+  "tempo": 1.06,
+  "lebendigkeit": 0.68,
+  "rhythmus": 0.82,
+  "tonhoehe_halbtoene": 0.8
+ },
+ "aussprache": {
+  "Roblox_Fan": "Robloksfän",
+  "Valenheims": "Valenheims"
+ },
+ "musik": {
+  "stil": "dramatisch",
+  "tonart": "d-moll",
+  "bpm": 84
+ },
+ "szenen": [
+  {
+   "id": "s1_eilmeldung",
+   "name": "Die Eilmeldung",
+   "vorlauf": 1.0,
+   "nachlauf": 0.5,
+   "sprecher": "Noch !sechs! !Tage!. |0.4| Die Situation in Valenheim wird immer *ernster*.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      46,
+      42
+     ],
+     "wackeln": 0.2,
+     "keys": [
+      {
+       "pos": [
+        -380,
+        260,
+        420
+       ],
+       "ziel": [
+        0,
+        20,
+        0
+       ]
+      },
+      {
+       "pos": [
+        -190,
+        150,
+        210
+       ],
+       "ziel": [
+        0,
+        10,
+        0
+       ]
+      },
+      {
+       "pos": [
+        -80,
+        70,
+        90
+       ],
+       "ziel": [
+        0,
+        5,
+        0
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "titel",
+     "zeit": 0.2,
+     "dauer": 2.6,
+     "text": "DAS NOTFALLPROJEKT",
+     "unter": "VALENHEIM · PART 3"
+    },
+    {
+     "typ": "eilmeldung",
+     "wort": "sechs",
+     "offset": -0.3,
+     "dauer": 20,
+     "text": "NOCH 6 TAGE – LAGE IN VALENHEIM SPITZT SICH ZU",
+     "laufband": "VALENHEIM NEWS · STADT BEREITET SICH AUF DEN ERNSTFALL VOR · 29 EINWOHNER · NEUE ANKÜNDIGUNG ERWARTET",
+     "sender": "VALENHEIM NEWS"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "boom",
+     "zeit": 0.05
+    },
+    {
+     "typ": "wind_swell",
+     "zeit": 0
+    },
+    {
+     "typ": "alarm",
+     "wort": "sechs",
+     "offset": -0.2,
+     "dauer": 2.0
+    },
+    {
+     "typ": "impact",
+     "wort": "ernster",
+     "offset": -0.1
+    }
+   ]
+  },
+  {
+   "id": "s2_ankuendigung",
+   "name": "Die besondere Nachricht",
+   "uebergang": "schwarz",
+   "vorlauf": 0.4,
+   "nachlauf": 0.4,
+   "sprecher": "Doch heute gibt es eine besondere *Ankündigung*. |0.4| Ein Bewohner hat unsere Stadt *unterstützt*, | und wird nun Teil eines ganz besonderen *Projekts*.",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      4,
+      2,
+      2
+     ],
+     "radius": [
+      42,
+      30
+     ],
+     "hoehe": [
+      22,
+      12
+     ],
+     "winkel": [
+      250,
+      285
+     ],
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.15
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "bewohner_pos",
+     "zeit": 0,
+     "dauer": 200,
+     "name": "Roblox",
+     "pos": [
+      18.6,
+      2.9
+     ],
+     "richtung": -90
+    },
+    {
+     "typ": "objekt",
+     "zeit": 0.0,
+     "typ_obj": "ehrentafel",
+     "name": "ROBLOX_FAN",
+     "pos": [
+      19.5,
+      0
+     ],
+     "richtung": -90,
+     "verhuellt": true
+    },
+    {
+     "typ": "callout",
+     "wort": "Projekts",
+     "offset": -0.6,
+     "dauer": 2.0,
+     "anker": [
+      19.5,
+      4.5,
+      0
+     ],
+     "titel": "???",
+     "unter": "ENTHÜLLUNG FOLGT"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "riser",
+     "wort": "Projekts",
+     "offset": -1.2,
+     "dauer": 1.4
+    }
+   ]
+  },
+  {
+   "id": "s3_roblox",
+   "name": "Roblox_Fan",
+   "uebergang": "blitz",
+   "vorlauf": 0.3,
+   "nachlauf": 0.5,
+   "sprecher": "*Roblox_Fan* | wird offizieller *Unterstützer* | des neuen *Notfallprojekts* von Valenheim. |0.4| Einwohner Nummer *neun*. | Unser *Panzer-Kommandant*. |0.3| Und ab heute: | *Ehrenmitglied*.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      40,
+      34
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        11.0,
+        2.2,
+        7.2
+       ],
+       "ziel": [
+        18.6,
+        1.5,
+        2.9
+       ]
+      },
+      {
+       "pos": [
+        13.6,
+        1.8,
+        5.4
+       ],
+       "ziel": [
+        18.6,
+        1.5,
+        2.9
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "pfad",
+     "ab_wort": "Einwohner",
+     "offset": -0.2,
+     "anteil": 1,
+     "fov": [
+      36,
+      32
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        14.8,
+        1.7,
+        6.8
+       ],
+       "ziel": [
+        18.6,
+        1.55,
+        2.9
+       ]
+      },
+      {
+       "pos": [
+        15.6,
+        1.75,
+        5.6
+       ],
+       "ziel": [
+        18.6,
+        1.6,
+        2.9
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "pfad",
+     "ab_wort": "Panzer-Kommandant",
+     "offset": -0.25,
+     "anteil": 1,
+     "fov": [
+      42,
+      40
+     ],
+     "wackeln": 0.2,
+     "keys": [
+      {
+       "pos": [
+        -50,
+        5.6,
+        -28.5
+       ],
+       "ziel": [
+        -57.5,
+        1.8,
+        -12.5
+       ]
+      },
+      {
+       "pos": [
+        -53.5,
+        4.4,
+        -25.5
+       ],
+       "ziel": [
+        -57.5,
+        1.6,
+        -12.5
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "pfad",
+     "ab_wort": "Ehrenmitglied",
+     "offset": -0.3,
+     "anteil": 1,
+     "fov": [
+      38,
+      34
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        12.5,
+        2.0,
+        6.0
+       ],
+       "ziel": [
+        18.6,
+        1.5,
+        2.9
+       ]
+      },
+      {
+       "pos": [
+        14.5,
+        1.8,
+        4.8
+       ],
+       "ziel": [
+        18.6,
+        1.5,
+        2.9
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "ernennung",
+     "zeit": 0.1,
+     "dauer": 5.2,
+     "name": "ROBLOX_FAN",
+     "avatar": "folgen/assets/roblox.jpg",
+     "ueber": "OFFIZIELL ERNANNT",
+     "titel": "OFFIZIELLER UNTERSTÜTZER",
+     "unter": "NOTFALLPROJEKT VALENHEIM"
+    },
+    {
+     "typ": "callout",
+     "wort": "Einwohner",
+     "offset": 0.0,
+     "dauer": 2.0,
+     "anker": [
+      18.6,
+      2.0,
+      2.9
+     ],
+     "titel": "ROBLOX_FAN",
+     "unter": "EINWOHNER #9"
+    },
+    {
+     "typ": "callout",
+     "wort": "Panzer-Kommandant",
+     "offset": 0.1,
+     "dauer": 2.0,
+     "anker": [
+      -58,
+      4,
+      -12
+     ],
+     "titel": "PANZER-KOMMANDANT",
+     "unter": "VERTEIDIGT VALENHEIM"
+    },
+    {
+     "typ": "callout",
+     "wort": "Ehrenmitglied",
+     "offset": 0.0,
+     "dauer": 2.2,
+     "anker": [
+      18.6,
+      2.0,
+      2.9
+     ],
+     "titel": "EHRENMITGLIED",
+     "unter": "NOTFALLPROJEKT VALENHEIM",
+     "farbe": "#f2c230"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "impact",
+     "zeit": 0.1
+    },
+    {
+     "typ": "shimmer",
+     "zeit": 0.4
+    },
+    {
+     "typ": "jubel",
+     "wort": "Unterstützer",
+     "dauer": 3.0
+    },
+    {
+     "typ": "blip",
+     "wort": "neun"
+    },
+    {
+     "typ": "whoosh",
+     "wort": "Panzer-Kommandant",
+     "offset": -0.3
+    },
+    {
+     "typ": "shimmer",
+     "wort": "Ehrenmitglied"
+    }
+   ]
+  },
+  {
+   "id": "s4_projekt",
+   "name": "Das Notfallprojekt",
+   "uebergang": "schnitt",
+   "vorlauf": 0.3,
+   "nachlauf": 0.6,
+   "sprecher": "Das Notfallprojekt: |0.3| ein *Notfallkrankenhaus*, | öffentliche *Schutzräume*, | ein städtisches *Warnsystem*, | eine *Rettungsdienstzentrale*, | ein *Krisenzentrum*, | und ein *Versorgungslager*.",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      0,
+      0,
+      0
+     ],
+     "radius": [
+      220,
+      180
+     ],
+     "hoehe": [
+      140,
+      110
+     ],
+     "winkel": [
+      182,
+      214
+     ],
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.2
+    },
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      74,
+      5,
+      148
+     ],
+     "radius": [
+      80,
+      62
+     ],
+     "hoehe": [
+      42,
+      26
+     ],
+     "winkel": [
+      -171.4,
+      -139.4
+     ],
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.2,
+     "ab_wort": "Notfallkrankenhaus",
+     "offset": -0.25
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      42,
+      38
+     ],
+     "wackeln": 0.2,
+     "keys": [
+      {
+       "pos": [
+        -11,
+        3.2,
+        5
+       ],
+       "ziel": [
+        -25.5,
+        2,
+        0
+       ]
+      },
+      {
+       "pos": [
+        -14,
+        2.4,
+        3.2
+       ],
+       "ziel": [
+        -25.5,
+        2,
+        0
+       ]
+      }
+     ],
+     "ab_wort": "Schutzräume",
+     "offset": -0.25
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.25,
+     "keys": [
+      {
+       "pos": [
+        16,
+        3,
+        -14
+       ],
+       "ziel": [
+        26,
+        8,
+        -26
+       ]
+      },
+      {
+       "pos": [
+        18,
+        2.4,
+        -16
+       ],
+       "ziel": [
+        26,
+        9,
+        -26
+       ]
+      }
+     ],
+     "ab_wort": "Warnsystem",
+     "offset": -0.25
+    },
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      -74,
+      4,
+      148
+     ],
+     "radius": [
+      80,
+      62
+     ],
+     "hoehe": [
+      42,
+      26
+     ],
+     "winkel": [
+      135.4,
+      167.4
+     ],
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.2,
+     "ab_wort": "Rettungsdienstzentrale",
+     "offset": -0.25
+    },
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      148,
+      9,
+      -74
+     ],
+     "radius": [
+      85,
+      66
+     ],
+     "hoehe": [
+      46,
+      30
+     ],
+     "winkel": [
+      -81.4,
+      -49.4
+     ],
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.2,
+     "ab_wort": "Krisenzentrum",
+     "offset": -0.25
+    },
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      -148,
+      5,
+      -74
+     ],
+     "radius": [
+      80,
+      62
+     ],
+     "hoehe": [
+      42,
+      26
+     ],
+     "winkel": [
+      45.4,
+      77.4
+     ],
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.2,
+     "ab_wort": "Versorgungslager",
+     "offset": -0.25
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "projektliste",
+     "zeit": 0.0,
+     "dauer": 30,
+     "titel": "NOTFALLPROJEKT",
+     "unter": "UNTERSTÜTZT VON ROBLOX_FAN",
+     "avatar": "folgen/assets/roblox.jpg",
+     "liste": [
+      {
+       "text": "NOTFALLKRANKENHAUS",
+       "wort": "Notfallkrankenhaus"
+      },
+      {
+       "text": "ÖFFENTLICHE SCHUTZRÄUME",
+       "wort": "Schutzräume"
+      },
+      {
+       "text": "WARNSYSTEM",
+       "wort": "Warnsystem"
+      },
+      {
+       "text": "RETTUNGSDIENST",
+       "wort": "Rettungsdienstzentrale"
+      },
+      {
+       "text": "KRISENZENTRUM",
+       "wort": "Krisenzentrum"
+      },
+      {
+       "text": "VERSORGUNGSLAGER",
+       "wort": "Versorgungslager"
+      }
+     ]
+    },
+    {
+     "typ": "bau",
+     "wort": "Notfallkrankenhaus",
+     "offset": -0.3,
+     "dauer": 1.8,
+     "platz": "B12",
+     "gebaeude": "notfallkrankenhaus",
+     "name": "NOTFALLKRANKENHAUS",
+     "form": "halle"
+    },
+    {
+     "typ": "objekt",
+     "wort": "Schutzräume",
+     "offset": -0.2,
+     "typ_obj": "schutzraum",
+     "pos": [
+      -25.5,
+      0
+     ],
+     "richtung": 90
+    },
+    {
+     "typ": "objekt",
+     "wort": "Schutzräume",
+     "offset": -0.05000000000000002,
+     "typ_obj": "schutzraum",
+     "pos": [
+      -24,
+      12
+     ],
+     "richtung": 90
+    },
+    {
+     "typ": "objekt",
+     "wort": "Schutzräume",
+     "offset": 0.09999999999999998,
+     "typ_obj": "schutzraum",
+     "pos": [
+      -24,
+      -12
+     ],
+     "richtung": 90
+    },
+    {
+     "typ": "objekt",
+     "wort": "Warnsystem",
+     "offset": -0.4,
+     "typ_obj": "sirene",
+     "pos": [
+      26,
+      -26
+     ],
+     "richtung": 0
+    },
+    {
+     "typ": "objekt",
+     "wort": "Warnsystem",
+     "offset": -0.4,
+     "typ_obj": "sirene",
+     "pos": [
+      -26,
+      26
+     ],
+     "richtung": 0
+    },
+    {
+     "typ": "objekt",
+     "wort": "Warnsystem",
+     "offset": -0.4,
+     "typ_obj": "sirene",
+     "pos": [
+      26,
+      26
+     ],
+     "richtung": 0
+    },
+    {
+     "typ": "objekt",
+     "wort": "Warnsystem",
+     "offset": -0.4,
+     "typ_obj": "sirene",
+     "pos": [
+      -26,
+      -26
+     ],
+     "richtung": 0
+    },
+    {
+     "typ": "sirenen",
+     "wort": "Warnsystem",
+     "offset": 0.2,
+     "dauer": 1.8
+    },
+    {
+     "typ": "bau",
+     "wort": "Rettungsdienstzentrale",
+     "offset": -0.3,
+     "dauer": 1.8,
+     "platz": "B13",
+     "gebaeude": "rettungsdienst",
+     "name": "RETTUNGSDIENST",
+     "form": "halle"
+    },
+    {
+     "typ": "bau",
+     "wort": "Krisenzentrum",
+     "offset": -0.3,
+     "dauer": 1.8,
+     "platz": "B10",
+     "gebaeude": "krisenzentrum",
+     "name": "KRISENZENTRUM",
+     "form": "turm"
+    },
+    {
+     "typ": "bau",
+     "wort": "Versorgungslager",
+     "offset": -0.3,
+     "dauer": 1.8,
+     "platz": "B11",
+     "gebaeude": "versorgungslager",
+     "name": "VERSORGUNGSLAGER",
+     "form": "halle"
+    },
+    {
+     "typ": "werte",
+     "wort": "Versorgungslager",
+     "offset": 0.6,
+     "dauer": 1.4,
+     "gebaeude": 13,
+     "entwicklung_prozent": 75,
+     "entwicklung_stufe": "STADT"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "impact",
+     "zeit": 0.0
+    },
+    {
+     "typ": "build",
+     "wort": "Notfallkrankenhaus",
+     "offset": -0.3
+    },
+    {
+     "typ": "build",
+     "wort": "Schutzräume",
+     "offset": -0.3
+    },
+    {
+     "typ": "build",
+     "wort": "Warnsystem",
+     "offset": -0.3
+    },
+    {
+     "typ": "build",
+     "wort": "Rettungsdienstzentrale",
+     "offset": -0.3
+    },
+    {
+     "typ": "build",
+     "wort": "Krisenzentrum",
+     "offset": -0.3
+    },
+    {
+     "typ": "build",
+     "wort": "Versorgungslager",
+     "offset": -0.3
+    },
+    {
+     "typ": "alarm",
+     "wort": "Warnsystem",
+     "offset": 0.2,
+     "dauer": 1.8
+    }
+   ]
+  },
+  {
+   "id": "s5_ehrung",
+   "name": "Die Ehrung",
+   "uebergang": "blitz",
+   "vorlauf": 0.4,
+   "nachlauf": 1.0,
+   "sprecher": "Und für seine Unterstützung | bekommt Roblox_Fan eine ganz besondere *Ehrung*. |0.6| Ein Teil der *Geschichte* Valenheims.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      42,
+      36
+     ],
+     "wackeln": 0.12,
+     "ease": "inOutCubic",
+     "keys": [
+      {
+       "pos": [
+        -2,
+        4.5,
+        -2.0
+       ],
+       "ziel": [
+        19.5,
+        2.4,
+        1.0
+       ]
+      },
+      {
+       "pos": [
+        3,
+        3.2,
+        0.0
+       ],
+       "ziel": [
+        19.5,
+        2.3,
+        1.0
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "pfad",
+     "ab_wort": "Ein",
+     "offset": -0.2,
+     "anteil": 1,
+     "fov": [
+      36,
+      34
+     ],
+     "wackeln": 0.1,
+     "keys": [
+      {
+       "pos": [
+        1.6,
+        3.1,
+        0.4
+       ],
+       "ziel": [
+        19.5,
+        1.4,
+        0.3
+       ]
+      },
+      {
+       "pos": [
+        2.5,
+        3.0,
+        0.35
+       ],
+       "ziel": [
+        19.5,
+        1.4,
+        0.3
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "enthuellung",
+     "wort": "Ehrung",
+     "offset": -0.2
+    },
+    {
+     "typ": "hud_aus",
+     "wort": "Ein",
+     "offset": -0.2,
+     "dauer": 20
+    }
+   ],
+   "toene": [
+    {
+     "typ": "riser",
+     "wort": "Ehrung",
+     "offset": -1.4,
+     "dauer": 1.2
+    },
+    {
+     "typ": "final_hit",
+     "wort": "Ehrung",
+     "offset": -0.2
+    },
+    {
+     "typ": "jubel",
+     "wort": "Ehrung",
+     "offset": 0.1,
+     "dauer": 4.0
+    },
+    {
+     "typ": "shimmer",
+     "wort": "Ein"
+    }
+   ]
+  },
+  {
+   "id": "s6_finale",
+   "name": "Finale",
+   "uebergang": "schwarz",
+   "vorlauf": 0.5,
+   "nachlauf": 3.2,
+   "sprecher": "Sechs Tage bleiben. |0.5| Doch egal, was kommt: |0.3| Valenheim hält *zusammen*. |0.5| Für unsere *Stadt*. |0.35| Für unsere *Bewohner*.",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      0,
+      30,
+      0
+     ],
+     "radius": [
+      620,
+      480
+     ],
+     "hoehe": [
+      330,
+      260
+     ],
+     "winkel": [
+      120,
+      170
+     ],
+     "fov": [
+      48,
+      44
+     ],
+     "wackeln": 0.1,
+     "ease": "inOutSine"
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "schluss",
+     "wort": "Bewohner",
+     "offset": 1.0,
+     "dauer": 10,
+     "ueberlauf": 0,
+     "text": "VALENHEIM",
+     "unter": "GEMEINSAM STARK."
+    }
+   ],
+   "toene": [
+    {
+     "typ": "whoosh",
+     "zeit": 0
+    },
+    {
+     "typ": "boom",
+     "wort": "zusammen",
+     "offset": -0.1
+    },
+    {
+     "typ": "final_hit",
+     "wort": "Bewohner",
+     "offset": 1.0
+    }
+   ]
+  }
+ ],
+ "ergebnis": {
+  "tag": 2,
+  "verbleibende_tage": 6,
+  "einwohner": 29,
+  "follower": 26,
+  "stadtkasse": 10000,
+  "entwicklung_prozent": 75,
+  "entwicklung_stufe": "STADT",
+  "neue_gebaeude": [
+   {
+    "typ": "notfallkrankenhaus",
+    "platz": "B12",
+    "name": "NOTFALLKRANKENHAUS",
+    "status": "fertig",
+    "projekt": "Notfallprojekt"
+   },
+   {
+    "typ": "rettungsdienst",
+    "platz": "B13",
+    "name": "RETTUNGSDIENST",
+    "status": "fertig",
+    "projekt": "Notfallprojekt"
+   },
+   {
+    "typ": "krisenzentrum",
+    "platz": "B10",
+    "name": "KRISENZENTRUM",
+    "status": "fertig",
+    "projekt": "Notfallprojekt"
+   },
+   {
+    "typ": "versorgungslager",
+    "platz": "B11",
+    "name": "VERSORGUNGSLAGER",
+    "status": "fertig",
+    "projekt": "Notfallprojekt"
+   }
+  ],
+  "neue_objekte": [
+   {
+    "typ": "ehrentafel",
+    "pos": [
+     19.5,
+     0
+    ],
+    "richtung": -90,
+    "name": "ROBLOX_FAN"
+   },
+   {
+    "typ": "sirene",
+    "pos": [
+     26,
+     -26
+    ],
+    "richtung": 0
+   },
+   {
+    "typ": "sirene",
+    "pos": [
+     -26,
+     26
+    ],
+    "richtung": 0
+   },
+   {
+    "typ": "sirene",
+    "pos": [
+     26,
+     26
+    ],
+    "richtung": 0
+   },
+   {
+    "typ": "sirene",
+    "pos": [
+     -26,
+     -26
+    ],
+    "richtung": 0
+   },
+   {
+    "typ": "schutzraum",
+    "pos": [
+     -25.5,
+     0
+    ],
+    "richtung": 90
+   },
+   {
+    "typ": "schutzraum",
+    "pos": [
+     -24,
+     12
+    ],
+    "richtung": 90
+   },
+   {
+    "typ": "schutzraum",
+    "pos": [
+     -24,
+     -12
+    ],
+    "richtung": 90
+   }
+  ],
+  "ehrungen": [
+   {
+    "name": "Roblox_Fan",
+    "titel": "Offizieller Unterstützer & Ehrenmitglied des Notfallprojekts"
+   }
+  ]
+ }
+}

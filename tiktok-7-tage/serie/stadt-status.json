@@ -2,13 +2,13 @@
   "_info": "Fortlaufender Stand der Serie. Wird nach jeder Folge mit 'node pipeline/folge-abschliessen.js <nr>' fortgeschrieben. Werte hier kannst du auch von Hand anpassen (z. B. echte Follower-Zahl).",
   "stadt": "VALENHEIM",
   "welt_seed": 7071,
-  "letzte_folge": 4,
+  "letzte_folge": 5,
   "tag": 2,
   "verbleibende_tage": 6,
-  "einwohner": 15,
-  "stadtkasse": 5000,
+  "einwohner": 29,
+  "stadtkasse": 10000,
   "waehrung": "€",
-  "entwicklung_prozent": 45,
+  "entwicklung_prozent": 60,
   "entwicklung_stufe": "KLEINSTADT",
   "gebaeude": [
     {
@@ -64,6 +64,22 @@
       "name": "ANGELS FREIZEITPARK",
       "besitzer": "Angel",
       "seit_folge": 4
+    },
+    {
+      "status": "fertig",
+      "typ": "krankenhaus",
+      "platz": "B8",
+      "name": "KRANKENHAUS",
+      "leitung": "SK|DANI",
+      "seit_folge": 5
+    },
+    {
+      "status": "fertig",
+      "typ": "polizei",
+      "platz": "B9",
+      "name": "POLIZEI",
+      "chef": "t.h.169",
+      "seit_folge": 5
     }
   ],
   "verlauf": [
@@ -98,6 +114,14 @@
       "tag": 2,
       "einwohner": 15,
       "gebaeude": 7
+    },
+    {
+      "folge": 5,
+      "titel": "Tag 2: Valenheim wächst",
+      "abgeschlossen": "2026-11-12",
+      "tag": 2,
+      "einwohner": 29,
+      "gebaeude": 9
     }
   ],
   "bewohner": [
@@ -425,6 +449,310 @@
       },
       "follower": false,
       "seit_folge": 4
+    },
+    {
+      "name": "Lauri",
+      "nr": 16,
+      "pos": [
+        -17,
+        8
+      ],
+      "richtung": 70,
+      "avatar": "folgen/assets/lauri.jpg",
+      "look": {
+        "jacke": "0x2a2a3a",
+        "kragen": "0xff9a4a",
+        "hose": "0x2a3040",
+        "haare": "0x8a6a4a",
+        "haut": "0xe8c0a0",
+        "schuhe": "0xe6e6e6",
+        "rucksack": "0x2a2a3a",
+        "gurt": "0xff9a4a"
+      },
+      "seit_folge": 5
+    },
+    {
+      "name": "sbpgae",
+      "nr": 17,
+      "pos": [
+        -13,
+        14
+      ],
+      "richtung": 80,
+      "avatar": "folgen/assets/sbpgae.jpg",
+      "look": {
+        "jacke": "0xf2d8e0",
+        "kragen": "0xd8a0b8",
+        "hose": "0xf2d8e0",
+        "haare": "0x2a1a10",
+        "haut": "0xe8c0a0",
+        "schuhe": "0xe6e6e6",
+        "rucksack": "0xf2d8e0",
+        "gurt": "0xd8a0b8",
+        "langeHaare": true
+      },
+      "seit_folge": 5
+    },
+    {
+      "name": "Mark",
+      "nr": 18,
+      "pos": [
+        -18,
+        15
+      ],
+      "richtung": 70,
+      "avatar": "folgen/assets/mark.jpg",
+      "look": {
+        "jacke": "0x0c0c0e",
+        "kragen": "0x1a1a1e",
+        "hose": "0x333336",
+        "haare": "0x0c0c0e",
+        "haut": "0xe8c0a0",
+        "schuhe": "0xe6e6e6",
+        "rucksack": "0x0c0c0e",
+        "gurt": "0x1a1a1e"
+      },
+      "seit_folge": 5
+    },
+    {
+      "name": "JR3",
+      "nr": 19,
+      "pos": [
+        -10,
+        20
+      ],
+      "richtung": 90,
+      "avatar": "folgen/assets/jr3.jpg",
+      "look": {
+        "jacke": "0x1a1a1a",
+        "kragen": "0xd4a017",
+        "hose": "0x1a1a1a",
+        "haare": "0x111111",
+        "haut": "0xb07a55",
+        "schuhe": "0xe6e6e6",
+        "rucksack": "0x1a1a1a",
+        "gurt": "0xd4a017"
+      },
+      "seit_folge": 5
+    },
+    {
+      "name": "assi",
+      "nr": 20,
+      "pos": [
+        -15,
+        21
+      ],
+      "richtung": 90,
+      "avatar": "folgen/assets/assi.jpg",
+      "look": {
+        "jacke": "0x4a5a3a",
+        "kragen": "0x2a3a2a",
+        "hose": "0x3a3020",
+        "haare": "0xe8c860",
+        "haut": "0xe8c0a0",
+        "schuhe": "0xe6e6e6",
+        "rucksack": "0x4a5a3a",
+        "gurt": "0x2a3a2a",
+        "langeHaare": true
+      },
+      "seit_folge": 5
+    },
+    {
+      "name": "Levy",
+      "nr": 21,
+      "pos": [
+        -20,
+        3
+      ],
+      "richtung": 60,
+      "avatar": "folgen/assets/levy.jpg",
+      "look": {
+        "jacke": "0x5a2a8a",
+        "kragen": "0x2a1a4a",
+        "hose": "0x222222",
+        "haare": "0x222222",
+        "haut": "0xe8c0a0",
+        "schuhe": "0xe6e6e6",
+        "rucksack": "0x5a2a8a",
+        "gurt": "0x2a1a4a",
+        "hut": "weihnacht"
+      },
+      "seit_folge": 5
+    },
+    {
+      "name": "Neutromind",
+      "nr": 22,
+      "pos": [
+        -76,
+        14.5
+      ],
+      "richtung": 60,
+      "avatar": "folgen/assets/neutromind.jpg",
+      "look": {
+        "jacke": "0x2a3440",
+        "kragen": "0x1a2028",
+        "hose": "0x1a2028",
+        "haare": "0x111111",
+        "haut": "0xe8c0a0",
+        "schuhe": "0xe6e6e6",
+        "rucksack": "0x2a3440",
+        "gurt": "0x1a2028"
+      },
+      "seit_folge": 5
+    },
+    {
+      "name": "t.h.169",
+      "nr": 23,
+      "pos": [
+        135.25,
+        63.71
+      ],
+      "richtung": 63.4,
+      "avatar": "folgen/assets/th169.jpg",
+      "look": {
+        "jacke": "0x1d3a6a",
+        "kragen": "0xf2f2f2",
+        "hose": "0x1d2a40",
+        "haare": "0x111111",
+        "haut": "0xe8c0a0",
+        "schuhe": "0xe6e6e6",
+        "rucksack": "0x1d3a6a",
+        "gurt": "0xf2f2f2",
+        "hut": "cap",
+        "capFarbe": "0x1d3a6a"
+      },
+      "seit_folge": 5
+    },
+    {
+      "name": "SK|DANI",
+      "nr": 24,
+      "pos": [
+        -132.12,
+        69.98
+      ],
+      "richtung": 296.6,
+      "avatar": "folgen/assets/skdani.jpg",
+      "look": {
+        "jacke": "0xc8102e",
+        "kragen": "0xf2f2f2",
+        "hose": "0x111111",
+        "haare": "0x6a4a2a",
+        "haut": "0xe8c0a0",
+        "schuhe": "0xe6e6e6",
+        "rucksack": "0xc8102e",
+        "gurt": "0xf2f2f2"
+      },
+      "seit_folge": 5
+    },
+    {
+      "name": "jannik",
+      "nr": 25,
+      "pos": [
+        -9,
+        4.5
+      ],
+      "richtung": 60,
+      "avatar": "folgen/assets/jannik.jpg",
+      "look": {
+        "jacke": "0x3a3aa0",
+        "kragen": "0x1a1a50",
+        "hose": "0x222222",
+        "haare": "0x3a2a1a",
+        "haut": "0xe8c0a0",
+        "schuhe": "0xe6e6e6",
+        "rucksack": "0x3a3aa0",
+        "gurt": "0x1a1a50",
+        "hut": "weihnacht"
+      },
+      "seit_folge": 5
+    },
+    {
+      "name": "wiam",
+      "nr": 26,
+      "pos": [
+        -21,
+        10
+      ],
+      "richtung": 80,
+      "avatar": "folgen/assets/wiam.jpg",
+      "look": {
+        "jacke": "0xf2f2f2",
+        "kragen": "0xdddddd",
+        "hose": "0x8a8a9a",
+        "haare": "0x1a1410",
+        "haut": "0xe8c0a0",
+        "schuhe": "0xe6e6e6",
+        "rucksack": "0xf2f2f2",
+        "gurt": "0xdddddd",
+        "langeHaare": true
+      },
+      "seit_folge": 5
+    },
+    {
+      "name": "Lukas Daron",
+      "nr": 27,
+      "pos": [
+        -62,
+        -17
+      ],
+      "richtung": 60,
+      "avatar": "folgen/assets/lukas.jpg",
+      "look": {
+        "jacke": "0x4f5a34",
+        "kragen": "0x3a4126",
+        "hose": "0x4f5a34",
+        "haare": "0x2a1a10",
+        "haut": "0xe8c0a0",
+        "schuhe": "0xe6e6e6",
+        "rucksack": "0x4f5a34",
+        "gurt": "0x3a4126",
+        "hut": "helm"
+      },
+      "seit_folge": 5
+    },
+    {
+      "name": "Mika",
+      "nr": 28,
+      "pos": [
+        -19,
+        -6
+      ],
+      "richtung": 50,
+      "avatar": "folgen/assets/mika.jpg",
+      "look": {
+        "jacke": "0x6a3a8a",
+        "kragen": "0xff7a5a",
+        "hose": "0x2a2a3a",
+        "haare": "0x2a1a10",
+        "haut": "0xe8c0a0",
+        "schuhe": "0xe6e6e6",
+        "rucksack": "0x6a3a8a",
+        "gurt": "0xff7a5a"
+      },
+      "seit_folge": 5
+    },
+    {
+      "name": "Max",
+      "nr": 29,
+      "follower": false,
+      "pos": [
+        -68.5,
+        -11.5
+      ],
+      "richtung": 120,
+      "avatar": "folgen/assets/max.jpg",
+      "look": {
+        "jacke": "0x9a9a9a",
+        "kragen": "0x555555",
+        "hose": "0x4f5a34",
+        "haare": "0x3a2a1a",
+        "haut": "0xe8c0a0",
+        "schuhe": "0xe6e6e6",
+        "rucksack": "0x9a9a9a",
+        "gurt": "0x555555",
+        "hut": "helm"
+      },
+      "seit_folge": 5
     }
   ],
   "ziel": {
@@ -453,6 +781,29 @@
       "name": "ROBLOX",
       "besitzer": "Roblox",
       "seit_folge": 4
+    },
+    {
+      "typ": "kampfjet",
+      "pos": [
+        -86,
+        17
+      ],
+      "richtung": 90,
+      "name": "NEUTROMIND",
+      "besitzer": "Neutromind",
+      "seit_folge": 5
+    },
+    {
+      "typ": "luftabwehr",
+      "pos": [
+        -72,
+        -16
+      ],
+      "richtung": 90,
+      "besitzer": "Max",
+      "seit_folge": 5
     }
-  ]
+  ],
+  "follower": 26,
+  "supermarkt_offen": true
 }

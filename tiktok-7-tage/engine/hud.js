@@ -83,7 +83,7 @@ export class HUD {
     if (S.playerLabel && !S.endkarte && !(S.frage && t - S.frage.t < S.frage.dauer)) this.drawPlayerLabel(g, t, S);
     for (const p of S.plusOnes) this.drawPlusOne(g, t, p, S);
     if (S.scan) this.drawScan(g, t, S.scan, S);
-    if (S.hudOn !== null && t >= S.hudOn) { g.save(); if (S.endkarte) g.globalAlpha = 1 - clamp((t - S.endkarte.t) / 0.4) * 0.85; this.drawHUD(g, t, S); g.restore(); }
+    if (S.hudOn !== null && t >= S.hudOn && !S.hudAus) { g.save(); if (S.endkarte) g.globalAlpha = 1 - clamp((t - S.endkarte.t) / 0.4) * 0.85; this.drawHUD(g, t, S); g.restore(); }
     if (S.simLabel) this.drawSimLabel(g, t, S.simLabel);
     if (S.titel) this.drawTitle(g, t, S.titel, S.hudOn !== null && t >= S.hudOn);
     if (S.alarm) this.drawAlarm(g, t, S.alarm);
@@ -94,8 +94,12 @@ export class HUD {
     if (S.follower) this.drawFollower(g, t, S.follower, S);
     if (S.ausweis) this.drawAusweis(g, t, S.ausweis, S);
     if (S.wand) this.drawWand(g, t, S.wand, S);
+    if (S.eilmeldung) this.drawEilmeldung(g, t, S.eilmeldung);
+    if (S.ernennung) this.drawErnennung(g, t, S.ernennung, S);
+    if (S.projektliste) this.drawProjektliste(g, t, S.projektliste, S);
+    if (S.schluss) this.drawSchluss(g, t, S.schluss);
     if (S.bauliste) this.drawBauliste(g, t, S.bauliste, S);
-    if (S.ziel && S.hudOn !== null && t >= S.hudOn && !S.endkarte) this.drawZiel(g, t, S.ziel, S);
+    if (S.ziel && S.hudOn !== null && t >= S.hudOn && !S.endkarte && !S.hudAus) this.drawZiel(g, t, S.ziel, S);
     if (S.frage) this.drawQuestion(g, t, S.frage);
     if (S.endkarte) this.drawEndcard(g, t, S.endkarte, S);
     if (S.cta) this.drawCTA(g, t, S.cta);
@@ -321,7 +325,8 @@ export class HUD {
     rr(g, -400, -60, 800, 104, 52); const grd = g.createLinearGradient(-400, 0, 400, 0); grd.addColorStop(0, '#ff8a3d'); grd.addColorStop(1, '#ff4f6d');
     g.fillStyle = grd; g.fill();
     icon(g, 'person', -345, -6, 48, '#fff');
-    text(g, s.text, 36, 12, { size: 44, weight: 900, font: F.big, align: 'center', spacing: 1 });
+    g.font = `900 44px ${F.big}`; const hf = Math.min(1, 680 / g.measureText(s.text).width);
+    g.save(); g.translate(36, 12); g.scale(hf, hf); text(g, s.text, 0, 0, { size: 44, weight: 900, font: F.big, align: 'center', spacing: 1 }); g.restore();
     g.restore();
   }
 
@@ -349,9 +354,9 @@ export class HUD {
   drawNameTags(g, t, S) {
     for (const n of S.namen) {
       const p = S.project(n.pos); if (!p.visible) continue;
-      const d = Math.hypot(S.camPos.x - n.pos[0], S.camPos.y - n.pos[1], S.camPos.z - n.pos[2]); if (d > 48) continue;
+      const d = Math.hypot(S.camPos.x - n.pos[0], S.camPos.y - n.pos[1], S.camPos.z - n.pos[2]); if (d > 34) continue;
       if (p.y < 420 || p.y > 1240) continue;
-      const a = clamp((t - n.t0 - 0.5) / 0.4) * (1 - smooth(34, 48, d));
+      const a = clamp((t - n.t0 - 0.5) / 0.4) * (1 - smooth(24, 34, d));
       if (a <= 0) continue;
       const k = ease.outBack(clamp((t - n.t0 - 0.5) / 0.45));
       g.save(); g.globalAlpha = a; g.translate(clamp(p.x, 150, W - 150), p.y - 30); g.scale(k, k);
@@ -504,6 +509,101 @@ export class HUD {
       text(g, 'GEPLANT', 865, y + 50, { size: 24, weight: 800, align: 'center', color: C.yellow, spacing: 2 });
       g.restore();
     });
+    g.restore();
+  }
+
+  // Eilmeldung (fiktiver Stadtsender) als Bauchbinde mit Laufband
+  drawEilmeldung(g, t, e) {
+    const lt = t - e.t; const d = e.dauer || 5; const a = clamp(lt / 0.25) * (1 - smooth(d - 0.3, d, lt)); if (a <= 0) return;
+    const k = ease.outCubic(clamp(lt / 0.45)); const y = 1010;
+    g.save(); g.globalAlpha = a;
+    g.save(); g.translate(-(1 - k) * W, 0);
+    g.fillStyle = '#c8102e'; g.fillRect(0, y, 400, 74); text(g, 'EILMELDUNG', 30, y + 52, { size: 44, weight: 900, font: F.big, spacing: 2 });
+    if (Math.sin(lt * 8) > 0) { g.fillStyle = '#fff'; g.beginPath(); g.arc(372, y + 37, 9, 0, 7); g.fill(); }
+    g.fillStyle = 'rgba(245,245,245,0.96)'; g.fillRect(0, y + 74, W, 86);
+    g.font = `900 48px ${F.big}`; const fit = Math.min(1, 1000 / g.measureText(e.text).width);
+    g.save(); g.translate(30, y + 134); g.scale(fit, fit); text(g, e.text, 0, 0, { size: 48, weight: 900, font: F.big, color: '#111' }); g.restore();
+    g.fillStyle = '#0b1a40'; g.fillRect(0, y + 160, W, 46);
+    g.save(); g.beginPath(); g.rect(0, y + 160, W, 46); g.clip();
+    const tick = (e.laufband || '') + '   ·   '; g.font = `700 26px ${F.hud}`; const tw = g.measureText(tick).width; const off = (lt * 140) % tw;
+    for (let x = -off; x < W; x += tw) text(g, tick, x, y + 192, { size: 26, weight: 700, color: '#ffffff' });
+    g.restore();
+    g.fillStyle = '#0b1a40'; g.fillRect(W - 300, y - 46, 300, 46); text(g, e.sender || 'VALENHEIM NEWS', W - 150, y - 14, { size: 26, weight: 800, align: 'center', color: '#fff', spacing: 2 });
+    g.restore(); g.restore();
+  }
+
+  // Große Ernennung (Hauptperson) mit Profilbild, Goldrahmen und Lichtstrahlen
+  drawErnennung(g, t, e, S) {
+    const lt = t - e.t; const d = e.dauer || 5; const a = clamp(lt / 0.3) * (1 - smooth(d - 0.4, d, lt)); if (a <= 0) return;
+    const gold = '#f2c230';
+    g.save(); g.globalAlpha = a;
+    g.fillStyle = `rgba(0,0,0,${0.45 * a})`; g.fillRect(0, 0, W, H);
+    const cy = 760;
+    // Strahlen
+    g.save(); g.translate(W / 2, cy); g.rotate(lt * 0.25);
+    for (let i = 0; i < 16; i++) { g.rotate(Math.PI / 8); const gr = g.createLinearGradient(0, 0, 700, 0); gr.addColorStop(0, 'rgba(242,194,48,0.35)'); gr.addColorStop(1, 'rgba(242,194,48,0)'); g.fillStyle = gr; g.beginPath(); g.moveTo(0, 0); g.lineTo(700, -50); g.lineTo(700, 50); g.closePath(); g.fill(); }
+    g.restore();
+    const k = ease.outBack(clamp(lt / 0.6));
+    g.save(); g.translate(W / 2, cy); g.scale(k, k);
+    g.strokeStyle = gold; g.lineWidth = 10; g.beginPath(); g.arc(0, 0, 175, 0, 7); g.stroke();
+    g.setLineDash([18, 12]); g.lineWidth = 4; g.beginPath(); g.arc(0, 0, 200, lt, lt + 7); g.stroke(); g.setLineDash([]);
+    avatar(g, S.bilder[e.avatar], 0, 0, 160, gold);
+    g.restore();
+    const k2 = ease.outCubic(clamp((lt - 0.35) / 0.5));
+    g.save(); g.globalAlpha *= k2;
+    text(g, e.ueber || 'OFFIZIELL ERNANNT', W / 2, cy + 270, { size: 34, weight: 700, align: 'center', color: C.mute, spacing: 6 });
+    g.font = `900 120px ${F.big}`; const fit = Math.min(1, 980 / g.measureText(e.name).width);
+    g.save(); g.translate(W / 2, cy + 400 - (1 - k2) * 40); g.scale(fit, fit);
+    const gr = g.createLinearGradient(-400, -80, 400, 20); gr.addColorStop(0, '#fff2b0'); gr.addColorStop(0.5, gold); gr.addColorStop(1, '#c8901a');
+    g.font = `900 120px ${F.big}`; g.textAlign = 'center'; g.lineWidth = 10; g.strokeStyle = 'rgba(0,0,0,0.7)'; g.strokeText(e.name, 0, 0); g.fillStyle = gr; g.fillText(e.name, 0, 0);
+    g.restore();
+    const k3 = clamp((lt - 0.8) / 0.4);
+    g.globalAlpha *= k3;
+    rr(g, W / 2 - 430, cy + 450, 860, 76, 38); g.fillStyle = gold; g.fill();
+    text(g, e.titel || 'OFFIZIELLER UNTERSTÜTZER', W / 2, cy + 503, { size: 40, weight: 900, font: F.big, align: 'center', color: '#1a1204', spacing: 1 });
+    text(g, e.unter || 'EHRENMITGLIED · NOTFALLPROJEKT VALENHEIM', W / 2, cy + 580, { size: 30, weight: 700, align: 'center', color: '#ffffff', spacing: 2 });
+    g.restore();
+    // Funken
+    const rg = makeRng(7);
+    for (let i = 0; i < 40; i++) { const ph = (lt * (0.3 + rg() * 0.5) + rg()) % 1; const x = W / 2 + (rg() - 0.5) * 900, y = cy + 300 - ph * 900; g.fillStyle = `rgba(255,220,120,${(1 - ph) * 0.8})`; g.beginPath(); g.arc(x, y, 2 + rg() * 3, 0, 7); g.fill(); }
+    g.restore();
+  }
+
+  // Notfallprojekt-Liste: Punkte werden nacheinander abgehakt
+  drawProjektliste(g, t, e, S) {
+    const lt = t - e.t; const d = e.dauer || 8; const a = clamp(lt / 0.3) * (1 - smooth(d - 0.35, d, lt)); if (a <= 0) return;
+    const n = e.liste.length; const x0 = 48, y0 = 820, w = 560, rowH = 62; const h = 120 + n * rowH;
+    g.save(); g.globalAlpha = a; const k = ease.outCubic(clamp(lt / 0.4)); g.translate(-(1 - k) * 600, 0);
+    panel(g, x0, y0, w, h, 1, '#ff3b3b');
+    text(g, e.titel || 'NOTFALLPROJEKT', x0 + 26, y0 + 50, { size: 34, weight: 900, font: F.big, color: '#ff5050', spacing: 2 });
+    avatar(g, S.bilder[e.avatar], x0 + 46, y0 + 88, 18, C.yellow);
+    text(g, e.unter || '', x0 + 74, y0 + 96, { size: 22, weight: 700, color: C.yellow, spacing: 1 });
+    e.liste.forEach((it, i) => {
+      const done = it.t != null && t >= it.t; const y = y0 + 140 + i * rowH;
+      g.save(); g.globalAlpha *= done ? 1 : 0.45;
+      rr(g, x0 + 24, y - 30, 36, 36, 8); g.strokeStyle = done ? '#3cff8f' : C.mute; g.lineWidth = 3; g.stroke();
+      if (done) { const ck = ease.outBack(clamp((t - it.t) / 0.25)); g.save(); g.translate(x0 + 42, y - 12); g.scale(ck, ck); g.strokeStyle = '#3cff8f'; g.lineWidth = 5; g.beginPath(); g.moveTo(-10, 0); g.lineTo(-3, 8); g.lineTo(11, -9); g.stroke(); g.restore(); }
+      text(g, it.text, x0 + 78, y, { size: 30, weight: 800, font: F.big, color: done ? C.white : C.mute });
+      g.restore();
+    });
+    g.restore();
+  }
+
+  // Großer Schluss-Schriftzug
+  drawSchluss(g, t, e) {
+    const lt = t - e.t; const a = clamp(lt / 0.5); if (a <= 0) return;
+    g.save(); g.globalAlpha = a;
+    g.fillStyle = `rgba(0,0,0,${0.5 * a})`; g.fillRect(0, 0, W, H);
+    const k = ease.outCubic(clamp(lt / 1.0));
+    g.translate(W / 2, 880);
+    g.font = `900 140px ${F.big}`; const f1 = Math.min(1, 980 / g.measureText(e.text).width);
+    g.save(); g.scale(f1 * (0.9 + 0.1 * k), f1 * (0.9 + 0.1 * k));
+    const gr = g.createLinearGradient(-450, -100, 450, 20); gr.addColorStop(0, '#ffffff'); gr.addColorStop(1, '#bfe9ff');
+    g.textAlign = 'center'; g.shadowColor = 'rgba(69,227,255,0.6)'; g.shadowBlur = 40; g.fillStyle = gr; g.fillText(e.text, 0, 0); g.restore();
+    const lw = 700 * ease.outCubic(clamp((lt - 0.4) / 0.8)); g.fillStyle = C.cyan; g.fillRect(-lw / 2, 50, lw, 6);
+    const a2 = clamp((lt - 0.8) / 0.6); g.globalAlpha = a * a2;
+    g.font = `900 92px ${F.big}`; const f2 = Math.min(1, 980 / (g.measureText(e.unter).width + 12 * e.unter.length));
+    g.save(); g.translate(0, 170); g.scale(f2, f2); text(g, e.unter, 0, 0, { size: 92, weight: 900, font: F.big, align: 'center', color: C.yellow, spacing: 12, shadow: 30 }); g.restore();
     g.restore();
   }
 

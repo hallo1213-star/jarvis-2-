@@ -28,6 +28,10 @@ export const KATALOG = {
   bank:         { name: 'BANK', farbe: 0xe8e1d0, akzent: 0xc9a227, h: 12, w: 26, d: 14, spezial: true },
   burger:       { name: "LOUIS' BURGER", farbe: 0x1f6fd1, akzent: 0xff8a1f, h: 5.5, w: 18, d: 12, spezial: true },
   freizeitpark: { name: 'FREIZEITPARK', farbe: 0x3f5a2a, akzent: 0xff3b8a, h: 0, w: 46, d: 46, spezial: true },
+  notfallkrankenhaus: { name: 'NOTFALLKRANKENHAUS', farbe: 0xf2f2f2, akzent: 0xd62828, h: 6, w: 40, d: 30, spezial: true },
+  rettungsdienst: { name: 'RETTUNGSDIENST', farbe: 0xf2f2f2, akzent: 0xff6a00, h: 8, w: 34, d: 20, spezial: true },
+  krisenzentrum: { name: 'KRISENZENTRUM', farbe: 0x1c2430, akzent: 0x45e3ff, h: 18, w: 30, d: 24, spezial: true },
+  versorgungslager: { name: 'VERSORGUNGSLAGER', farbe: 0x6d6a60, akzent: 0xf2994a, h: 11, w: 40, d: 26, spezial: true },
   militaer:     { name: 'MILITÄRSTATION',farbe: 0x4a5236, akzent: 0xc9a227, h: 7,  w: 30, d: 18, spezial: true },
   park:         { name: 'PARK',          farbe: 0x3f5a2a, akzent: 0x6fcf97, h: 0,  w: 44, d: 44, park: true },
 };
@@ -45,6 +49,10 @@ export function buildBuilding(typ, { status = 'fertig', name, seed = 1, fortschr
   if (typ === 'militaer') return buildMilitaer(g, add, name || def.name, r);
   if (typ === 'stadion') return buildStadion(g, add, name || def.name, r);
   if (typ === 'bank') return buildBank(g, add, name || def.name, r);
+  if (typ === 'notfallkrankenhaus') return buildNotfallKH(g, add, name || def.name, r);
+  if (typ === 'rettungsdienst') return buildRettung(g, add, name || def.name, r);
+  if (typ === 'krisenzentrum') return buildKrise(g, add, name || def.name, r);
+  if (typ === 'versorgungslager') return buildLager(g, add, name || def.name, r);
   if (typ === 'burger') return buildBurger(g, add, name || def.name, r);
   if (typ === 'freizeitpark') return buildFreizeitpark(g, add, name || def.name, r);
   if (typ === 'bunker_tief') return buildBunker(g, add, name || def.name, r);
@@ -510,6 +518,49 @@ export function buildObjekt(typ, { name } = {}) {
     const dish = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.2, 0.12), M(0xc9cbc4, { metalness: 0.5 })); dish.position.y = 0.6; dish.rotation.x = -0.3; dish.castShadow = true; radar.add(dish);
     add(new THREE.CylinderGeometry(0.1, 0.1, 0.8, 6), olivD, 0, 3.4, 2.6);
     g.userData.update = (t) => { radar.rotation.y = t * 1.2; rack.rotation.y = Math.sin(t * 0.3) * 0.25; };
+  } else if (typ === 'sirene') {
+    add(new THREE.CylinderGeometry(0.18, 0.3, 9, 8), M(0x6a6e74, { metalness: 0.6 }), 0, 4.5, 0);
+    const kopf = new THREE.Group(); kopf.position.y = 9.3; g.add(kopf);
+    for (let k = 0; k < 4; k++) { const h = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.7, 1.4, 12).rotateX(Math.PI / 2), M(0xd8d8d0, { metalness: 0.3 })); h.position.set(Math.sin(k * Math.PI / 2) * 0.8, 0, Math.cos(k * Math.PI / 2) * 0.8); h.lookAt(Math.sin(k * Math.PI / 2) * 5, 0, Math.cos(k * Math.PI / 2) * 5); h.castShadow = true; kopf.add(h); }
+    const lm = new THREE.MeshStandardMaterial({ color: 0x220800, emissive: 0xff7a10, emissiveIntensity: 0.3 });
+    const licht = new THREE.Mesh(new THREE.SphereGeometry(0.35, 10, 8), lm); licht.position.y = 0.9; kopf.add(licht);
+    const kegel = new THREE.Mesh(new THREE.ConeGeometry(2.2, 8, 16, 1, true).rotateZ(Math.PI / 2).translate(4, 0, 0), new THREE.MeshBasicMaterial({ color: 0xff8a20, transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
+    kegel.position.y = 0.9; kopf.add(kegel);
+    g.userData.alarm = false;
+    g.userData.update = (t) => { const on = g.userData.aktivAb != null && t >= g.userData.aktivAb && t < g.userData.aktivAb + (g.userData.aktivDauer || 99);
+      kegel.rotation.y = t * 5; lm.emissiveIntensity = on ? 4 : 0.3; kegel.material.opacity = on ? 0.18 : 0; };
+  } else if (typ === 'schutzraum') {
+    const beton = M(0x7a7b76, { roughness: 0.95 });
+    add(new THREE.BoxGeometry(4.2, 3.2, 3.2), beton, 0, 1.6, 0);
+    add(new THREE.BoxGeometry(2.4, 2.4, 0.15), M(0x2a2c30, { metalness: 0.5 }), 0, 1.2, 1.62, false);
+    const gr = textTexture(['SCHUTZRAUM', '↓ 120 PLÄTZE'], { w: 512, h: 256, bg: '#0f8a3a', color: '#ffffff', font: '900 64px Montserrat' });
+    const sg = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 1.7), new THREE.MeshStandardMaterial({ map: gr, emissive: 0xffffff, emissiveMap: gr, emissiveIntensity: 0.9 })); sg.position.set(0, 3.9, 1.62); g.add(sg);
+    add(new THREE.BoxGeometry(3.6, 0.2, 0.2), M(0x333333), 0, 3.0, 1.62, false);
+  } else if (typ === 'ehrentafel') {
+    const stein = M(0x3a3c40, { roughness: 0.5, metalness: 0.3 }), gold = new THREE.MeshStandardMaterial({ color: 0xc9a227, metalness: 0.9, roughness: 0.25, emissive: 0x5a4208, emissiveIntensity: 0.15 });
+    add(new THREE.BoxGeometry(5.2, 0.5, 2.2), stein, 0, 0.25, 0);
+    add(new THREE.BoxGeometry(4.6, 3.6, 0.8), stein, 0, 2.3, 0);
+    add(new THREE.BoxGeometry(4.2, 3.2, 0.1), gold, 0, 2.35, 0.42, false);
+    const c = document.createElement('canvas'); c.width = 1024; c.height = 780; const x = c.getContext('2d');
+    const gr = x.createLinearGradient(0, 0, 1024, 780); gr.addColorStop(0, '#d9b23a'); gr.addColorStop(0.5, '#f6dd7a'); gr.addColorStop(1, '#b8901e'); x.fillStyle = gr; x.fillRect(0, 0, 1024, 780);
+    x.strokeStyle = '#6a4e08'; x.lineWidth = 14; x.strokeRect(24, 24, 976, 732); x.lineWidth = 4; x.strokeRect(46, 46, 932, 688);
+    x.fillStyle = '#3a2a04'; x.textAlign = 'center'; x.font = '700 46px Montserrat'; x.fillText('VALENHEIM · NOTFALLPROJEKT', 512, 140);
+    x.font = '900 118px Montserrat'; x.fillText(name || 'ROBLOX_FAN', 512, 320);
+    x.font = '800 52px Montserrat'; x.fillText('EIN TEIL DER', 512, 450); x.fillText('GESCHICHTE VALENHEIMS', 512, 520);
+    x.font = '600 38px Montserrat'; x.fillText('EHRENMITGLIED · OFFIZIELLER UNTERSTÜTZER', 512, 640);
+    const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace;
+    const plak = new THREE.Mesh(new THREE.PlaneGeometry(4.0, 3.05), new THREE.MeshStandardMaterial({ map: tx, metalness: 0.6, roughness: 0.3, emissive: 0xffffff, emissiveMap: tx, emissiveIntensity: 0.35 })); plak.position.set(0, 2.35, 0.48); g.add(plak);
+    // Spotlichter
+    for (const sx of [-2.2, 2.2]) add(new THREE.CylinderGeometry(0.15, 0.25, 0.4, 10), M(0x222222), sx, 0.3, 1.6);
+    const glow = new THREE.Mesh(new THREE.PlaneGeometry(6, 5), new THREE.MeshBasicMaterial({ color: 0xffd36a, transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending, depthWrite: false })); glow.position.set(0, 2.4, 0.6); g.add(glow);
+    // Scheinwerfer auf Tafel und Platz davor
+    const spot = new THREE.SpotLight(0xffe2a8, 320, 30, 0.6, 0.5, 2); spot.position.set(-7, 7, 5); spot.target.position.set(0, 1.5, 1.5); g.add(spot); g.add(spot.target);
+    // Enthüllungstuch
+    const tuch = new THREE.Mesh(new THREE.BoxGeometry(5.0, 4.0, 1.4), M(0x8a1a1a, { roughness: 0.9 })); tuch.position.set(0, 2.3, 0.1); tuch.castShadow = true; g.add(tuch);
+    g.userData.update = (t) => { const ab = g.userData.enthuellAb; const k = ab == null ? 1 : Math.max(0, Math.min(1, (t - ab) / 1.2));
+      const verh = ab == null ? (g.userData.verhuellt ? 0 : 1) : k;
+      tuch.visible = verh < 1; tuch.position.y = 2.3 + verh * 4.5; tuch.scale.set(1 - verh * 0.3, 1 - verh * 0.8, 1); tuch.material.opacity = 1;
+      glow.material.opacity = verh * (0.04 + 0.02 * Math.sin(t * 3)); plak.material.emissiveIntensity = 0.04 + verh * 0.12; };
   } else if (typ === 'panzer') {
     const oliv = M(0x4f5a34, { roughness: 0.75 }), olivD = M(0x353d22), kette = M(0x1c1c1c, { roughness: 0.9 });
     add(new THREE.BoxGeometry(3.6, 1.3, 7.4), oliv, 0, 1.25, 0);
@@ -524,5 +575,80 @@ export function buildObjekt(typ, { name } = {}) {
     if (name) { const tx = textTexture(name, { w: 512, h: 128, color: '#f2f2f2', font: '900 96px Montserrat' }); const pl = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 0.55), new THREE.MeshStandardMaterial({ map: tx, transparent: true })); pl.position.set(1.81, 1.35, 0); pl.rotation.y = Math.PI / 2; g.add(pl); }
     g.userData.update = (t) => { turm.rotation.y = Math.sin(t * 0.4) * 0.35; };
   }
+  return g;
+}
+
+const schild = (g, text, w, h, x, y, z, bg, col, font = '900 120px Montserrat', emis = 0.8) => {
+  const tex = textTexture(text, { w: 1024, h: Math.round(1024 * h / w), bg, color: col, font });
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: emis }));
+  m.position.set(x, y, z); m.rotation.y = Math.PI; g.add(m); return m;
+};
+function kreuzSchild(g, add, x, y, z, s = 1) { const k = new THREE.MeshStandardMaterial({ color: 0x220000, emissive: 0xff2a2a, emissiveIntensity: 2.2 }); add(new THREE.BoxGeometry(1.0 * s, 3.4 * s, 0.25), k, x, y, z, false); add(new THREE.BoxGeometry(3.4 * s, 1.0 * s, 0.25), k, x, y, z, false); }
+
+// Notfallkrankenhaus: Modulcontainer + Zelte + Krankenwagen-Zufahrt
+function buildNotfallKH(g, add, name, r) {
+  add(new THREE.BoxGeometry(46, 0.12, 40), M(0x55585c), 0, 0.06, 0, false);
+  const weiss = M(0xf0f0ee, { roughness: 0.6 }), rot = M(0xd62828, { roughness: 0.5 });
+  for (let k = 0; k < 4; k++) { add(new THREE.BoxGeometry(12, 3.2, 3.2), weiss, -6 + (k % 2) * 13, 1.6 + Math.floor(k / 2) * 3.25, 6); add(new THREE.BoxGeometry(12.05, 0.35, 3.25), rot, -6 + (k % 2) * 13, 1.0 + Math.floor(k / 2) * 3.25, 6, false); }
+  const fen = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, emissive: 0xfff2d6, emissiveIntensity: 1.2 });
+  for (let k = 0; k < 8; k++) add(new THREE.BoxGeometry(1.6, 1.0, 0.05), fen, -10 + k * 3.2, 2.1 + (k % 2) * 3.25, 4.37, false);
+  for (const x of [-12, 0, 12]) { const zelt = add(new THREE.CylinderGeometry(4.5, 4.5, 9, 3, 1, false).rotateZ(Math.PI / 2), weiss, x, 2.2, -8); zelt.rotation.y = Math.PI / 2; zelt.scale.set(1, 1, 0.75); add(new THREE.BoxGeometry(1.4, 0.06, 1.4), rot, x, 4.55, -8, false); }
+  kreuzSchild(g, add, 0, 9.5, 4.2, 0.9);
+  schild(g, name, 16, 2.2, 0, 7.6, 4.2, '#ffffff', '#d62828', '900 110px Montserrat', 0.9);
+  for (const x of [-16, 16]) { const lm = new THREE.MeshStandardMaterial({ color: 0x111111, emissive: 0xfff4dd, emissiveIntensity: 2.5 }); add(new THREE.CylinderGeometry(0.12, 0.12, 6, 6), M(0x777777), x, 3, -16); add(new THREE.BoxGeometry(1.2, 0.4, 0.6), lm, x, 6.1, -16, false); }
+  return g;
+}
+function krankenwagen(add, x, z, ry = 0) {
+  const parts = [];
+  parts.push(add(new THREE.BoxGeometry(2.2, 2.4, 5.2), M(0xf2f2f2, { roughness: 0.4 }), x, 1.5, z));
+  parts.push(add(new THREE.BoxGeometry(2.25, 0.35, 5.25), M(0xff6a00), x, 1.2, z, false));
+  parts.push(add(new THREE.BoxGeometry(1.6, 0.25, 0.4), new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0x3a7bff, emissiveIntensity: 3 }), x, 2.82, z + 1.6, false));
+  for (const [dx, dz] of [[-1, 1.8], [1, 1.8], [-1, -1.8], [1, -1.8]]) parts.push(add(new THREE.CylinderGeometry(0.4, 0.4, 0.3, 10).rotateZ(Math.PI / 2), M(0x111111), x + dx, 0.4, z + dz));
+  for (const p of parts) { const lx = p.position.x - x, lz = p.position.z - z; p.position.x = x + lx * Math.cos(ry) + lz * Math.sin(ry); p.position.z = z - lx * Math.sin(ry) + lz * Math.cos(ry); p.rotation.y += ry; }
+}
+// Rettungsdienstzentrale: Fahrzeughalle mit Toren, Krankenwagen, Hubschrauberlandeplatz
+function buildRettung(g, add, name, r) {
+  add(new THREE.BoxGeometry(46, 0.12, 40), M(0x4a4c50), 0, 0.06, 0, false);
+  const weiss = M(0xf0f0ee, { roughness: 0.6 }), orange = M(0xff6a00, { roughness: 0.5 });
+  add(new THREE.BoxGeometry(34, 8, 16), weiss, 0, 4, 6);
+  add(new THREE.BoxGeometry(34.4, 1.0, 16.4), orange, 0, 8.4, 6);
+  for (let k = 0; k < 4; k++) add(new THREE.BoxGeometry(6, 5, 0.25), new THREE.MeshStandardMaterial({ color: 0x1a1a1a, emissive: 0xfff2d6, emissiveIntensity: 0.6 }), -12 + k * 8, 2.5, -2.05, false);
+  schild(g, name, 18, 2.3, 0, 6.6, -2.3, '#ff6a00', '#ffffff', '900 110px Montserrat', 0.8);
+  for (let k = 0; k < 3; k++) krankenwagen(add, -12 + k * 8, -6.5);
+  add(new THREE.CylinderGeometry(6, 6, 0.08, 32), M(0x2d2f30), 14, 8.95, 6, false);
+  const h = textTexture('H', { w: 256, h: 256, color: '#ffffff', font: '900 200px Montserrat' });
+  const hm = new THREE.Mesh(new THREE.PlaneGeometry(5, 5).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ map: h, transparent: true, emissive: 0xffffff, emissiveMap: h, emissiveIntensity: 0.4 })); hm.position.set(14, 9.02, 6); hm.rotation.y = Math.PI; g.add(hm);
+  const blau = []; for (const x of [-16, 16]) { const m = new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0x3a7bff, emissiveIntensity: 2 }); add(new THREE.SphereGeometry(0.35, 8, 6), m, x, 9.2, -2, false); blau.push(m); }
+  g.userData.update = (t) => { blau.forEach((m, i) => { m.emissiveIntensity = Math.sin(t * 9 + i * 3) > 0 ? 4 : 0.2; }); };
+  return g;
+}
+// Krisenzentrum: dunkler Glasbau, Antennen, Satellitenschüsseln, Lagebildschirm
+function buildKrise(g, add, name, r) {
+  add(new THREE.BoxGeometry(46, 0.12, 40), M(0x3a3c40), 0, 0.06, 0, false);
+  const glas = new THREE.MeshStandardMaterial({ color: 0x0b1018, roughness: 0.15, metalness: 0.6, emissive: 0x0a2a3a, emissiveIntensity: 0.6 });
+  add(new THREE.BoxGeometry(30, 18, 22), glas, 0, 9, 3);
+  for (let y = 3.5; y < 18; y += 3.6) add(new THREE.BoxGeometry(30.2, 0.25, 22.2), new THREE.MeshStandardMaterial({ color: 0x111111, emissive: 0x45e3ff, emissiveIntensity: 0.9 }), 0, y, 3, false);
+  add(new THREE.BoxGeometry(31, 1.0, 23), M(0x1c2430), 0, 18.4, 3);
+  const scr = textTexture(['LAGEZENTRUM', 'WARNSTUFE: HOCH', 'NOCH 6 TAGE'], { w: 1024, h: 600, bg: '#06121a', color: '#45e3ff', font: '800 100px Oxanium' });
+  const sc = new THREE.Mesh(new THREE.PlaneGeometry(12, 7), new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0xffffff, emissiveMap: scr, emissiveIntensity: 1.0 })); sc.position.set(0, 9, -8.1); sc.rotation.y = Math.PI; g.add(sc);
+  schild(g, name, 16, 2.0, 0, 15.6, -8.15, '#1c2430', '#45e3ff', '900 110px Montserrat', 0.9);
+  for (const [x, z] of [[-10, 8], [10, 10]]) { add(new THREE.CylinderGeometry(0.15, 0.25, 10, 6), M(0x9aa0a6, { metalness: 0.7 }), x, 23.9, z); add(new THREE.SphereGeometry(0.35, 8, 6), new THREE.MeshStandardMaterial({ color: 0x220000, emissive: 0xff2020, emissiveIntensity: 3 }), x, 29, z, false); }
+  const dishes = [];
+  for (const x of [-4, 4]) { const d = add(new THREE.SphereGeometry(2.0, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.32), M(0xd8dde3, { side: THREE.DoubleSide, metalness: 0.4 }), x, 20.6, 10); d.rotation.x = -0.9; dishes.push(d); }
+  g.userData.update = (t) => { dishes.forEach((d, i) => { d.rotation.z = Math.sin(t * 0.3 + i) * 0.4; }); };
+  return g;
+}
+// Versorgungslager: Halle, Hochregale mit Kisten, LKWs, Wassertanks
+function buildLager(g, add, name, r) {
+  add(new THREE.BoxGeometry(46, 0.12, 40), M(0x5a5850), 0, 0.06, 0, false);
+  const halle = M(0x6d6a60, { roughness: 0.8 }), orange = M(0xf2994a);
+  add(new THREE.BoxGeometry(36, 10, 18), halle, 0, 5, 8);
+  const dach = add(new THREE.CylinderGeometry(9.2, 9.2, 36.2, 20, 1, false, 0, Math.PI).rotateZ(Math.PI / 2), M(0x8a8a84, { metalness: 0.5 }), 0, 10, 8); dach.rotation.y = 0;
+  for (const x of [-10, 0, 10]) add(new THREE.BoxGeometry(7, 7, 0.25), M(0x3a3a3a, { metalness: 0.4 }), x, 3.5, -1.05, false);
+  schild(g, name, 18, 2.2, 0, 8.4, -1.25, '#f2994a', '#141414', '900 100px Montserrat', 0.7);
+  const cols = [0x8a6a3a, 0x4f5a3a, 0x3a5a7a, 0x7a3a2a];
+  for (let k = 0; k < 30; k++) add(new THREE.BoxGeometry(1.8, 1.4, 1.8), M(cols[k % 4]), -18 + (k % 10) * 2.0, 0.8 + Math.floor(k / 10) * 1.45, -6.5);
+  for (const x of [12, 17]) add(new THREE.CylinderGeometry(2, 2, 6, 16), M(0x2d6fd1, { metalness: 0.3 }), x, 3, -10);
+  for (const x of [-12, -4]) { add(new THREE.BoxGeometry(2.6, 3.2, 7), M(0xdddddd), x, 2.0, -13); add(new THREE.BoxGeometry(2.6, 2.4, 2.4), orange, x, 1.6, -17.8); }
   return g;
 }
