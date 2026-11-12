@@ -447,7 +447,7 @@ export class HUD {
   // Zielbalken unter der Karte: Überraschung bei X Followern
   drawZiel(g, t, z, S) {
     const a = clamp((t - (z.t0 ?? -9)) / 0.4); if (a <= 0) return;
-    const x = 784, y = 652, w = 256, h = 96; const cur = Math.round(S.einwohner), ziel = z.ziel || 50;
+    const x = 784, y = 652, w = 256, h = 96; const cur = Math.round(S.einwohner) - (S.nichtFollower || 0), ziel = z.ziel || 50;
     g.save(); g.globalAlpha = a;
     panel(g, x, y, w, h, 1, C.yellow);
     text(g, z.text || '🎁 ÜBERRASCHUNG', x + 16, y + 30, { size: 19, weight: 700, color: C.yellow, spacing: 1.5 });

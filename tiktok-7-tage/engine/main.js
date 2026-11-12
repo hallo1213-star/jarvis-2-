@@ -249,6 +249,7 @@ async function init() {
     S.namen = benannt.filter((o) => o.arrive === null || t >= o.arrive + 0.5).map((o) => { const pp = o.cur || o.b.pos; return { name: o.b.name, avatar: o.b.avatar, nr: o.b.nr, pos: [pp[0], SLAB + 2.15, pp[1]], t0: o.arrive ?? -9 }; });
     for (const tm of teams) for (const sp of tm.spieler) if (sp.f.root.visible && t > tm.e.t + sp.delay + (tm.e.lauf || 2.4) * 0.8) S.namen.push({ name: sp.sp.name, avatar: sp.sp.avatar, nr: sp.sp.nr, pos: [sp.f.root.position.x, SLAB + 2.3, sp.f.root.position.z], t0: tm.e.t + sp.delay + (tm.e.lauf || 2.4) * 0.8 - 0.5 });
     S.ausweis = null; for (const e of events) if (e.typ === 'ausweis' && t >= e.t && t < e.t + (e.dauer || 1.1)) S.ausweis = e;
+    S.nichtFollower = benannt.filter((o) => o.b.follower === false && (o.arrive === null || t >= o.arrive + 0.6)).length;
     S.ziel = STATUS.ziel || null; for (const e of events) if (e.typ === 'ziel' && t >= e.t) S.ziel = { ...e, t0: e.t };
     // 'werte': HUD-Werte zählen animiert auf neue Werte (z. B. Stadtkasse, Gebäude, Entwicklung, Tag)
     for (const e of events) if (e.typ === 'werte' && t >= e.t) {

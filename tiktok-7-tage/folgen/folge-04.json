@@ -756,7 +756,8 @@
       "schuhe": "0xf2f2f2",
       "rucksack": "0x5a5e66",
       "gurt": "0x5a5e66"
-     }
+     },
+     "follower": false
     },
     {
      "typ": "follower_karte",
@@ -1192,7 +1193,7 @@
    "uebergang": "schnitt",
    "vorlauf": 0.35,
    "nachlauf": 2.3,
-   "sprecher": "In der Kasse bleiben *fünftausend* *Euro*. |0.3| Noch *fünfunddreißig* Follower | bis zur großen *Überraschung*! |0.3| Schreibt in die *Kommentare*, was wir als Nächstes bauen!",
+   "sprecher": "In der Kasse bleiben *fünftausend* *Euro*. |0.3| Noch *sechsunddreißig* Follower | bis zur großen *Überraschung*! |0.3| Schreibt in die *Kommentare*, was wir als Nächstes bauen!",
    "shots": [
     {
      "typ": "pfad",
@@ -1255,10 +1256,10 @@
     },
     {
      "typ": "hinweis",
-     "wort": "fünfunddreißig",
+     "wort": "sechsunddreißig",
      "offset": -0.1,
      "dauer": 2.6,
-     "text": "NOCH 35 BIS ZUR ÜBERRASCHUNG"
+     "text": "NOCH 36 BIS ZUR ÜBERRASCHUNG"
     },
     {
      "typ": "endkarte",
@@ -1279,7 +1280,7 @@
     },
     {
      "typ": "riser",
-     "wort": "fünfunddreißig",
+     "wort": "sechsunddreißig",
      "offset": -0.3,
      "dauer": 1.2
     },
@@ -1547,8 +1548,10 @@
      "schuhe": "0xf2f2f2",
      "rucksack": "0x5a5e66",
      "gurt": "0x5a5e66"
-    }
+    },
+    "follower": false
    }
-  ]
+  ],
+  "follower": 14
  }
 }
