@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { P, HB, SLAB, BoxBatch, instanced, merge, treeGeometry, lampGeometry, textTexture } from './world.js';
 import { makeRng } from './rng.js';
 import { flaggeCanvas, wappenCanvas, tvLogoCanvas, FARBEN } from './identitaet.js';
-import { baueVillenviertel } from './villa.js';
+import { baueVillenviertel, baueMegaVilla } from './villa.js';
 
 const C = (hex) => new THREE.Color(hex);
 const M = (hex, o = {}) => new THREE.MeshStandardMaterial({ color: hex, roughness: 0.7, ...o });
@@ -78,7 +78,7 @@ function flaggenMaterial(tex, U) {
 }
 
 // ================================================================ Aufbau
-export function baueRepublik(scene, world, U, { seed = 2026, villen = [] } = {}) {
+export function baueRepublik(scene, world, U, { seed = 2026, villen = [], megaVilla = null } = {}) {
   const rng = makeRng(seed);
   const bb = new BoxBatch();
   let bid = 5000;
@@ -92,6 +92,7 @@ export function baueRepublik(scene, world, U, { seed = 2026, villen = [] } = {})
   const pflaster = new BoxBatch(); // Plätze über Straßen
   // Villenviertel (Luxusviertel, Blöcke i -11..-7, j 7..10): zwei Villen pro Block, je eine zur Nord- und Südstraße
   const villaPlaetze = [];
+  if (megaVilla) for (const [i, j] of [[-12, 11], [-11, 11], [-12, 12], [-11, 12]]) res(i, j); // Präsidenten-Anwesen
   if (villen.length) {
     outer: for (let j = 7; j <= 10; j++) for (let i = -7; i >= -11; i--) {
       res(i, j); const cx = i * P, cz = j * P;
@@ -375,11 +376,12 @@ export function baueRepublik(scene, world, U, { seed = 2026, villen = [] } = {})
   const hissFlagge = new THREE.Mesh(new THREE.PlaneGeometry(9, 6, 20, 8).translate(4.5, -3, 0), flaggenMaterial(fTex, U));
   hissFlagge.position.set(0.3, SLAB + 23.6, -19.5); scene.add(hissFlagge);
 
+  const praesidentenVilla = megaVilla ? baueMegaVilla(scene, { x: -11.5 * P, z: 11.5 * P, slab: SLAB, name: megaVilla }) : null;
   const villenviertel = villen.length ? baueVillenviertel(scene, { plaetze: villaPlaetze, namen: villen, slab: SLAB }) : null;
   if (villen.length) schild('VILLENVIERTEL VALENHEIM HILLS', 30, 3.2, -7 * P + 40, SLAB + 6, 6.5 * P, Math.PI, FARBEN.nachtblau, '#e8d29a', '900 80px Montserrat', 0.8);
 
   return {
-    hissFlagge, tvBeacon, villenviertel,
+    hissFlagge, tvBeacon, villenviertel, praesidentenVilla,
     setHissen(k) { hissFlagge.position.y = SLAB + 3.2 + k * 20.4; hissFlagge.visible = k > 0.001; },
     update(t) { tvBeacon.emissiveIntensity = Math.sin(t * 3) > 0.5 ? 5 : 0.3; },
   };

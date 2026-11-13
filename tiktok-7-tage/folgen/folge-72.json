@@ -1,0 +1,690 @@
+{
+ "folge": 72,
+ "titel": "Meine Villa",
+ "licht": "nacht",
+ "republik": true,
+ "mega_villa": "PRÄSIDENTENVILLA",
+ "_hinweis": "Sondervideo: Die Präsidentenvilla. CTA: 2 Videos in die Story = eigene Riesen-Villa.",
+ "stimme": {
+  "modell": "de_DE-thorsten-high",
+  "tempo": 1.05,
+  "lebendigkeit": 0.7,
+  "rhythmus": 0.84,
+  "tonhoehe_halbtoene": 0.8
+ },
+ "aussprache": {
+  "Infinity-Pool": "Infiniti-Pul",
+  "Pool": "Pul",
+  "Riesen-Villa": "Riesen-Villa"
+ },
+ "musik": {
+  "stil": "dramatisch",
+  "tonart": "d-moll",
+  "bpm": 92
+ },
+ "szenen": [
+  {
+   "id": "s1_hook",
+   "vorlauf": 0.6,
+   "nachlauf": 0.3,
+   "sprecher": "Das ist die *krasseste* Villa | in ganz Valenheim. |0.4| Und sie gehört | *mir*.",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      -851,
+      0,
+      845
+     ],
+     "radius": [
+      230,
+      150
+     ],
+     "hoehe": [
+      150,
+      90
+     ],
+     "winkel": [
+      60,
+      95
+     ],
+     "fov": [
+      46,
+      44
+     ],
+     "wackeln": 0.06,
+     "ease": "inOutSine"
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "hud_aus",
+     "zeit": 0,
+     "dauer": 300,
+     "global": true
+    },
+    {
+     "typ": "titel",
+     "zeit": 0.15,
+     "dauer": 2.6,
+     "text": "MEINE VILLA",
+     "unter": "VALENHEIM HILLS"
+    },
+    {
+     "typ": "feuerwerk",
+     "wort": "mir",
+     "offset": -0.2,
+     "dauer": 4,
+     "anzahl": 14,
+     "zentrum": [
+      -851,
+      0,
+      820
+     ],
+     "radius": 60,
+     "hoehe": 45
+    }
+   ],
+   "toene": [
+    {
+     "typ": "boom",
+     "zeit": 0.05
+    },
+    {
+     "typ": "wind_swell",
+     "zeit": 0
+    },
+    {
+     "typ": "riser",
+     "wort": "gehört",
+     "offset": -0.6,
+     "dauer": 0.9
+    },
+    {
+     "typ": "impact",
+     "wort": "mir"
+    }
+   ]
+  },
+  {
+   "id": "s2_tor",
+   "uebergang": "schnitt",
+   "vorlauf": 0.3,
+   "nachlauf": 0.3,
+   "sprecher": "Ein goldenes *Tor*, | eine *Palmenallee*, | und ein Brunnen | aus *Gold*.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.12,
+     "keys": [
+      {
+       "pos": [
+        -843,
+        3.5,
+        950
+       ],
+       "ziel": [
+        -851,
+        4.5,
+        916
+       ]
+      },
+      {
+       "pos": [
+        -848,
+        4,
+        936
+       ],
+       "ziel": [
+        -851,
+        4.5,
+        916
+       ]
+      }
+     ],
+     "ease": "inOutSine"
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.12,
+     "keys": [
+      {
+       "pos": [
+        -838,
+        6,
+        915
+       ],
+       "ziel": [
+        -851,
+        3,
+        877
+       ]
+      },
+      {
+       "pos": [
+        -844,
+        5,
+        905
+       ],
+       "ziel": [
+        -851,
+        4,
+        877
+       ]
+      }
+     ],
+     "ab_wort": "Palmenallee",
+     "offset": -0.2
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      42
+     ],
+     "wackeln": 0.1,
+     "keys": [
+      {
+       "pos": [
+        -830,
+        9,
+        898
+       ],
+       "ziel": [
+        -851,
+        4,
+        877
+       ]
+      },
+      {
+       "pos": [
+        -872,
+        9,
+        898
+       ],
+       "ziel": [
+        -851,
+        4,
+        877
+       ]
+      }
+     ],
+     "ab_wort": "Brunnen",
+     "offset": -0.2
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "gebiet",
+     "wort": "Tor",
+     "offset": -0.1,
+     "dauer": 2.0,
+     "text": "GOLDENES TOR",
+     "farbe": "#f2c230",
+     "nr": "EINGANG"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "Brunnen",
+     "offset": -0.1,
+     "dauer": 2.2,
+     "text": "GOLDBRUNNEN",
+     "farbe": "#f2c230",
+     "nr": "VORPLATZ"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "whoosh",
+     "zeit": 0
+    },
+    {
+     "typ": "whoosh",
+     "wort": "Palmenallee",
+     "offset": -0.25
+    },
+    {
+     "typ": "whoosh",
+     "wort": "Brunnen",
+     "offset": -0.25
+    }
+   ]
+  },
+  {
+   "id": "s3_haus",
+   "uebergang": "schnitt",
+   "vorlauf": 0.3,
+   "nachlauf": 0.3,
+   "sprecher": "Drei Etagen | aus *Glas* und *Marmor*, | mit einem *Infinity-Pool* | im ersten Stock.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.12,
+     "keys": [
+      {
+       "pos": [
+        -815,
+        9,
+        890
+       ],
+       "ziel": [
+        -851,
+        8,
+        840
+       ]
+      },
+      {
+       "pos": [
+        -830,
+        12,
+        885
+       ],
+       "ziel": [
+        -851,
+        9,
+        840
+       ]
+      }
+     ],
+     "ease": "inOutSine"
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.12,
+     "keys": [
+      {
+       "pos": [
+        -820,
+        14,
+        868
+       ],
+       "ziel": [
+        -845,
+        7,
+        849
+       ]
+      },
+      {
+       "pos": [
+        -830,
+        13,
+        866
+       ],
+       "ziel": [
+        -845,
+        7,
+        849
+       ]
+      }
+     ],
+     "ab_wort": "Infinity-Pool",
+     "offset": -0.2
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "gebiet",
+     "wort": "Glas",
+     "offset": -0.1,
+     "dauer": 2.2,
+     "text": "GLASPALAST · 3 ETAGEN",
+     "farbe": "#9fd2ff",
+     "nr": "HAUPTHAUS"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "Infinity-Pool",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "text": "INFINITY-POOL",
+     "farbe": "#45e3ff",
+     "nr": "1. STOCK"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "whoosh",
+     "zeit": 0
+    },
+    {
+     "typ": "whoosh",
+     "wort": "Infinity-Pool",
+     "offset": -0.25
+    }
+   ]
+  },
+  {
+   "id": "s4_extras",
+   "uebergang": "schnitt",
+   "vorlauf": 0.3,
+   "nachlauf": 0.3,
+   "sprecher": "In der Garage: | fünf *Sportwagen*. |0.2| Dazu ein riesiger *Pool*, | und mein eigener *Tennisplatz*.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.1,
+     "keys": [
+      {
+       "pos": [
+        -884,
+        3.2,
+        893
+       ],
+       "ziel": [
+        -897,
+        1.6,
+        866
+       ]
+      },
+      {
+       "pos": [
+        -904,
+        3.2,
+        893
+       ],
+       "ziel": [
+        -893,
+        1.6,
+        866
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.12,
+     "keys": [
+      {
+       "pos": [
+        -790,
+        12,
+        905
+       ],
+       "ziel": [
+        -811,
+        1,
+        873
+       ]
+      },
+      {
+       "pos": [
+        -800,
+        10,
+        900
+       ],
+       "ziel": [
+        -811,
+        1,
+        873
+       ]
+      }
+     ],
+     "ab_wort": "Pool",
+     "offset": -0.2
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.12,
+     "keys": [
+      {
+       "pos": [
+        -790,
+        22,
+        790
+       ],
+       "ziel": [
+        -811,
+        0,
+        813
+       ]
+      },
+      {
+       "pos": [
+        -800,
+        20,
+        786
+       ],
+       "ziel": [
+        -811,
+        0,
+        813
+       ]
+      }
+     ],
+     "ab_wort": "Tennisplatz",
+     "offset": -0.2
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "gebiet",
+     "wort": "Sportwagen",
+     "offset": -0.2,
+     "dauer": 2.2,
+     "text": "5 SPORTWAGEN",
+     "farbe": "#f2c230",
+     "nr": "GARAGE"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "Pool",
+     "offset": -0.1,
+     "dauer": 2.0,
+     "text": "POOL MIT POOLHAUS",
+     "farbe": "#45e3ff",
+     "nr": "GARTEN"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "Tennisplatz",
+     "offset": -0.1,
+     "dauer": 2.0,
+     "text": "PRIVATER TENNISPLATZ",
+     "farbe": "#9fd2ff",
+     "nr": "SPORT"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "whoosh",
+     "zeit": 0
+    },
+    {
+     "typ": "whoosh",
+     "wort": "Pool",
+     "offset": -0.25
+    },
+    {
+     "typ": "whoosh",
+     "wort": "Tennisplatz",
+     "offset": -0.25
+    }
+   ]
+  },
+  {
+   "id": "s5_heli",
+   "uebergang": "schnitt",
+   "vorlauf": 0.3,
+   "nachlauf": 0.4,
+   "sprecher": "Und auf dem Dach | wartet mein eigener *Hubschrauber*.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.1,
+     "ease": "inOutSine",
+     "keys": [
+      {
+       "pos": [
+        -842,
+        30,
+        856
+       ],
+       "ziel": [
+        -867,
+        17,
+        833
+       ]
+      },
+      {
+       "pos": [
+        -852,
+        26,
+        852
+       ],
+       "ziel": [
+        -867,
+        17,
+        833
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "gebiet",
+     "wort": "Hubschrauber",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "text": "HUBSCHRAUBERLANDEPLATZ",
+     "farbe": "#f2c230",
+     "nr": "DACH"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "riser",
+     "wort": "wartet",
+     "offset": -0.6,
+     "dauer": 0.9
+    },
+    {
+     "typ": "impact",
+     "wort": "Hubschrauber"
+    }
+   ]
+  },
+  {
+   "id": "s6_cta",
+   "uebergang": "schwarz",
+   "vorlauf": 0.5,
+   "nachlauf": 3.4,
+   "sprecher": "Du willst auch so eine Villa | wie *meine*? |0.5| Lege *zwei* *Videos* von mir | in deine *Story*, | und du hast deine eigene | *Riesen-Villa*!",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      -851,
+      5,
+      845
+     ],
+     "radius": [
+      150,
+      175
+     ],
+     "hoehe": [
+      70,
+      90
+     ],
+     "winkel": [
+      70,
+      100
+     ],
+     "fov": [
+      48,
+      46
+     ],
+     "wackeln": 0.06,
+     "ease": "inOutSine"
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "schluss",
+     "wort": "Lege",
+     "offset": -0.2,
+     "dauer": 20,
+     "text": "2 VIDEOS IN DEINE STORY",
+     "unter": "= DEINE EIGENE RIESEN-VILLA",
+     "y": 640
+    },
+    {
+     "typ": "kommentar_cta",
+     "wort": "Riesen-Villa",
+     "offset": -0.3,
+     "text": "JETZT IN DIE STORY!",
+     "text2": "+ FOLGEN = EINWOHNER"
+    },
+    {
+     "typ": "feuerwerk",
+     "wort": "Riesen-Villa",
+     "offset": -0.2,
+     "dauer": 5,
+     "anzahl": 20,
+     "zentrum": [
+      -851,
+      0,
+      820
+     ],
+     "radius": 70,
+     "hoehe": 50
+    }
+   ],
+   "toene": [
+    {
+     "typ": "impact",
+     "wort": "meine",
+     "offset": -0.1
+    },
+    {
+     "typ": "final_hit",
+     "wort": "Riesen-Villa",
+     "offset": -0.2
+    }
+   ]
+  }
+ ]
+}
