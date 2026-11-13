@@ -90,7 +90,7 @@ function makeMaterials() {
   const M = {};
   const std = (o) => new THREE.MeshStandardMaterial({ roughness: 0.85, metalness: 0, ...o });
   TX.FACADE_STYLES.forEach((s, i) => {
-    M['fac' + i] = std({ map: TX.facadeTexture(i), roughness: 0.82 });
+    M['fac' + i] = std({ map: TX.facadeTexture(i), roughness: 0.82, emissive: '#ffffff', emissiveMap: TX.facadeNightTexture(i), emissiveIntensity: 0 });
     M['fac' + i + ':giebel'] = std({ color: s.wall, roughness: 0.9 });
   });
   for (let i = 0; i < 6; i++) M['shop' + i] = std({ map: TX.shopTexture(i), roughness: 0.6 });
@@ -119,7 +119,7 @@ function makeMaterials() {
   M.rail = std({ color: '#6b6560', roughness: 0.4, metalness: 0.8 });
   M.sleeper = std({ color: '#4a3b2e', roughness: 0.95 });
   M.camo = std({ color: '#55603f', roughness: 0.85 });
-  M.redcross = std({ color: '#d42a2a', roughness: 0.5, emissive: '#5a0000' });
+  M.redcross = std({ color: '#d42a2a', roughness: 0.5, emissive: '#ff2020', emissiveIntensity: 0.15 });
   M.gold = std({ color: '#d4af37', roughness: 0.3, metalness: 0.9 });
   return M;
 }

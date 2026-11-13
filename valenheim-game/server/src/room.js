@@ -7,6 +7,9 @@ const TICK_HZ = 15, MAX_PER_ROOM = 50, BOUNDS = 330;
 const MAX_SPEED = 8.4;           // m/s (Rennen 7.6 + Puffer)
 const EMOTES = ['hallo', 'hilfe', 'folgen', 'danke', 'super', 'achtung'];
 
+// Fehler in Spiellogik dürfen den Server nie beenden
+function safe(fn) { try { fn(); } catch (e) { console.error('Spiellogik-Fehler:', e); } }
+
 const rooms = new Map(); let roomSeq = 0;
 const online = new Map(); // playerId -> client
 global.VALENHEIM_ONLINE = () => online.size;
@@ -20,9 +23,19 @@ function broadcast(room, msg, except) { const s = JSON.stringify(msg); for (cons
 function broadcastAll(msg) { const s = JSON.stringify(msg); for (const c of online.values()) if (c.ws.readyState === 1) c.ws.send(s); }
 const pub = (c) => ({ id: c.id, name: c.name, look: c.look, level: c.level, x: c.x, y: c.y, z: c.z, h: c.h });
 
-export const hooks = { onJoin: [], onLeave: [], onMessage: [] }; // für Missionen (Phase 3)
+export const hooks = { onJoin: [], onLeave: [], onMessage: [], onMove: [] }; // für Missionen (Phase 3)
 export function clientsOf() { return online; }
 export { send, broadcast, broadcastAll };
+
+// Aktueller Weltzustand (Wetter, Stromausfall) – neue Spieler bekommen ihn beim Betreten
+const worldState = {};
+export function setWorldState(typ, dauer) {
+  const until = Date.now() + dauer * 1000;
+  if (typ === 'regen' || typ === 'nebel') { worldState.wetter = { typ, until }; }
+  if (typ === 'klar') delete worldState.wetter;
+  if (typ === 'stromausfall') worldState.strom = { until };
+}
+function currentWorld() { const now = Date.now(); const o = {}; for (const [k, v] of Object.entries(worldState)) if (v.until > now) o[k] = { ...v, rest: Math.round((v.until - now) / 1000) }; return o; }
 
 export function attach(server) {
   const wss = new WebSocketServer({ server, path: '/ws', maxPayload: 2048 });
@@ -32,13 +45,14 @@ export function attach(server) {
     const helloTimer = setTimeout(() => { if (!c) ws.close(4001, 'keine Anmeldung'); }, 8000);
     let msgCount = 0, msgWindow = Date.now();
 
-    ws.on('message', (raw) => {
+    ws.on('message', async (raw) => {
       // Flutschutz: max. 40 Nachrichten pro Sekunde
       const now = Date.now(); if (now - msgWindow > 1000) { msgWindow = now; msgCount = 0; } if (++msgCount > 40) return;
       let m; try { m = JSON.parse(raw); } catch { return; }
       if (!c) {
         if (m.t !== 'hello') return;
-        const p = DB.findByToken(String(m.token || ''));
+        if (ws.helloBusy) return; ws.helloBusy = true;
+        const p = await DB.findByToken(String(m.token || ''));
         if (!p) return ws.close(4003, 'ungültig');
         if (p.banned) return ws.close(4004, 'gesperrt');
         clearTimeout(helloTimer);
@@ -46,11 +60,11 @@ export function attach(server) {
         const old = online.get(p.id); if (old) { send(old.ws, { t: 'kicked', grund: 'Du hast dich auf einem anderen Gerät oder Tab angemeldet.' }); old.ws.close(4005, 'doppelt'); leave(old); }
         const room = getRoom(); const prof = DB.publicProfile(p);
         c = { id: p.id, name: p.name, look: prof.look, level: prof.level, role: p.role, ws, room, x: 0, y: 0.15, z: 21, h: Math.PI, a: 0, lastT: now, joinedAt: now, lastEmote: 0, warn: 0 };
-        room.clients.set(c.id, c); online.set(c.id, c); DB.touch(c.id);
-        send(ws, { t: 'welcome', you: c.id, room: room.name, players: [...room.clients.values()].filter((o) => o !== c).map(pub), online: online.size });
+        room.clients.set(c.id, c); online.set(c.id, c); DB.touch(c.id).catch(() => {});
+        send(ws, { t: 'welcome', welt: currentWorld(), you: c.id, room: room.name, players: [...room.clients.values()].filter((o) => o !== c).map(pub), online: online.size });
         broadcast(room, { t: 'join', p: pub(c) }, c);
         broadcastAll({ t: 'online', n: online.size });
-        hooks.onJoin.forEach((f) => f(c));
+        safe(() => hooks.onJoin.forEach((f) => f(c)));
         return;
       }
       if (m.t === 'in') {
@@ -61,6 +75,7 @@ export function attach(server) {
           c.warn++; send(ws, { t: 'fix', x: c.x, y: c.y, z: c.z }); c.lastT = now; return;
         }
         c.x = x; c.y = y; c.z = z; c.h = h; c.a = Math.min(9, Math.max(0, +m.a || 0)); c.lastT = now;
+        safe(() => hooks.onMove.forEach((f) => f(c, dt, d)));
         return;
       }
       if (m.t === 'emote') {
@@ -69,7 +84,7 @@ export function attach(server) {
         return;
       }
       if (m.t === 'ping') return send(ws, { t: 'pong', ts: m.ts, now });
-      hooks.onMessage.forEach((f) => f(c, m));
+      safe(() => hooks.onMessage.forEach((f) => f(c, m)));
     });
     ws.on('close', () => { clearTimeout(helloTimer); if (c) leave(c); });
     ws.on('error', () => {});
@@ -78,10 +93,10 @@ export function attach(server) {
   function leave(c) {
     if (!c.room.clients.has(c.id) || c.room.clients.get(c.id) !== c) return;
     c.room.clients.delete(c.id); if (online.get(c.id) === c) online.delete(c.id);
-    DB.addPlaytime(c.id, (Date.now() - c.joinedAt) / 1000); DB.touch(c.id);
+    Promise.resolve(DB.addPlaytime(c.id, (Date.now() - c.joinedAt) / 1000)).then(() => DB.touch(c.id)).catch((e) => console.error(e));
     broadcast(c.room, { t: 'leave', id: c.id });
     broadcastAll({ t: 'online', n: online.size });
-    hooks.onLeave.forEach((f) => f(c));
+    safe(() => hooks.onLeave.forEach((f) => f(c)));
     if (c.room.clients.size === 0 && rooms.size > 1) rooms.delete(c.room.id);
   }
 

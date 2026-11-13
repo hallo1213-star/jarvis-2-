@@ -3,5 +3,11 @@
   "private": true,
   "type": "module",
   "main": "src/index.js",
-  "dependencies": { "ws": "8.23.0" }
+  "dependencies": {
+    "pg": "^8.23.1",
+    "ws": "8.23.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.16"
+  }
 }

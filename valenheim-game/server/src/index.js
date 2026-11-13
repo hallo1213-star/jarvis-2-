@@ -9,6 +9,8 @@ import { fileURLToPath } from 'node:url';
 import * as DB from './db.js';
 import { checkName } from './names.js';
 
+process.on('unhandledRejection', (e) => console.error('Unbehandelter Fehler:', e));
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 2567);
 const DIST = path.resolve(__dirname, '../../web/dist');
@@ -58,7 +60,7 @@ function cleanLook(look) {
 
 // ---------- API ----------
 const routes = {
-  'GET /api/status': async () => [200, { ok: true, spiel: 'Valenheim – The City Challenge', buerger: DB.countPlayers(), online: global.VALENHEIM_ONLINE?.() ?? 0 }],
+  'GET /api/status': async () => [200, { ok: true, spiel: 'Valenheim – The City Challenge', buerger: await DB.countPlayers(), online: global.VALENHEIM_ONLINE?.() ?? 0 }],
 
   'POST /api/register': async (req) => {
     if (limited('reg:' + clientIp(req), 5)) return [429, { fehler: 'Zu viele Versuche. Bitte warte eine Minute.' }];
@@ -66,9 +68,9 @@ const routes = {
     const name = String(body.name || '').trim();
     const err = checkName(name);
     if (err) return [400, { fehler: err }];
-    if (DB.findByName(name)) return [409, { fehler: 'Dieser Name ist schon vergeben. Bitte wähle einen anderen.' }];
+    if (await DB.findByName(name)) return [409, { fehler: 'Dieser Name ist schon vergeben. Bitte wähle einen anderen.' }];
     try {
-      const { token, player } = DB.createPlayer(name, cleanLook(body.look));
+      const { token, player } = await DB.createPlayer(name, cleanLook(body.look));
       return [201, { token, profil: DB.publicProfile(player) }];
     } catch (e) {
       if (String(e.message).includes('UNIQUE')) return [409, { fehler: 'Dieser Name ist schon vergeben. Bitte wähle einen anderen.' }];
@@ -77,13 +79,14 @@ const routes = {
   },
 
   'GET /api/me': async (req) => {
-    const p = DB.findByToken(tokenFrom(req));
+    const p = await DB.findByToken(tokenFrom(req));
     if (!p) return [401, { fehler: 'Nicht angemeldet.' }];
     if (p.banned) return [403, { fehler: 'Dieses Konto wurde gesperrt.' }];
-    DB.touch(p.id);
-    return [200, { profil: DB.publicProfile(p) }];
+    await DB.touch(p.id);
+    return [200, { profil: await DB.fullProfile(p) }];
   },
 };
+let patternRoutes = [];
 
 // ---------- statische Dateien (gebaute Website) ----------
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json',
@@ -103,9 +106,10 @@ function serveStatic(req, res) {
 
 export const server = http.createServer(async (req, res) => {
   const key = `${req.method} ${req.url.split('?')[0]}`;
-  const h = routes[key];
+  let h = routes[key]; let params = [];
+  if (!h) for (const [m, re, fn] of patternRoutes) { const mm = m === req.method && re.exec(req.url.split('?')[0]); if (mm) { h = fn; params = mm.slice(1); break; } }
   if (h) {
-    try { const [status, data] = await h(req, res); send(res, status, data); }
+    try { const [status, data] = await h(req, params); send(res, status, data); }
     catch (e) { console.error(e); send(res, e.message === 'ungültiges JSON' || e.message === 'zu groß' ? 400 : 500, { fehler: 'Serverfehler.' }); }
     return;
   }
@@ -115,6 +119,11 @@ export const server = http.createServer(async (req, res) => {
 });
 
 // Multiplayer anhängen (Phase 2), falls vorhanden
-try { const room = await import('./room.js'); room.attach(server); } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e; }
+const room = await import('./room.js');
+room.attach(server);
+const missions = await import('./missions.js');
+missions.init(room.clientsOf);
+const { extraRoutes } = await import('./api-extra.js');
+patternRoutes = extraRoutes({ readJson, tokenFrom, limited, clientIp, room });
 
-server.listen(PORT, () => console.log(`Valenheim-Server läuft auf http://localhost:${PORT}`));
+server.listen(PORT, () => console.log(`Valenheim-Server läuft auf http://localhost:${PORT} (Datenbank: ${DB.backend})`));

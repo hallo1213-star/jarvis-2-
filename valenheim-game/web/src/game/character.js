@@ -72,6 +72,7 @@ export class Character {
       L.kn.rotation.x = Math.max(0, Math.sin(p * 1 + (L.s > 0 ? 0 : Math.PI) - 0.6)) * amp * (1.1 + run * 0.6);
     }
     for (const A of this.arms) {
+      if (this.carry) { A.sh.rotation.set(-1.05, 0, -A.s * 0.12); A.el.rotation.x = -0.55; continue; }
       const ph = A.s > 0 ? -swing : swing;
       A.sh.rotation.x = -ph * (0.7 + run * 0.3); A.sh.rotation.z = A.s * (0.08 + run * 0.05);
       A.el.rotation.x = -(0.25 + run * 0.9) * (stride ? 1 : 0.4);

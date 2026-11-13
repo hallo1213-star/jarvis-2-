@@ -1,0 +1,18 @@
+# Render-Blueprint: ein kostenloser Web-Service liefert Website, API und Multiplayer (WebSocket) aus.
+services:
+  - type: web
+    name: valenheim
+    runtime: node
+    plan: free
+    region: frankfurt
+    rootDir: valenheim-game
+    buildCommand: npm run install:all && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/status
+    envVars:
+      - key: NODE_VERSION
+        value: 22.12.0
+      - key: DATABASE_URL        # Supabase → Connect → "Session pooler" (IPv4) Verbindungs-URL
+        sync: false
+      - key: ADMIN_PASSWORD_HASH # Ausgabe von: npm run admin:passwort
+        sync: false

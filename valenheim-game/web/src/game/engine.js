@@ -34,7 +34,7 @@ export class Engine {
     const sky = new Sky(); sky.scale.setScalar(5000); scene.add(sky);
     const u = sky.material.uniforms; u.turbidity.value = 6; u.rayleigh.value = 1.6; u.mieCoefficient.value = 0.004; u.mieDirectionalG.value = 0.82;
     this.sunDir = new THREE.Vector3().setFromSphericalCoords(1, THREE.MathUtils.degToRad(58), THREE.MathUtils.degToRad(215));
-    u.sunPosition.value.copy(this.sunDir);
+    u.sunPosition.value.copy(this.sunDir); this.skyUniforms = u;
     // Umgebungslicht aus dem Himmel (Reflexionen auf Glas/Autos)
     const pm = new THREE.PMREMGenerator(r); const envScene = new THREE.Scene(); const sky2 = new Sky(); sky2.scale.setScalar(1000);
     Object.assign(sky2.material.uniforms.turbidity, { value: 6 }); sky2.material.uniforms.sunPosition.value.copy(this.sunDir); envScene.add(sky2);
@@ -117,7 +117,7 @@ export class Engine {
 
     // Bewegung relativ zur Kamera
     const mx = inp.move.x, my = inp.move.y; const moving = Math.hypot(mx, my) > 0.05;
-    const speed = (inp.run ? RUN : WALK) * Math.min(1, Math.hypot(mx, my));
+    const speed = (inp.run && !this.noRun ? RUN : WALK) * Math.min(1, Math.hypot(mx, my));
     if (moving) {
       const fwdX = -Math.sin(this.yaw), fwdZ = -Math.cos(this.yaw); const rX = -fwdZ, rZ = fwdX;
       const dx = fwdX * my + rX * mx, dz = fwdZ * my + rZ * mx; const l = Math.hypot(dx, dz) || 1;
@@ -132,7 +132,6 @@ export class Engine {
     else if (this.grounded && this.pos.y - gh < 0.3) { this.pos.y = gh; this.velY = 0; } // Bordsteinkante
     else this.grounded = false;
     this.colliders.resolve(this.pos, RADIUS, this.pos.y + 0.2);
-    inp.consume('interact');
 
     if (this.char) {
       this.char.root.position.copy(this.pos); this.char.root.rotation.y = this.heading;

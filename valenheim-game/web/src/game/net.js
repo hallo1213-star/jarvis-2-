@@ -44,7 +44,7 @@ export class Net {
 
   handle(m) {
     switch (m.t) {
-      case 'welcome': this.you = m.you; this.ev.status?.('online', m.room); this.ev.online?.(m.online); for (const p of m.players) this.add(p); break;
+      case 'welcome': this.ev.welt?.(m.welt || {}); this.you = m.you; this.ev.status?.('online', m.room); this.ev.online?.(m.online); for (const p of m.players) this.add(p); break;
       case 'join': this.add(m.p); this.ev.feed?.(`${m.p.name} hat die Stadt betreten`); break;
       case 'leave': { const o = this.others.get(m.id); if (o) this.ev.feed?.(`${o.name} hat die Stadt verlassen`); this.remove(m.id); break; }
       case 'online': this.ev.online?.(m.n); break;
@@ -56,6 +56,7 @@ export class Net {
       case 'emote': { if (m.id === this.you) this.showBubble(this.engine.char?.root, m.k, this); else { const o = this.others.get(m.id); if (o) this.showBubble(o.char.root, m.k, o); } break; }
       case 'pong': this.offset = m.now - (m.ts + Date.now()) / 2; break;
       case 'kicked': this.ev.feed?.(m.grund); break;
+      case 'feed': this.ev.feed?.(m.text); break;
       default: this.ev.message?.(m);
     }
   }

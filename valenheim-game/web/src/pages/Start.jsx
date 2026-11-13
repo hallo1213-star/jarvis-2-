@@ -59,6 +59,7 @@ export default function Start({ profil, checking, onLogin, onLogout }) {
           {status ? <span>{status.buerger} Bürger registriert</span> : <span>Server wird verbunden …</span>}
           <span className="dot" />
           <a href="#/rangliste">Rangliste</a>
+          {profil && <><span className="dot" /><a href="#/profil">Mein Profil</a></>}
         </div>
       </div>
     </div>

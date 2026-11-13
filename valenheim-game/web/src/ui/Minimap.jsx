@@ -27,6 +27,13 @@ export default function Minimap({ engine }) {
       g.translate(SIZE / 2, SIZE / 2); g.rotate(s.yaw); g.scale(zoom, zoom);
       g.drawImage(base, -(s.x + RANGE) * k, -(s.z + RANGE) * k);
       g.restore();
+      // Missionsziel (am Rand, wenn außerhalb)
+      const tg = engine.missionTarget;
+      if (tg) {
+        const dx = (tg.x - s.x) * k * zoom, dz = (tg.z - s.z) * k * zoom; const c = Math.cos(s.yaw), sn = Math.sin(s.yaw);
+        let px = dx * c - dz * sn, pz = dx * sn + dz * c; const R = SIZE / 2 - 10; const L = Math.hypot(px, pz); if (L > R) { px *= R / L; pz *= R / L; }
+        g.fillStyle = '#ffd54a'; g.strokeStyle = '#000'; g.lineWidth = 2; g.beginPath(); g.arc(SIZE / 2 + px, SIZE / 2 + pz, 6, 0, 7); g.fill(); g.stroke();
+      }
       // Spielerpfeil
       g.save(); g.translate(SIZE / 2, SIZE / 2); g.rotate(-(s.heading - s.yaw) + Math.PI);
       g.fillStyle = '#d4af37'; g.strokeStyle = '#000'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(0, -9); g.lineTo(6.5, 7); g.lineTo(0, 3.5); g.lineTo(-6.5, 7); g.closePath(); g.fill(); g.stroke(); g.restore();

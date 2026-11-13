@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import Start from './pages/Start.jsx';
 import Game from './pages/Game.jsx';
-import Soon from './pages/Soon.jsx';
+import Rangliste from './pages/Rangliste.jsx';
+import Profil from './pages/Profil.jsx';
+import Buergermeister from './pages/Buergermeister.jsx';
 import { api, getToken, setToken } from './lib/api.js';
 
 // Einfache Hash-Navigation: #/ (Start), #/spiel, #/profil, #/rangliste, #/buergermeister
@@ -23,8 +25,9 @@ export default function App() {
   }, []);
 
   if (route === '/spiel' && profil) return <Game profil={profil} onExit={() => go('/')} />;
-  if (route === '/profil') return <Soon titel="Bürgerprofil" phase={4} />;
-  if (route === '/rangliste') return <Soon titel="Rangliste" phase={4} />;
-  if (route === '/buergermeister') return <Soon titel="Bürgermeister-Dashboard" phase={5} />;
+  if (route === '/profil') return <Profil />;
+  if (route.startsWith('/profil/')) return <Profil name={decodeURIComponent(route.slice(8))} />;
+  if (route === '/rangliste') return <Rangliste meinName={profil?.name} />;
+  if (route === '/buergermeister') return <Buergermeister />;
   return <Start profil={profil} checking={checking} onLogin={(p) => { setProfil(p); go('/spiel'); }} onLogout={() => { setToken(null); setProfil(null); }} />;
 }

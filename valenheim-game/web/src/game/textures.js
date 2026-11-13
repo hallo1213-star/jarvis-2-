@@ -196,3 +196,17 @@ export function flagTexture() {
     g.closePath(); g.fill();
   }, { repeat: false });
 }
+
+// Nacht: Leuchtende Fenster als Emissive-Maske (passt exakt auf facadeTexture)
+export function facadeNightTexture(i) {
+  const s = FACADE_STYLES[i % FACADE_STYLES.length];
+  return canvasTex(`facn-${i}`, 256, 256, (g, W, H) => {
+    g.fillStyle = '#000'; g.fillRect(0, 0, W, H); const r = rng(500 + i); const fw = W / 4, fh = H / 4;
+    for (let fy = 0; fy < 4; fy++) for (let fx = 0; fx < 4; fx++) {
+      if (r() > 0.42) continue; const warm = r() < 0.75;
+      g.fillStyle = warm ? `rgb(255,${190 + r() * 40 | 0},${110 + r() * 40 | 0})` : 'rgb(170,200,255)';
+      if (s.modern) g.fillRect(fx * fw + 3, fy * fh + 7, fw - 6, fh - 15);
+      else { const w = fw * 0.42, h = fh * 0.58; g.fillRect(fx * fw + (fw - w) / 2 + 1, fy * fh + fh * 0.16 + 1, w - 2, h - 2); }
+    }
+  });
+}
