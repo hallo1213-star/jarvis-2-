@@ -56,9 +56,10 @@ export class Atmosphere {
     e.hemi.intensity = (0.08 + 0.34 * day) * (1 - rainK * 0.25);
     this.moon.intensity = (1 - day) * 0.35; this.moon.position.copy(e.sun.target.position).add(new THREE.Vector3(-80, 120, 60)); this.moon.target = e.sun.target;
     e.scene.environmentIntensity = 0.05 + 0.25 * day;
-    e.renderer.toneMappingExposure = 0.72 + (1 - day) * 0.25;
+    e.renderer.toneMappingExposure = 0.6 + (1 - day) * 0.32;
+    if (e.bloom) { e.bloom.strength = 0.1 + (1 - day) * 0.5; e.bloom.threshold = 0.92 - (1 - day) * 0.25; }
     e.skyUniforms.rayleigh.value = 1.6 + rainK * 2; e.skyUniforms.turbidity.value = 6 + rainK * 12;
-    const fogCol = new THREE.Color().setHSL(0.6, 0.18 - rainK * 0.1, 0.07 + day * 0.68 * dim);
+    const fogCol = new THREE.Color().setHSL(0.6, 0.18 - rainK * 0.1, 0.07 + day * 0.56 * dim);
     e.scene.fog.color.copy(fogCol); e.scene.fog.density = this.fogBase * (1 + rainK * 1.2 + fogK * 5.5);
     // Nachtbeleuchtung (Fenster, Laternen) – fällt bei Stromausfall aus
     const lights = (1 - day) * this.power * flicker;

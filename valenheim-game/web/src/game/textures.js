@@ -135,7 +135,7 @@ export function plazaTexture() {
   return canvasTex('plaza', 512, 512, (g, W, H) => {
     g.fillStyle = '#7d766c'; g.fillRect(0, 0, W, H); const r = rng(77);
     for (let y = 0; y < H; y += 16) for (let x = (y / 16) % 2 ? -12 : 0; x < W; x += 24) {
-      const v = 0.85 + r() * 0.25; g.fillStyle = `rgb(${150 * v | 0},${140 * v | 0},${124 * v | 0})`; g.fillRect(x + 1, y + 1, 22, 14);
+      const v = 0.85 + r() * 0.25; g.fillStyle = `rgb(${128 * v | 0},${120 * v | 0},${108 * v | 0})`; g.fillRect(x + 1, y + 1, 22, 14);
     }
     noise(g, W, H, 0.1, 78, 2);
   });

@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { Character, nameTag } from './character.js';
 import { getToken } from '../lib/api.js';
 import { DEMO, LocalSocket } from '../demo/local.js';
+import { makeCar } from './vehicles.js';
 
 const SEND_HZ = 15, DELAY = 140; // ms Interpolationsverzögerung
 
@@ -50,7 +51,7 @@ export class Net {
       case 'leave': { const o = this.others.get(m.id); if (o) this.ev.feed?.(`${o.name} hat die Stadt verlassen`); this.remove(m.id); break; }
       case 'online': this.ev.online?.(m.n); break;
       case 'snap': {
-        for (const [id, x, y, z, h, a] of m.p) { const o = this.others.get(id); if (o) { o.buf.push({ ts: m.ts, x, y, z, h, a }); if (o.buf.length > 30) o.buf.shift(); } }
+        for (const [id, x, y, z, h, a, v] of m.p) { const o = this.others.get(id); if (o) { this.setVehicle(o, v || 0); o.buf.push({ ts: m.ts, x, y, z, h, a }); if (o.buf.length > 30) o.buf.shift(); } }
         break;
       }
       case 'fix': this.engine.pos.set(m.x, m.y, m.z); break;
@@ -68,7 +69,15 @@ export class Net {
     char.root.position.set(p.x, p.y, p.z); char.root.rotation.y = p.h; this.engine.scene.add(char.root);
     this.others.set(p.id, { id: p.id, name: p.name, char, buf: [], bubble: null });
   }
-  remove(id) { const o = this.others.get(id); if (!o) return; this.engine.scene.remove(o.char.root); o.char.root.traverse((x) => { x.geometry?.dispose(); x.material?.map?.dispose(); x.material?.dispose(); }); this.others.delete(id); }
+  remove(id) { const o = this.others.get(id); if (!o) return; this.engine.scene.remove(o.char.root); if (o.car) this.engine.scene.remove(o.car); o.char.root.traverse((x) => { x.geometry?.dispose(); x.material?.map?.dispose(); x.material?.dispose(); }); this.others.delete(id); }
+
+  // Andere Spieler im Auto: Auto statt Figur zeigen
+  setVehicle(o, v) {
+    if ((o.v || 0) === v) return; o.v = v;
+    if (o.car) { this.engine.scene.remove(o.car); o.car = null; }
+    o.char.body.visible = !v;
+    if (v) { const [type, color] = String(v).split('|'); try { o.car = makeCar(type, color); this.engine.scene.add(o.car); } catch { o.car = null; o.char.body.visible = true; } }
+  }
 
   showBubble(root, k, holder) {
     if (!root) return; if (holder.bubble) root.remove(holder.bubble);
@@ -82,7 +91,7 @@ export class Net {
     const e = this.engine; const now = performance.now();
     if (now - this.lastSend > 1000 / SEND_HZ && this.ws?.readyState === 1 && this.you) {
       this.lastSend = now;
-      this.ws.send(JSON.stringify({ t: 'in', x: +e.pos.x.toFixed(2), y: +e.pos.y.toFixed(2), z: +e.pos.z.toFixed(2), h: +e.heading.toFixed(2), a: +(e.char?.speedSmooth || 0).toFixed(1) }));
+      this.ws.send(JSON.stringify({ t: 'in', x: +e.pos.x.toFixed(2), y: +e.pos.y.toFixed(2), z: +e.pos.z.toFixed(2), h: +e.heading.toFixed(2), a: +(e.char?.speedSmooth || 0).toFixed(1), v: e.vehicle ? `${e.vehicle.type}|${e.vehicle.color}` : 0 }));
     }
     // Andere Spieler: zwischen zwei Server-Zuständen interpolieren
     const renderTs = Date.now() + this.offset - DELAY;
@@ -94,6 +103,7 @@ export class Net {
       const r = o.char.root; r.position.set(A.x + (B.x - A.x) * k, A.y + (B.y - A.y) * k, A.z + (B.z - A.z) * k);
       let dh = B.h - A.h; dh = Math.atan2(Math.sin(dh), Math.cos(dh)); r.rotation.y = A.h + dh * k;
       o.char.animate(dt, A.a + (B.a - A.a) * k);
+      if (o.car) { o.car.position.copy(r.position); o.car.rotation.y = r.rotation.y; }
       while (b.length > 2 && b[1].ts < renderTs - 500) b.shift();
     }
   }

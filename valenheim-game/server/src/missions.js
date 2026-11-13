@@ -124,7 +124,7 @@ hooks.onMove.push((c, dt, d) => {
   const last = c.trail[c.trail.length - 1];
   if (!last || Math.hypot(c.x - last.x, c.z - last.z) > 0.8) { c.trail.push({ x: c.x, z: c.z }); if (c.trail.length > 60) c.trail.shift(); }
   const m = c.mission; if (!m) return;
-  if (m.carrying && m.ware !== 'aushang' && d / dt > 5.6) { // mit schwerer Ladung nur gehen
+  if (m.carrying && m.ware !== 'aushang' && !c.v && d / dt > 5.6) { // mit schwerer Ladung nur gehen
     c.carryWarn = (c.carryWarn || 0) + 1;
     if (c.carryWarn === 1) send(c.ws, { t: 'm_info', text: 'Mit der Ladung kannst du nicht rennen!' });
     if (c.carryWarn > 20) { m.carrying = null; m.idx = 0; c.carryWarn = 0; send(c.ws, { t: 'm_info', text: 'Die Ladung ist dir heruntergefallen – hole eine neue!' }); sendState(c); }

@@ -232,3 +232,10 @@ textarea.input, select.input { font-size: 15px; font-family: inherit; }
 .radio__track { overflow: hidden; flex: 1; }
 .radio__track span { display: inline-block; white-space: nowrap; padding-left: 100%; animation: ticker 18s linear infinite; font-size: 14px; }
 @keyframes ticker { to { transform: translateX(-100%); } }
+
+/* ---------- Fahren ---------- */
+.speedo { position: absolute; right: calc(24px + var(--safe-r)); bottom: calc(150px + var(--safe-b)); width: 108px; height: 108px; border-radius: 50%; display: grid; place-items: center; align-content: center; background: radial-gradient(circle, rgba(8,16,34,0.85) 60%, rgba(212,175,55,0.25)); border: 2px solid var(--gold); pointer-events: none; }
+.speedo b { font-size: 34px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+.speedo small { color: var(--gold); font-weight: 800; letter-spacing: 0.15em; font-size: 10px; }
+@media (pointer: fine) { .speedo { bottom: calc(70px + var(--safe-b)); } }
+.tbtn--siren { right: calc(214px + var(--safe-r)); bottom: calc(30px + var(--safe-b)); }

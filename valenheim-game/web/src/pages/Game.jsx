@@ -14,6 +14,8 @@ const TIPPS = [
   'Das Militärgelände im Norden ist Sperrgebiet.',
   'Am Bahnhof im Westen fahren die Züge nach Valenheim.',
   'Missionen findest du an den Missionstafeln mit dem goldenen Ring.',
+  'Am Rathausplatz stehen Autos – mit E steigst du ein.',
+  'Den Rettungswagen findest du an der Rettungsstation im Osten.',
   'Hilfst du anderen Spielern in der Nähe, bekommst du einen Teamwork-Bonus.',
 ];
 
@@ -29,6 +31,9 @@ export default function Game({ profil, onExit }) {
   const [quality, setQuality] = useState(defaultQuality());
   const [joy, setJoy] = useState(null);
   const [run, setRun] = useState(false);
+  const [carPrompt, setCarPrompt] = useState(null);
+  const [inCar, setInCar] = useState(null);
+  const [kmh, setKmh] = useState(0);
   const [net, setNet] = useState({ status: 'verbinde', room: '', online: 0 });
   const [feed, setFeed] = useState([]);
   const [emotes, setEmotes] = useState(false);
@@ -56,9 +61,10 @@ export default function Game({ profil, onExit }) {
       eng = new Engine(canvas.current, {
         mode: 'play', quality, player: profil,
         onDistrict: (d, info) => { setDistrict(info); setToast({ ...info, k: Date.now() }); },
-        onStats: (s) => setFps(s.fps),
+        onStats: (s) => { setFps(s.fps); },
       });
       setEngine(eng);
+      eng.onCarPrompt = setCarPrompt; eng.onVehicle = (v) => setInCar(v ? { type: v.type } : null);
       atmoRef.current = new Atmosphere(eng);
       const onEvent = (ev) => {
         atmoRef.current.event(ev);
@@ -100,14 +106,16 @@ export default function Game({ profil, onExit }) {
 
   // Uhrzeit/Wetter-Anzeige, Meldungen ausblenden, Ton nach erster Berührung starten
   useEffect(() => {
+    const sp = setInterval(() => setKmh(window.VH?.speedKmh || 0), 150);
     const id = setInterval(() => { const a = atmoRef.current; if (a?.state) setWelt({ ...a.state }); const n = Date.now(); setMeldung((m) => (m && n > m.bis ? null : m)); setRadio((r) => (r && n > r.bis ? null : r)); }, 1000);
     const wake = () => atmoRef.current?.audio.resume(); addEventListener('pointerdown', wake); addEventListener('keydown', wake);
-    return () => { clearInterval(id); removeEventListener('pointerdown', wake); removeEventListener('keydown', wake); };
+    return () => { clearInterval(id); clearInterval(sp); removeEventListener('pointerdown', wake); removeEventListener('keydown', wake); };
   }, []);
 
   // Escape → Menü
   useEffect(() => {
     const k = (e) => {
+      if (e.code === 'KeyH' && window.VH?.vehicle?.type === 'rtw') window.VH.vehicle.siren = !window.VH.vehicle.siren;
       if (e.code === 'Escape') { if (mListRef.current) { setMList(null); return; } setMenu((m) => !m); }
       const n = ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6'].indexOf(e.code);
       if (n >= 0 && e.target.tagName !== 'INPUT') netRef.current?.emote(Object.keys(EMOTE_TEXT)[n]);
@@ -158,7 +166,10 @@ export default function Game({ profil, onExit }) {
             </div>
           )}
           {!mission && <div className="mcard mcard--idle">Gehe zu einer <b>Missionstafel</b> (goldener Ring), um eine Mission anzunehmen.</div>}
-          {prompt && (isTouch ? <button className="tbtn tbtn--act" onClick={() => msRef.current?.interact()}>{prompt}</button> : <div className="prompt"><kbd>E</kbd> {prompt}</div>)}
+          {inCar && <div className="speedo"><b>{kmh}</b><small>km/h</small></div>}
+          {!inCar && carPrompt && !prompt && (isTouch ? <button className="tbtn tbtn--act" onClick={() => engine?.toggleVehicle()}>{carPrompt}</button> : <div className="prompt"><kbd>E</kbd> {carPrompt}</div>)}
+          {inCar && !isTouch && <div className="hint-bar">W Gas · S Bremse/Rückwärts · A/D Lenken · Leertaste Handbremse{inCar.type === 'rtw' ? ' · H Blaulicht' : ''} · E Aussteigen</div>}
+          {!inCar && prompt && (isTouch ? <button className="tbtn tbtn--act" onClick={() => msRef.current?.interact()}>{prompt}</button> : <div className="prompt"><kbd>E</kbd> {prompt}</div>)}
           {info && <div key={info.k} className={`info ${info.bad ? 'info--bad' : ''}`}>{info.text}</div>}
           {done && <div key={done.k} className="done"><small>MISSION ERFÜLLT</small><div>{done.titel}</div><b>+{done.punkte} PUNKTE</b></div>}
           <div className="feed">{feed.map((f) => <div key={f.k} className="feed__item">{f.text}</div>)}</div>
@@ -172,13 +183,23 @@ export default function Game({ profil, onExit }) {
           {welt?.sirene && <div className="alarm-vignette" />}
           {radio && <div className="radio"><b>📻 RADIO VALENHEIM</b><div className="radio__track"><span key={radio.k}>{radio.text} · {radio.text}</span></div></div>}
           {toast && <div key={toast.k} className="toast" style={{ '--c': toast.farbe }}><small>DU BETRITTST</small>{toast.name}</div>}
-          {!isTouch && !menu && <div className="hint-bar">Klicken zum Umsehen · WASD laufen · Shift rennen · Leertaste springen · E Interagieren · 1–6 Nachrichten · Esc Menü</div>}
+          {!isTouch && !menu && !inCar && <div className="hint-bar">Klicken zum Umsehen · WASD laufen · Shift rennen · Leertaste springen · E Interagieren · 1–6 Nachrichten · Esc Menü</div>}
           {isTouch && (
             <>
               {joy && <div className="joy" style={{ left: joy.ox, top: joy.oy }}><div className="joy__knob" style={{ transform: `translate(${joy.kx}px, ${joy.ky}px)` }} /></div>}
               {!joy && <div className="joy-hint">Links ziehen zum Laufen · rechts wischen zum Umsehen</div>}
-              <button className={`tbtn tbtn--run ${run ? 'is-on' : ''}`} onClick={() => setRun(!run)}>RENNEN</button>
-              <button className="tbtn tbtn--jump" onTouchStart={(e) => { e.preventDefault(); if (engine?.input) engine.input.jump = true; }}>SPRUNG</button>
+              {inCar ? (
+                <>
+                  <button className="tbtn tbtn--run" onClick={() => engine?.toggleVehicle()}>AUS&shy;STEIGEN</button>
+                  <button className="tbtn tbtn--jump" onTouchStart={(e) => { e.preventDefault(); if (engine?.input) engine.input.handTouch = true; }} onTouchEnd={() => { if (engine?.input) engine.input.handTouch = false; }}>BREMSE</button>
+                  {inCar.type === 'rtw' && <button className="tbtn tbtn--siren" onClick={() => { if (engine?.vehicle) engine.vehicle.siren = !engine.vehicle.siren; }}>🚨</button>}
+                </>
+              ) : (
+                <>
+                  <button className={`tbtn tbtn--run ${run ? 'is-on' : ''}`} onClick={() => setRun(!run)}>RENNEN</button>
+                  <button className="tbtn tbtn--jump" onTouchStart={(e) => { e.preventDefault(); if (engine?.input) engine.input.jump = true; }}>SPRUNG</button>
+                </>
+              )}
               <button className="tbtn tbtn--menu" onClick={() => setMenu(true)} aria-label="Menü">☰</button>
             </>
           )}

@@ -71,10 +71,11 @@ export function attach(server) {
         const x = +m.x, y = +m.y, z = +m.z, h = +m.h; if (![x, y, z, h].every(Number.isFinite)) return;
         const dt = Math.max(0.05, (now - c.lastT) / 1000); const d = Math.hypot(x - c.x, z - c.z);
         const inside = Math.abs(x) <= BOUNDS && Math.abs(z) <= BOUNDS && y > -1 && y < 12;
-        if (!inside || d > MAX_SPEED * dt + 1.5) { // zu schnell / außerhalb: Server setzt zurück
+        const vRaw = typeof m.v === 'string' && /^(limousine|kombi|kompakt|suv|rtw)\|#[0-9a-fA-F]{6}$/.test(m.v) ? m.v : 0;
+        if (!inside || d > (vRaw || c.v ? 40 : MAX_SPEED) * dt + 1.5) { // zu schnell / außerhalb: Server setzt zurück
           c.warn++; send(ws, { t: 'fix', x: c.x, y: c.y, z: c.z }); c.lastT = now; return;
         }
-        c.x = x; c.y = y; c.z = z; c.h = h; c.a = Math.min(9, Math.max(0, +m.a || 0)); c.lastT = now;
+        c.x = x; c.y = y; c.z = z; c.h = h; c.a = Math.min(9, Math.max(0, +m.a || 0)); c.lastT = now; c.v = vRaw;
         safe(() => hooks.onMove.forEach((f) => f(c, dt, d)));
         return;
       }
@@ -105,7 +106,7 @@ export function attach(server) {
     const ts = Date.now();
     for (const room of rooms.values()) {
       if (room.clients.size < 2) continue;
-      const p = [...room.clients.values()].map((c) => [c.id, +c.x.toFixed(2), +c.y.toFixed(2), +c.z.toFixed(2), +c.h.toFixed(2), +c.a.toFixed(1)]);
+      const p = [...room.clients.values()].map((c) => [c.id, +c.x.toFixed(2), +c.y.toFixed(2), +c.z.toFixed(2), +c.h.toFixed(2), +c.a.toFixed(1), c.v || 0]);
       broadcast(room, { t: 'snap', ts, p });
     }
   }, 1000 / TICK_HZ).unref();

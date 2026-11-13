@@ -59,6 +59,7 @@ export class Input {
     }
     const l = Math.hypot(x, y); if (l > 1) { x /= l; y /= l; }
     this.move.x = this.enabled ? x : 0; this.move.y = this.enabled ? y : 0; this.run = (run || this.runToggle) && l > 0;
+    this.hand = this.enabled && (k.has('Space') || !!this.handTouch);
   }
   consumeLook() { const l = { ...this.look }; this.look.dx = 0; this.look.dy = 0; return l; }
   consume(name) { const v = this[name]; this[name] = name === 'zoom' ? 0 : false; return v; }
