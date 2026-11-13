@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { P, HB, SLAB, BoxBatch, instanced, merge, treeGeometry, lampGeometry, textTexture } from './world.js';
 import { makeRng } from './rng.js';
 import { flaggeCanvas, wappenCanvas, tvLogoCanvas, FARBEN } from './identitaet.js';
+import { baueVillenviertel } from './villa.js';
 
 const C = (hex) => new THREE.Color(hex);
 const M = (hex, o = {}) => new THREE.MeshStandardMaterial({ color: hex, roughness: 0.7, ...o });
@@ -77,7 +78,7 @@ function flaggenMaterial(tex, U) {
 }
 
 // ================================================================ Aufbau
-export function baueRepublik(scene, world, U, { seed = 2026 } = {}) {
+export function baueRepublik(scene, world, U, { seed = 2026, villen = [] } = {}) {
   const rng = makeRng(seed);
   const bb = new BoxBatch();
   let bid = 5000;
@@ -89,6 +90,15 @@ export function baueRepublik(scene, world, U, { seed = 2026 } = {}) {
   const baeume = []; const lampen = [];
   const infoscreens = [];
   const pflaster = new BoxBatch(); // Plätze über Straßen
+  // Villenviertel (Luxusviertel, Blöcke i -11..-7, j 7..10): zwei Villen pro Block, je eine zur Nord- und Südstraße
+  const villaPlaetze = [];
+  if (villen.length) {
+    outer: for (let j = 7; j <= 10; j++) for (let i = -7; i >= -11; i--) {
+      res(i, j); const cx = i * P, cz = j * P;
+      villaPlaetze.push([cx, cz + 13, 0], [cx, cz - 13, Math.PI]);
+      if (villaPlaetze.length >= villen.length) break outer;
+    }
+  }
 
   const addB = (x, z, sx, sz, h, kind, hex, ry = 0, y0 = SLAB) => { const id = bid++; const fh = kind === 1 ? 3.0 : kind === 0 ? 3.8 : 3.5; const ws = kind === 0 ? rng.range(1.6, 2.4) : rng.range(2.4, 3.2); bb.add(x, y0, z, sx, h, sz, C(hex), [id, fh, ws, kind], ry); return y0 + h; };
   const flagge = (x, y, z, ry = 0, s = 1, mast = true) => { if (mast) masten.push({ x, z, y: SLAB, sy: y - SLAB, s: 1 }); flaggen.push({ x, y, z, ry, s }); };
@@ -365,8 +375,11 @@ export function baueRepublik(scene, world, U, { seed = 2026 } = {}) {
   const hissFlagge = new THREE.Mesh(new THREE.PlaneGeometry(9, 6, 20, 8).translate(4.5, -3, 0), flaggenMaterial(fTex, U));
   hissFlagge.position.set(0.3, SLAB + 23.6, -19.5); scene.add(hissFlagge);
 
+  const villenviertel = villen.length ? baueVillenviertel(scene, { plaetze: villaPlaetze, namen: villen, slab: SLAB }) : null;
+  if (villen.length) schild('VILLENVIERTEL VALENHEIM HILLS', 30, 3.2, -7 * P + 40, SLAB + 6, 6.5 * P, Math.PI, FARBEN.nachtblau, '#e8d29a', '900 80px Montserrat', 0.8);
+
   return {
-    hissFlagge, tvBeacon,
+    hissFlagge, tvBeacon, villenviertel,
     setHissen(k) { hissFlagge.position.y = SLAB + 3.2 + k * 20.4; hissFlagge.visible = k > 0.001; },
     update(t) { tvBeacon.emissiveIntensity = Math.sin(t * 3) > 0.5 ? 5 : 0.3; },
   };

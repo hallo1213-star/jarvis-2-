@@ -42,7 +42,8 @@ async function init() {
   const zusatzPlaetze = [...new Set([...(STATUS.gebaeude || []).map((b) => b.platz), ...TL.szenen.flatMap((z) => (z.effekte || []).filter((e) => e.typ === 'bau').map((e) => e.platz))])];
   const republikAktiv = !!(STATUS.republik || TL.republik);
   const world = buildWorld(scene, { seed: STATUS.welt_seed || 7071, licht: TL.licht || 'standard', zusatz: zusatzPlaetze, republik: republikAktiv });
-  const rep = republikAktiv ? baueRepublik(scene, world, U) : null;
+  const rep = republikAktiv ? baueRepublik(scene, world, U, { villen: TL.villen || STATUS.villen || [] }) : null;
+  if (rep?.villenviertel) rep.villenviertel.nacht(TL.licht === 'nacht' ? 1 : TL.licht === 'abend' ? 0.4 : 0);
   if (rep) scene.fog.density = 0.00042;
   renderer.toneMappingExposure = world.exposure || 1.2;
 
