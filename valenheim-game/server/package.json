@@ -1,0 +1,7 @@
+{
+  "name": "valenheim-server",
+  "private": true,
+  "type": "module",
+  "main": "src/index.js",
+  "dependencies": { "ws": "8.23.0" }
+}

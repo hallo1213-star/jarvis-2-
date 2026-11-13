@@ -1,0 +1,631 @@
+{
+ "folge": 70,
+ "titel": "Teaser: Valenheim – The City Challenge",
+ "licht": "abend",
+ "republik": true,
+ "_hinweis": "Sondervideo (kein Serienteil, Serienstand bleibt unverändert): Ankündigung des Web-Spiels für morgen.",
+ "stimme": {
+  "modell": "de_DE-thorsten-high",
+  "tempo": 1.05,
+  "lebendigkeit": 0.7,
+  "rhythmus": 0.84,
+  "tonhoehe_halbtoene": 0.8
+ },
+ "aussprache": {
+  "TV": "Tiwi",
+  "City": "Sitti",
+  "Challenge": "Tschällendsch",
+  "Web-Spiel": "Wepp-Spiel",
+  "PC": "Pe Tse",
+  "Valenheim-Spiel": "Valenheim-Spiel"
+ },
+ "musik": {
+  "stil": "dramatisch",
+  "tonart": "d-moll",
+  "bpm": 92
+ },
+ "szenen": [
+  {
+   "id": "s1_hook",
+   "name": "Hook",
+   "vorlauf": 0.7,
+   "nachlauf": 0.3,
+   "sprecher": "*Morgen* passiert etwas, |0.2| das es in Valenheim | *noch* *nie* gab.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      48,
+      42
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        0,
+        260,
+        -180
+       ],
+       "ziel": [
+        0,
+        20,
+        -900
+       ]
+      },
+      {
+       "pos": [
+        0,
+        90,
+        -560
+       ],
+       "ziel": [
+        0,
+        24,
+        -900
+       ]
+      }
+     ],
+     "ease": "inOutSine"
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "hud_aus",
+     "zeit": 0,
+     "dauer": 300,
+     "global": true
+    },
+    {
+     "typ": "titel",
+     "zeit": 0.15,
+     "dauer": 2.4,
+     "text": "MORGEN",
+     "unter": "VALENHEIM · ANKÜNDIGUNG"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "boom",
+     "zeit": 0.05
+    },
+    {
+     "typ": "wind_swell",
+     "zeit": 0
+    },
+    {
+     "typ": "impact",
+     "wort": "nie"
+    }
+   ]
+  },
+  {
+   "id": "s2_eilmeldung",
+   "name": "Eilmeldung",
+   "uebergang": "schnitt",
+   "vorlauf": 2.4,
+   "nachlauf": 0.3,
+   "sprecher": "*Eilmeldung* auf Valenheim TV: |0.3| Ab morgen könnt ihr Valenheim | *selbst* *betreten*!",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      46,
+      44
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        430,
+        80,
+        -430
+       ],
+       "ziel": [
+        518,
+        150,
+        -518
+       ]
+      },
+      {
+       "pos": [
+        460,
+        110,
+        -470
+       ],
+       "ziel": [
+        518,
+        170,
+        -518
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "sondersendung",
+     "zeit": 0.0,
+     "dauer": 2.4,
+     "text": "EILMELDUNG",
+     "unter": "VALENHEIM TV · LIVE"
+    },
+    {
+     "typ": "tv",
+     "zeit": 2.2,
+     "dauer": 200,
+     "text": "SONDERMELDUNG · LIVE"
+    },
+    {
+     "typ": "eilmeldung",
+     "wort": "morgen",
+     "offset": -0.6,
+     "dauer": 30,
+     "text": "MORGEN: DAS VALENHEIM-WEBSPIEL",
+     "laufband": "VALENHEIM – THE CITY CHALLENGE · KOSTENLOS IM BROWSER · HANDY & PC · START MORGEN",
+     "sender": "VALENHEIM TV"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "whoosh",
+     "zeit": 0.0
+    },
+    {
+     "typ": "impact",
+     "zeit": 0.5
+    },
+    {
+     "typ": "riser",
+     "wort": "selbst",
+     "offset": -0.8,
+     "dauer": 1.0
+    },
+    {
+     "typ": "impact",
+     "wort": "betreten"
+    }
+   ]
+  },
+  {
+   "id": "s3_spiel",
+   "name": "Das Spiel",
+   "uebergang": "schnitt",
+   "vorlauf": 0.3,
+   "nachlauf": 0.4,
+   "sprecher": "Mein eigenes *Web-Spiel*: |0.25| Valenheim – The *City* *Challenge*. |0.4| Lauft durch die *Stadt*, | trefft andere *Spieler*, | und erledigt echte *Missionen*.",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      0,
+      0,
+      8
+     ],
+     "radius": [
+      62,
+      40
+     ],
+     "hoehe": [
+      48,
+      30
+     ],
+     "winkel": [
+      130,
+      200
+     ],
+     "fov": [
+      46,
+      44
+     ],
+     "wackeln": 0.15
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "gebiet",
+     "wort": "City",
+     "offset": -0.6,
+     "dauer": 2.8,
+     "text": "VALENHEIM – THE CITY CHALLENGE",
+     "farbe": "#f2c230",
+     "nr": "DAS WEBSPIEL"
+    },
+    {
+     "typ": "projektliste",
+     "wort": "Stadt",
+     "offset": -0.3,
+     "dauer": 30,
+     "titel": "IM SPIEL",
+     "unter": "VALENHEIM – THE CITY CHALLENGE",
+     "avatar": "folgen/assets/ich_flagge.png",
+     "liste": [
+      {
+       "text": "STADT ERKUNDEN",
+       "wort": "Stadt"
+      },
+      {
+       "text": "MULTIPLAYER",
+       "wort": "Spieler"
+      },
+      {
+       "text": "ECHTE MISSIONEN",
+       "wort": "Missionen"
+      },
+      {
+       "text": "PUNKTE & LEVEL",
+       "wort": "_"
+      },
+      {
+       "text": "RANGLISTE",
+       "wort": "_"
+      }
+     ]
+    }
+   ],
+   "toene": [
+    {
+     "typ": "whoosh",
+     "zeit": 0.0
+    },
+    {
+     "typ": "scan_ok",
+     "wort": "Stadt"
+    },
+    {
+     "typ": "scan_ok",
+     "wort": "Spieler"
+    },
+    {
+     "typ": "scan_ok",
+     "wort": "Missionen"
+    }
+   ]
+  },
+  {
+   "id": "s4_missionen",
+   "name": "Missionen",
+   "uebergang": "schnitt",
+   "vorlauf": 0.3,
+   "nachlauf": 0.3,
+   "sprecher": "Bringt *Versorgung* | ins Krankenhaus, |0.25| helft bei der *Evakuierung*, |0.3| und sammelt *Punkte*.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        700,
+        50,
+        70
+       ],
+       "ziel": [
+        814,
+        25,
+        0
+       ]
+      },
+      {
+       "pos": [
+        710,
+        44,
+        55
+       ],
+       "ziel": [
+        814,
+        25,
+        0
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        -480,
+        40,
+        70
+       ],
+       "ziel": [
+        -600,
+        12,
+        0
+       ]
+      },
+      {
+       "pos": [
+        -490,
+        34,
+        50
+       ],
+       "ziel": [
+        -600,
+        12,
+        0
+       ]
+      }
+     ],
+     "ab_wort": "Evakuierung",
+     "offset": -0.2
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        0,
+        24,
+        -500
+       ],
+       "ziel": [
+        0,
+        22,
+        -900
+       ]
+      },
+      {
+       "pos": [
+        0,
+        30,
+        -640
+       ],
+       "ziel": [
+        0,
+        26,
+        -900
+       ]
+      }
+     ],
+     "ab_wort": "Punkte",
+     "offset": -0.3
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "gebiet",
+     "wort": "Versorgung",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "text": "MISSION: VERSORGUNG",
+     "farbe": "#7fe0b6",
+     "nr": "+100 PUNKTE"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "Evakuierung",
+     "offset": -0.1,
+     "dauer": 2.2,
+     "text": "MISSION: EVAKUIERUNG",
+     "farbe": "#ff6a6a",
+     "nr": "+200 PUNKTE"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "Punkte",
+     "offset": -0.1,
+     "dauer": 2.0,
+     "text": "PUNKTE SAMMELN",
+     "farbe": "#f2c230",
+     "nr": "LEVEL STEIGEN"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "whoosh",
+     "wort": "Versorgung",
+     "offset": -0.25
+    },
+    {
+     "typ": "whoosh",
+     "wort": "Evakuierung",
+     "offset": -0.25
+    },
+    {
+     "typ": "kasse",
+     "wort": "Punkte"
+    }
+   ]
+  },
+  {
+   "id": "s5_rangliste",
+   "name": "Rangliste",
+   "uebergang": "schnitt",
+   "vorlauf": 0.3,
+   "nachlauf": 0.4,
+   "sprecher": "Die *Besten* | landen ganz oben | in der *Rangliste*. |0.35| Kostenlos, | direkt im *Browser*, | auf dem *Handy* | und am *PC*.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        520,
+        110,
+        500
+       ],
+       "ziel": [
+        703,
+        10,
+        690
+       ]
+      },
+      {
+       "pos": [
+        545,
+        95,
+        525
+       ],
+       "ziel": [
+        703,
+        10,
+        690
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      0,
+      20,
+      -300
+     ],
+     "radius": [
+      900,
+      820
+     ],
+     "hoehe": [
+      300,
+      260
+     ],
+     "winkel": [
+      200,
+      225
+     ],
+     "fov": [
+      48,
+      46
+     ],
+     "wackeln": 0.08,
+     "ab_wort": "Kostenlos",
+     "offset": -0.2
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "gebiet",
+     "wort": "Rangliste",
+     "offset": -0.3,
+     "dauer": 2.6,
+     "text": "RANGLISTE · PLATZ 1 BIS 100",
+     "farbe": "#f2c230",
+     "nr": "WER WIRD NUMMER 1?"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "Kostenlos",
+     "offset": -0.1,
+     "dauer": 3.6,
+     "text": "KOSTENLOS · HANDY & PC",
+     "farbe": "#9fd2ff",
+     "nr": "DIREKT IM BROWSER"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "impact",
+     "wort": "Rangliste",
+     "offset": -0.1
+    },
+    {
+     "typ": "whoosh",
+     "wort": "Kostenlos",
+     "offset": -0.25
+    }
+   ]
+  },
+  {
+   "id": "s6_cta",
+   "name": "Morgen geht es los",
+   "uebergang": "schwarz",
+   "vorlauf": 0.5,
+   "nachlauf": 3.2,
+   "sprecher": "*Morgen* geht es los. |0.4| Folgt jetzt, | damit ihr den *Start* nicht verpasst. |0.3| Wer wird die Nummer *eins* | in Valenheim?",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      0,
+      20,
+      -300
+     ],
+     "radius": [
+      1300,
+      1150
+     ],
+     "hoehe": [
+      520,
+      460
+     ],
+     "winkel": [
+      150,
+      175
+     ],
+     "fov": [
+      50,
+      48
+     ],
+     "wackeln": 0.08,
+     "ease": "inOutSine"
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "alarm",
+     "wort": "Morgen",
+     "offset": -0.1,
+     "dauer": 2.0,
+     "text": "START MORGEN",
+     "unter": "VALENHEIM – THE CITY CHALLENGE"
+    },
+    {
+     "typ": "schluss",
+     "wort": "Start",
+     "offset": -0.2,
+     "dauer": 20,
+     "text": "THE CITY CHALLENGE",
+     "unter": "AB MORGEN · KOSTENLOS",
+     "y": 640
+    },
+    {
+     "typ": "kommentar_cta",
+     "wort": "eins",
+     "offset": -0.3,
+     "text": "JETZT FOLGEN!",
+     "text2": "START: MORGEN"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "final_hit",
+     "wort": "Morgen",
+     "offset": -0.1
+    },
+    {
+     "typ": "impact",
+     "wort": "eins"
+    }
+   ]
+  }
+ ]
+}

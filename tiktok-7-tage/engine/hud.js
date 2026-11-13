@@ -756,12 +756,12 @@ export class HUD {
     const a = clamp(lt / 0.3); const bounce = Math.sin(lt * 5) * 6 * clamp(lt - 0.6);
     g.save(); g.globalAlpha = a; g.translate(W / 2, 1060 + bounce); const k = ease.outBack(clamp(lt / 0.45)); g.scale(k, k);
     rr(g, -420, -52, 840, 100, 50); g.fillStyle = '#ffffff'; g.fill();
-    icon(g, 'bubble', -350, -4, 58, '#ff3b5c');
-    text(g, 'IDEEN IN DIE KOMMENTARE!', 34, 16, { size: 44, weight: 900, font: F.big, align: 'center', color: '#111', spacing: 0.5 });
+    if (!c.text) icon(g, 'bubble', -350, -4, 58, '#ff3b5c');
+    text(g, c.text || 'IDEEN IN DIE KOMMENTARE!', c.text ? 0 : 34, 16, { size: 44, weight: 900, font: F.big, align: 'center', color: '#111', spacing: 0.5 });
     g.restore();
     const a2 = clamp((lt - 0.5) / 0.3);
     if (a2 > 0) { g.save(); g.globalAlpha = a2; g.translate(W / 2, 1172); rr(g, -330, -38, 660, 72, 36); g.fillStyle = '#ff3b5c'; g.fill();
-      text(g, '+ FOLGEN = NEUER EINWOHNER', 0, 12, { size: 34, weight: 800, font: F.big, align: 'center', spacing: 1 }); g.restore(); }
+      text(g, c.text2 || '+ FOLGEN = NEUER EINWOHNER', 0, 12, { size: 34, weight: 800, font: F.big, align: 'center', spacing: 1 }); g.restore(); }
   }
 
   drawSubtitles(g, t, sub) {

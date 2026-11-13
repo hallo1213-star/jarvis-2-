@@ -1,0 +1,15 @@
+{
+  "name": "valenheim-the-city-challenge",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Valenheim – The City Challenge: Multiplayer-3D-Browserspiel",
+  "type": "module",
+  "engines": { "node": ">=22.5" },
+  "scripts": {
+    "install:all": "npm install --prefix server && npm install --prefix web",
+    "dev:server": "node --watch server/src/index.js",
+    "dev:web": "npm run dev --prefix web",
+    "build": "npm run build --prefix web",
+    "start": "node server/src/index.js"
+  }
+}
