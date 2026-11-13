@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { Character, nameTag } from './character.js';
 import { getToken } from '../lib/api.js';
+import { DEMO, LocalSocket } from '../demo/local.js';
 
 const SEND_HZ = 15, DELAY = 140; // ms Interpolationsverzögerung
 
@@ -28,7 +29,7 @@ export class Net {
   connect() {
     if (this.closed) return;
     const url = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`;
-    const ws = new WebSocket(url); this.ws = ws; this.ev.status?.('verbinde');
+    const ws = DEMO ? new LocalSocket() : new WebSocket(url); this.ws = ws; this.ev.status?.('verbinde');
     ws.onopen = () => { this.retry = 0; ws.send(JSON.stringify({ t: 'hello', token: getToken() })); ws.send(JSON.stringify({ t: 'ping', ts: Date.now() })); };
     ws.onmessage = (e) => { let m; try { m = JSON.parse(e.data); } catch { return; } this.handle(m); };
     ws.onclose = (e) => {

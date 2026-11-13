@@ -1,4 +1,6 @@
 // Kommunikation mit dem Spielserver. Das Konto-Token liegt nur auf diesem Gerät.
+import { DEMO, localApi } from '../demo/local.js';
+
 const KEY = 'vh_token';
 export const getToken = () => { try { return localStorage.getItem(KEY); } catch { return null; } };
 export const setToken = (t) => { try { t ? localStorage.setItem(KEY, t) : localStorage.removeItem(KEY); } catch { /* privat */ } };
@@ -8,6 +10,7 @@ export const getAdmin = () => { try { return sessionStorage.getItem(AKEY); } cat
 export const setAdmin = (t) => { try { t ? sessionStorage.setItem(AKEY, t) : sessionStorage.removeItem(AKEY); } catch { /* privat */ } };
 
 async function call(method, url, body) {
+  if (DEMO) return localApi(method, url, body);
   const headers = { 'Content-Type': 'application/json' }; const t = getToken(); if (t) headers.Authorization = `Bearer ${t}`;
   const a = getAdmin(); if (a && url.startsWith('/api/admin')) headers['X-Admin-Token'] = a;
   let res;

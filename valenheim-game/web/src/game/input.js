@@ -18,10 +18,10 @@ export class Input {
     on(window, 'blur', () => this.keys.clear());
 
     // Maus: Zeiger-Sperre beim Klick, sonst Ziehen
-    on(el, 'click', () => { if (!this.isTouch && this.enabled && document.pointerLockElement !== el) el.requestPointerLock?.(); });
+    on(el, 'click', () => { if (!this.isTouch && this.enabled && document.pointerLockElement !== el) { try { const r = el.requestPointerLock?.(); r?.catch?.(() => {}); } catch { /* nicht erlaubt: Ziehen mit gedrückter Maustaste funktioniert trotzdem */ } } });
     on(document, 'mousemove', (e) => {
       if (!this.enabled) return;
-      if (document.pointerLockElement === el) { this.look.dx += e.movementX; this.look.dy += e.movementY; }
+      if (document.pointerLockElement === el || (e.buttons & 1 && e.target === el)) { this.look.dx += e.movementX; this.look.dy += e.movementY; }
     });
     on(el, 'wheel', (e) => { this.zoom += Math.sign(e.deltaY); e.preventDefault(); }, { passive: false });
 

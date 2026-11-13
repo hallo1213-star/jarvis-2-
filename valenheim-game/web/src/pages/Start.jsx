@@ -3,6 +3,7 @@ import Logo from '../ui/Logo.jsx';
 import { Engine } from '../game/engine.js';
 import { LOOK } from '../game/character.js';
 import { api, setToken } from '../lib/api.js';
+import { DEMO } from '../demo/local.js';
 
 // Startseite: cinematischer Flug über Valenheim, Name eingeben, Stadt betreten.
 export default function Start({ profil, checking, onLogin, onLogout }) {
@@ -33,6 +34,7 @@ export default function Start({ profil, checking, onLogin, onLogout }) {
       <div className="start__shade" />
       <div className="start__content">
         <Logo />
+        {DEMO && <div className="chip" style={{ '--c': '#d4af37' }}>DEMO-VERSION · Einzelspieler · Punkte nur auf diesem Gerät</div>}
         <p className="start__lead">Valenheim steht vor ungewissen Tagen. Betritt die Stadt, hilf den Menschen – und werde zur Nummer&nbsp;1.</p>
         {checking ? <div className="card start__card"><div className="spinner" /></div> : profil ? (
           <div className="card start__card">
