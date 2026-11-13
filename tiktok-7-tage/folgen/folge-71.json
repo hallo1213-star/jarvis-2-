@@ -1,0 +1,641 @@
+{
+ "folge": 71,
+ "titel": "Die Machtwechsel-Woche",
+ "licht": "abend",
+ "republik": true,
+ "_hinweis": "Sondervideo (kein Serienteil): Ankündigung Community-Event 14.–20.11.2026. Jeden Tag Auslosung (min. 20 Teilnehmer), Gewinner 24 h Staatsoberhaupt, schreibt privat seine Änderungen, danach Abstimmung JA/NEIN in den Kommentaren.",
+ "stimme": {
+  "modell": "de_DE-thorsten-high",
+  "tempo": 1.05,
+  "lebendigkeit": 0.7,
+  "rhythmus": 0.84,
+  "tonhoehe_halbtoene": 0.8
+ },
+ "aussprache": {
+  "TV": "Tiwi",
+  "24": "vierundzwanzig"
+ },
+ "musik": {
+  "stil": "dramatisch",
+  "tonart": "d-moll",
+  "bpm": 88
+ },
+ "szenen": [
+  {
+   "id": "s1_hook",
+   "vorlauf": 0.7,
+   "nachlauf": 0.3,
+   "sprecher": "Ab Samstag | gehört Valenheim | *euch*.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      48,
+      42
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        0,
+        260,
+        -180
+       ],
+       "ziel": [
+        0,
+        20,
+        -900
+       ]
+      },
+      {
+       "pos": [
+        0,
+        90,
+        -560
+       ],
+       "ziel": [
+        0,
+        24,
+        -900
+       ]
+      }
+     ],
+     "ease": "inOutSine"
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "hud_aus",
+     "zeit": 0,
+     "dauer": 300,
+     "global": true
+    },
+    {
+     "typ": "titel",
+     "zeit": 0.15,
+     "dauer": 2.8,
+     "text": "MACHTWECHSEL",
+     "unter": "14. – 20. NOVEMBER"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "boom",
+     "zeit": 0.05
+    },
+    {
+     "typ": "wind_swell",
+     "zeit": 0
+    },
+    {
+     "typ": "impact",
+     "wort": "euch"
+    }
+   ]
+  },
+  {
+   "id": "s2_eilmeldung",
+   "uebergang": "schnitt",
+   "vorlauf": 2.4,
+   "nachlauf": 0.3,
+   "sprecher": "*Eilmeldung* auf Valenheim TV: |0.3| Sieben Tage lang | bekommt Valenheim jeden Tag | ein *neues* *Staatsoberhaupt*. |0.3| Und das seid *ihr*!",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      46,
+      44
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        430,
+        80,
+        -430
+       ],
+       "ziel": [
+        518,
+        150,
+        -518
+       ]
+      },
+      {
+       "pos": [
+        460,
+        110,
+        -470
+       ],
+       "ziel": [
+        518,
+        170,
+        -518
+       ]
+      }
+     ]
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "sondersendung",
+     "zeit": 0.0,
+     "dauer": 2.4,
+     "text": "EILMELDUNG",
+     "unter": "VALENHEIM TV · LIVE"
+    },
+    {
+     "typ": "tv",
+     "zeit": 2.2,
+     "dauer": 300,
+     "text": "MACHTWECHSEL-WOCHE · LIVE"
+    },
+    {
+     "typ": "eilmeldung",
+     "wort": "Sieben",
+     "offset": -0.5,
+     "dauer": 30,
+     "text": "7 TAGE · 7 STAATSOBERHÄUPTER",
+     "laufband": "DIE MACHTWECHSEL-WOCHE · 14.–20. NOVEMBER · JEDEN TAG EINE AUSLOSUNG · MIND. 20 TEILNEHMER · VALENHEIM TV",
+     "sender": "VALENHEIM TV"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "whoosh",
+     "zeit": 0.0
+    },
+    {
+     "typ": "impact",
+     "zeit": 0.5
+    },
+    {
+     "typ": "riser",
+     "wort": "neues",
+     "offset": -0.8,
+     "dauer": 1.0
+    },
+    {
+     "typ": "impact",
+     "wort": "ihr"
+    }
+   ]
+  },
+  {
+   "id": "s3_mitmachen",
+   "uebergang": "schnitt",
+   "vorlauf": 0.3,
+   "nachlauf": 0.4,
+   "sprecher": "So machst du mit: |0.3| *Folge* Valenheim, | *like* das Video, | schreib einen *Kommentar*, | und *teile* es.",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      0,
+      0,
+      8
+     ],
+     "radius": [
+      62,
+      40
+     ],
+     "hoehe": [
+      48,
+      30
+     ],
+     "winkel": [
+      130,
+      200
+     ],
+     "fov": [
+      46,
+      44
+     ],
+     "wackeln": 0.15
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "projektliste",
+     "wort": "So",
+     "offset": 0.0,
+     "dauer": 30,
+     "titel": "SO MACHST DU MIT",
+     "unter": "JEDEN TAG NEU",
+     "avatar": "folgen/assets/ich_flagge.png",
+     "liste": [
+      {
+       "text": "1. VALENHEIM FOLGEN",
+       "wort": "Folge"
+      },
+      {
+       "text": "2. VIDEO LIKEN",
+       "wort": "like"
+      },
+      {
+       "text": "3. KOMMENTIEREN",
+       "wort": "Kommentar"
+      },
+      {
+       "text": "4. VIDEO TEILEN",
+       "wort": "teile"
+      }
+     ]
+    }
+   ],
+   "toene": [
+    {
+     "typ": "whoosh",
+     "zeit": 0.0
+    },
+    {
+     "typ": "scan_ok",
+     "wort": "Folge"
+    },
+    {
+     "typ": "scan_ok",
+     "wort": "like"
+    },
+    {
+     "typ": "scan_ok",
+     "wort": "Kommentar"
+    },
+    {
+     "typ": "scan_ok",
+     "wort": "teile"
+    }
+   ]
+  },
+  {
+   "id": "s4_zwanzig",
+   "uebergang": "schnitt",
+   "vorlauf": 0.3,
+   "nachlauf": 0.4,
+   "sprecher": "*Wichtig*: |0.3| Es müssen mindestens !zwanzig! *verschiedene* Leute mitmachen. |0.3| Sonst gibt es an diesem Tag | *kein* Staatsoberhaupt.",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        0,
+        24,
+        -500
+       ],
+       "ziel": [
+        0,
+        22,
+        -900
+       ]
+      },
+      {
+       "pos": [
+        0,
+        30,
+        -660
+       ],
+       "ziel": [
+        0,
+        26,
+        -900
+       ]
+      }
+     ],
+     "ease": "inOutSine"
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "alarm",
+     "wort": "zwanzig",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "text": "MIND. 20 TEILNEHMER",
+     "unter": "JEDE PERSON ZÄHLT NUR EINMAL"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "kein",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "text": "UNTER 20 = KEINE AUSLOSUNG",
+     "farbe": "#ff6a6a",
+     "nr": "REGEL"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "alarm",
+     "wort": "zwanzig",
+     "offset": 0.0,
+     "dauer": 1.6
+    },
+    {
+     "typ": "impact",
+     "wort": "kein"
+    }
+   ]
+  },
+  {
+   "id": "s5_gewinner",
+   "uebergang": "schnitt",
+   "vorlauf": 0.3,
+   "nachlauf": 0.4,
+   "sprecher": "Unter allen wird *ausgelost*. |3.0| Der Gewinner wird für *vierundzwanzig* *Stunden* | Staatsoberhaupt von Valenheim | und schreibt mir *privat*, | was er verändern will: |0.2| neue *Gebäude*, | neue *Gesetze*, | ganze *Gebiete*!",
+   "shots": [
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        -80,
+        28,
+        -640
+       ],
+       "ziel": [
+        -185,
+        18,
+        -705
+       ]
+      },
+      {
+       "pos": [
+        -90,
+        24,
+        -660
+       ],
+       "ziel": [
+        -185,
+        18,
+        -705
+       ]
+      }
+     ]
+    },
+    {
+     "typ": "pfad",
+     "anteil": 1,
+     "fov": [
+      44,
+      40
+     ],
+     "wackeln": 0.15,
+     "keys": [
+      {
+       "pos": [
+        110,
+        24,
+        -650
+       ],
+       "ziel": [
+        205,
+        12,
+        -705
+       ]
+      },
+      {
+       "pos": [
+        120,
+        20,
+        -670
+       ],
+       "ziel": [
+        205,
+        12,
+        -705
+       ]
+      }
+     ],
+     "ab_wort": "privat",
+     "offset": -0.2
+    },
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      0,
+      20,
+      -300
+     ],
+     "radius": [
+      900,
+      820
+     ],
+     "hoehe": [
+      300,
+      260
+     ],
+     "winkel": [
+      200,
+      225
+     ],
+     "fov": [
+      48,
+      46
+     ],
+     "wackeln": 0.08,
+     "ab_wort": "Gebäude",
+     "offset": -0.2
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "ernennung",
+     "wort": "ausgelost",
+     "offset": 0.55,
+     "dauer": 3.2,
+     "name": "DU?",
+     "avatar": "folgen/assets/fragezeichen.png",
+     "ueber": "TAGESGEWINNER",
+     "titel": "STAATSOBERHAUPT",
+     "unter": "VON VALENHEIM · 24 STUNDEN"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "privat",
+     "offset": -0.1,
+     "dauer": 2.4,
+     "text": "DEINE WÜNSCHE PER PRIVATNACHRICHT",
+     "farbe": "#f2c230",
+     "nr": "DER GEWINNER"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "Gebäude",
+     "offset": -0.1,
+     "dauer": 3.6,
+     "text": "GEBÄUDE · GESETZE · GEBIETE",
+     "farbe": "#9fd2ff",
+     "nr": "DU BESTIMMST"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "riser",
+     "wort": "ausgelost",
+     "offset": -0.9,
+     "dauer": 1.0
+    },
+    {
+     "typ": "jubel",
+     "wort": "ausgelost",
+     "offset": 0.7
+    },
+    {
+     "typ": "whoosh",
+     "wort": "privat",
+     "offset": -0.25
+    },
+    {
+     "typ": "whoosh",
+     "wort": "Gebäude",
+     "offset": -0.25
+    }
+   ]
+  },
+  {
+   "id": "s6_abstimmung",
+   "uebergang": "schnitt",
+   "vorlauf": 0.3,
+   "nachlauf": 0.4,
+   "sprecher": "Nach vierundzwanzig Stunden | entscheidet *ihr* in den Kommentaren: |0.3| *Ja* | – alles bleibt. |0.3| Oder !Nein! | – alles wird zurückgesetzt.",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      0,
+      0,
+      8
+     ],
+     "radius": [
+      70,
+      55
+     ],
+     "hoehe": [
+      60,
+      44
+     ],
+     "winkel": [
+      200,
+      250
+     ],
+     "fov": [
+      46,
+      44
+     ],
+     "wackeln": 0.12
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "gebiet",
+     "wort": "Ja",
+     "offset": -0.1,
+     "dauer": 2.0,
+     "text": "JA – ALLES BLEIBT",
+     "farbe": "#3cff8f",
+     "nr": "ABSTIMMUNG"
+    },
+    {
+     "typ": "gebiet",
+     "wort": "Nein",
+     "offset": -0.1,
+     "dauer": 2.6,
+     "text": "NEIN – ALLES ZURÜCK",
+     "farbe": "#ff5050",
+     "nr": "ABSTIMMUNG"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "scan_ok",
+     "wort": "Ja"
+    },
+    {
+     "typ": "scan_nein",
+     "wort": "Nein"
+    }
+   ]
+  },
+  {
+   "id": "s7_cta",
+   "uebergang": "schwarz",
+   "vorlauf": 0.5,
+   "nachlauf": 3.2,
+   "sprecher": "Die erste Auslosung startet am *Samstag*. |0.4| Folgt jetzt | und kommentiert, | damit ihr dabei seid!",
+   "shots": [
+    {
+     "typ": "orbit",
+     "anteil": 1,
+     "ziel": [
+      0,
+      20,
+      -300
+     ],
+     "radius": [
+      1300,
+      1150
+     ],
+     "hoehe": [
+      520,
+      460
+     ],
+     "winkel": [
+      150,
+      175
+     ],
+     "fov": [
+      50,
+      48
+     ],
+     "wackeln": 0.08,
+     "ease": "inOutSine"
+    }
+   ],
+   "effekte": [
+    {
+     "typ": "schluss",
+     "wort": "Folgt",
+     "offset": -0.2,
+     "dauer": 20,
+     "text": "MACHTWECHSEL-WOCHE",
+     "unter": "14.–20.11. · JEDEN TAG NEU",
+     "y": 640
+    },
+    {
+     "typ": "kommentar_cta",
+     "wort": "kommentiert",
+     "offset": -0.3,
+     "text": "JETZT KOMMENTIEREN!",
+     "text2": "FOLGEN · LIKEN · TEILEN"
+    }
+   ],
+   "toene": [
+    {
+     "typ": "final_hit",
+     "wort": "Samstag",
+     "offset": -0.1
+    },
+    {
+     "typ": "impact",
+     "wort": "dabei"
+    }
+   ]
+  }
+ ]
+}
