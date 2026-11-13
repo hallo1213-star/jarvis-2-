@@ -17,7 +17,7 @@ export class Atmosphere {
     this.rain = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: 0xaab8c8, transparent: true, opacity: 0.0, depthWrite: false }));
     this.rain.frustumCulled = false; engine.scene.add(this.rain);
     this.moon = new THREE.DirectionalLight(0x8fa8ff, 0); engine.scene.add(this.moon);
-    this.audio = new Sound();
+    this.audio = new Sound(); engine.atmo = this;
     engine.addUpdater((dt, t) => this.update(dt, t));
   }
 
@@ -46,7 +46,7 @@ export class Atmosphere {
     const wTarget = this.weather ? 1 : 0; this.weatherK += (wTarget - this.weatherK) * Math.min(1, dt * 0.6);
     const raining = this.weather?.typ === 'regen' || (!this.weather && this.lastWeather === 'regen');
     if (this.weather) this.lastWeather = this.weather.typ;
-    const wk = this.weatherK; const rainK = raining ? wk : 0; const fogK = (this.weather?.typ === 'nebel' || (!this.weather && this.lastWeather === 'nebel')) ? wk : 0;
+    const wk = this.weatherK; this.rainK = raining ? wk : 0; const rainK = raining ? wk : 0; const fogK = (this.weather?.typ === 'nebel' || (!this.weather && this.lastWeather === 'nebel')) ? wk : 0;
     // --- Strom ---
     const powerOff = now < this.powerOffUntil; const flicker = powerOff ? (Math.random() < 0.04 ? 1 : 0) : 1;
     this.power += ((powerOff ? 0 : 1) - this.power) * Math.min(1, dt * 3);
@@ -65,6 +65,9 @@ export class Atmosphere {
     const lights = (1 - day) * this.power * flicker;
     for (let i = 0; i < 7; i++) { const m = e.city.materials['fac' + i]; if (m) m.emissiveIntensity = lights * 0.9; }
     if (e.city.props.lampHeadMat) e.city.props.lampHeadMat.emissiveIntensity = lights * 3.2;
+    if (e.city.props.poolMat) e.city.props.poolMat.opacity = lights * 0.55;
+    e.nightLights = lights; e.dayLight = day;
+    if (e.clouds) e.clouds.material.uniforms.uCover.value = 0.45 - rainK * 0.35 - fogK * 0.1;
     // Regen folgt der Kamera
     this.rain.visible = rainK > 0.02; this.rain.material.opacity = rainK * 0.5;
     if (this.rain.visible) {

@@ -43,7 +43,7 @@ function drawWindow(g, x, y, w, h, s, lit) {
   g.fillStyle = s.frame; g.fillRect(x - 2, y - 2, w + 4, h + 4);
   const grd = g.createLinearGradient(x, y, x + w * 0.3, y + h);
   if (lit) { grd.addColorStop(0, '#ffe2a8'); grd.addColorStop(1, '#f0b860'); }
-  else { grd.addColorStop(0, '#9fb4c6'); grd.addColorStop(0.45, '#4d6276'); grd.addColorStop(1, '#253241'); }
+  else { grd.addColorStop(0, '#5d6f80'); grd.addColorStop(0.5, '#2c3946'); grd.addColorStop(1, '#161e27'); }
   g.fillStyle = grd; g.fillRect(x + 2, y + 2, w - 4, h - 4);
   g.fillStyle = s.frame; g.fillRect(x + w / 2 - 1.5, y, 3, h); g.fillRect(x, y + h * 0.32, w, 3);
   // Fensterbank
@@ -209,4 +209,73 @@ export function facadeNightTexture(i) {
       else { const w = fw * 0.42, h = fh * 0.58; g.fillRect(fx * fw + (fw - w) / 2 + 1, fy * fh + fh * 0.16 + 1, w - 2, h - 2); }
     }
   });
+}
+
+// ---------- Oberflächendetails: Normal- und Rauheitskarten (Tiefe + echte Spiegelung in Fenstern) ----------
+function heightToNormal(hc, strength = 2.5) {
+  const W = hc.width, H = hc.height; const src = hc.getContext('2d').getImageData(0, 0, W, H).data;
+  const out = document.createElement('canvas'); out.width = W; out.height = H; const og = out.getContext('2d'); const img = og.createImageData(W, H); const d = img.data;
+  const h = (x, y) => src[(((y + H) % H) * W + ((x + W) % W)) * 4] / 255;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const dx = (h(x + 1, y) - h(x - 1, y)) * strength, dy = (h(x, y + 1) - h(x, y - 1)) * strength;
+    const l = Math.hypot(dx, dy, 1); const i = (y * W + x) * 4;
+    d[i] = (-dx / l * 0.5 + 0.5) * 255; d[i + 1] = (dy / l * 0.5 + 0.5) * 255; d[i + 2] = (1 / l * 0.5 + 0.5) * 255; d[i + 3] = 255;
+  }
+  og.putImageData(img, 0, 0); return out;
+}
+function mapTex(key, w, h, drawHeight, drawRough, strength) {
+  if (cache.has(key)) return cache.get(key);
+  const hc = document.createElement('canvas'); hc.width = w; hc.height = h; drawHeight(hc.getContext('2d'), w, h);
+  const n = new THREE.CanvasTexture(heightToNormal(hc, strength)); n.wrapS = n.wrapT = THREE.RepeatWrapping; n.anisotropy = 8;
+  let r = null;
+  if (drawRough) { const rc = document.createElement('canvas'); rc.width = w; rc.height = h; drawRough(rc.getContext('2d'), w, h); r = new THREE.CanvasTexture(rc); r.wrapS = r.wrapT = THREE.RepeatWrapping; r.anisotropy = 8; }
+  const res = { normal: n, rough: r }; cache.set(key, res); return res;
+}
+// Gleiche Fensteraufteilung wie facadeTexture()
+function facadeLayout(i, cb) {
+  const s = FACADE_STYLES[i % FACADE_STYLES.length]; const W = 256, fw = W / 4, fh = W / 4;
+  for (let fy = 0; fy < 4; fy++) for (let fx = 0; fx < 4; fx++) {
+    if (s.modern) cb({ x: fx * fw + 3, y: fy * fh + 7, w: fw - 6, h: fh - 15, fy, s });
+    else { const w = fw * 0.42, h = fh * 0.58; cb({ x: fx * fw + (fw - w) / 2, y: fy * fh + fh * 0.16, w, h, fy, s }); }
+  }
+}
+export function facadeMaps(i) {
+  const s = FACADE_STYLES[i % FACADE_STYLES.length];
+  return mapTex(`facmap-${i}`, 256, 256, (g, W, H) => {
+    g.fillStyle = '#808080'; g.fillRect(0, 0, W, H);
+    if (s.brick) { g.fillStyle = '#6a6a6a'; for (let y = 0; y < H; y += 4) g.fillRect(0, y, W, 1); for (let y = 0; y < H; y += 4) for (let x = (y / 4) % 2 ? -5 : 0; x < W; x += 10) g.fillRect(x, y, 1, 4); }
+    if (s.cornice) for (let fy = 0; fy < 4; fy++) { g.fillStyle = '#b4b4b4'; g.fillRect(0, fy * 64 + 60, W, 3); }
+    facadeLayout(i, ({ x, y, w, h }) => {
+      g.fillStyle = '#9a9a9a'; g.fillRect(x - 2, y - 2, w + 4, h + 4);      // Rahmen
+      g.fillStyle = '#262626'; g.fillRect(x + 1, y + 1, w - 2, h - 2);        // Laibung (tief)
+      g.fillStyle = '#383838'; g.fillRect(x + 2, y + 2, w - 4, h - 4);        // Glas
+      g.fillStyle = '#9a9a9a'; g.fillRect(x + w / 2 - 0.7, y, 1.4, h);       // Sprosse
+      if (!s.modern) { g.fillStyle = '#c8c8c8'; g.fillRect(x - 3, y + h + 1, w + 6, 3); } // Fensterbank
+    });
+  }, (g, W, H) => {
+    g.fillStyle = s.brick ? '#e6e6e6' : '#d8d8d8'; g.fillRect(0, 0, W, H);
+    facadeLayout(i, ({ x, y, w, h }) => { g.fillStyle = '#7a7a7a'; g.fillRect(x - 2, y - 2, w + 4, h + 4); g.fillStyle = '#141414'; g.fillRect(x + 2, y + 2, w - 4, h - 4); });
+  }, 3);
+}
+export function asphaltMaps() {
+  return mapTex('asphaltmap', 256, 256, (g, W, H) => {
+    g.fillStyle = '#808080'; g.fillRect(0, 0, W, H); const r = rng(91);
+    for (let k = 0; k < 9000; k++) { const v = 100 + r() * 70 | 0; g.fillStyle = `rgb(${v},${v},${v})`; g.fillRect(r() * W, r() * H, 1 + r() * 1.5, 1 + r() * 1.5); }
+    for (let k = 0; k < 10; k++) { g.strokeStyle = 'rgba(30,30,30,0.6)'; g.lineWidth = 1; g.beginPath(); let x = r() * W, y = r() * H; g.moveTo(x, y); for (let j = 0; j < 5; j++) { x += (r() - 0.5) * 40; y += (r() - 0.5) * 40; g.lineTo(x, y); } g.stroke(); }
+  }, (g, W, H) => {
+    g.fillStyle = '#e0e0e0'; g.fillRect(0, 0, W, H); const r = rng(92);
+    for (let k = 0; k < 8; k++) { const gr = g.createRadialGradient(0, 0, 0, 0, 0, 1); gr.addColorStop(0, 'rgba(90,90,90,0.9)'); gr.addColorStop(1, 'rgba(224,224,224,0)'); g.save(); g.translate(r() * W, r() * H); g.scale(20 + r() * 30, 10 + r() * 15); g.fillStyle = gr; g.beginPath(); g.arc(0, 0, 1, 0, 7); g.fill(); g.restore(); }
+  }, 1.6);
+}
+export function pavingMaps(tile = 16) {
+  return mapTex('pavingmap' + tile, 256, 256, (g, W, H) => {
+    g.fillStyle = '#3a3a3a'; g.fillRect(0, 0, W, H); const r = rng(93);
+    for (let y = 0; y < H; y += tile) for (let x = 0; x < W; x += tile) { const v = 150 + r() * 40 | 0; g.fillStyle = `rgb(${v},${v},${v})`; g.fillRect(x + 1, y + 1, tile - 2, tile - 2); }
+  }, (g, W, H) => { g.fillStyle = '#d0d0d0'; g.fillRect(0, 0, W, H); g.fillStyle = '#f0f0f0'; for (let y = 0; y < H; y += tile) g.fillRect(0, y, W, 1); for (let x = 0; x < W; x += tile) g.fillRect(x, 0, 1, H); }, 2);
+}
+export function plazaMaps() {
+  return mapTex('plazamap', 256, 256, (g, W, H) => {
+    g.fillStyle = '#3a3a3a'; g.fillRect(0, 0, W, H); const r = rng(94);
+    for (let y = 0; y < H; y += 8) for (let x = (y / 8) % 2 ? -6 : 0; x < W; x += 12) { const v = 150 + r() * 40 | 0; g.fillStyle = `rgb(${v},${v},${v})`; g.fillRect(x + 0.5, y + 0.5, 11, 7); }
+  }, (g, W, H) => { g.fillStyle = '#c8c8c8'; g.fillRect(0, 0, W, H); }, 2);
 }

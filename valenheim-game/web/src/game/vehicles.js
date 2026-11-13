@@ -45,6 +45,8 @@ const mats = {
   stripe: new THREE.MeshStandardMaterial({ color: '#d42a2a', emissive: '#300000' }),
   blue: new THREE.MeshStandardMaterial({ color: '#1e5bff', emissive: '#2a6bff', emissiveIntensity: 0 }),
   plastic: new THREE.MeshStandardMaterial({ color: '#1d1f22', roughness: 0.7 }),
+  beam: (() => { const c = document.createElement('canvas'); c.width = 64; c.height = 128; const g = c.getContext('2d'); const gr = g.createRadialGradient(32, 128, 4, 32, 90, 90); gr.addColorStop(0, 'rgba(255,245,215,0.95)'); gr.addColorStop(1, 'rgba(255,240,200,0)'); g.fillStyle = gr; g.fillRect(0, 0, 64, 128);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return new THREE.MeshBasicMaterial({ map: t, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); })(),
   plate: new THREE.MeshStandardMaterial({ color: '#f2f2ee', roughness: 0.5 }),
 };
 const paint = new Map();
@@ -52,6 +54,9 @@ function paintMat(color) {
   if (!paint.has(color)) paint.set(color, new THREE.MeshPhysicalMaterial({ color, roughness: 0.32, metalness: 0.55, clearcoat: 0.8, clearcoatRoughness: 0.15 }));
   return paint.get(color);
 }
+const BEAM_GEO = new THREE.PlaneGeometry(4.2, 11).rotateX(-Math.PI / 2);
+// Nachtbeleuchtung aller Autos (0 = Tag, 1 = Nacht)
+export function setCarNight(n) { mats.beam.opacity = n * 0.5; mats.head.emissiveIntensity = 0.6 + n * 3; mats.tail.emissiveIntensity = 0.4 + n * 1.6; }
 export const CAR_COLORS = ['#9a1b1b', '#1b3a6b', '#e8e8e8', '#202226', '#7d7f82', '#2f4b33', '#c9b48a', '#b56a1d', '#5d2a6e', '#1d6f7a'];
 
 export function makeCar(type = 'limousine', color = '#9a1b1b') {
@@ -70,6 +75,8 @@ export function makeCar(type = 'limousine', color = '#9a1b1b') {
     const h = add(G.headL, mats.head); h.position.set(s * (T.W / 2 - 0.32), yL, T.L / 2 + 0.02);
     const t = add(G.tail, mats.tail); t.position.set(s * (T.W / 2 - 0.3), yL + 0.1, -T.L / 2 - 0.02);
   }
+  // Scheinwerferkegel auf der Straße (nachts)
+  const beam = new THREE.Mesh(BEAM_GEO, mats.beam); beam.position.set(0, 0.04 - 0, T.L / 2 + 5.5); root.add(beam);
   // Stoßstangen, Kennzeichen, Spiegel, Radkästen
   const yb = T.r * 0.8;
   for (const s of [1, -1]) { const b = add(G.bumper, mats.plastic); b.position.set(0, yb, s * (T.L / 2 - 0.05)); const pl = add(G.plate, mats.plate); pl.position.set(0, yb + 0.02, s * (T.L / 2 + 0.07)); }

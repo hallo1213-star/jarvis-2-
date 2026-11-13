@@ -4,12 +4,14 @@ import { Sky } from 'three/addons/objects/Sky.js';
 import { buildCity, groundHeight, districtAt, DISTRICTS } from './city.js';
 import { Character, nameTag } from './character.js';
 import { Input } from './input.js';
-import { DrivableCar, Traffic } from './vehicles.js';
+import { DrivableCar, Traffic, setCarNight } from './vehicles.js';
 import { Crowd } from './crowd.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
+import { FX } from './fx.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 
 // Farbkorrektur + Vignette (Kino-Look)
@@ -59,6 +61,23 @@ export class Engine {
     Object.assign(sky2.material.uniforms.turbidity, { value: 6 }); sky2.material.uniforms.sunPosition.value.copy(this.sunDir); envScene.add(sky2);
     scene.environment = pm.fromScene(envScene, 0, 0.1, 2000).texture; scene.environmentIntensity = 0.3; pm.dispose();
 
+    // Wolkenschicht (prozedural, zieht langsam)
+    this.clouds = new THREE.Mesh(new THREE.SphereGeometry(3000, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.ShaderMaterial({
+      transparent: true, depthWrite: false, side: THREE.BackSide, fog: false,
+      uniforms: { uTime: { value: 0 }, uSun: { value: this.sunDir.clone() }, uDay: { value: 1 }, uCover: { value: 0.45 } },
+      vertexShader: 'varying vec3 vDir; void main(){ vDir = normalize(position); vec4 p = projectionMatrix * modelViewMatrix * vec4(position, 1.0); p.z = p.w * 0.9999; gl_Position = p; }',
+      fragmentShader: `varying vec3 vDir; uniform float uTime, uDay, uCover; uniform vec3 uSun;
+        float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+        float n(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); return mix(mix(h(i), h(i + vec2(1, 0)), f.x), mix(h(i + vec2(0, 1)), h(i + vec2(1, 1)), f.x), f.y); }
+        float fbm(vec2 p){ float v = 0.0, a = 0.5; for (int i = 0; i < 5; i++){ v += a * n(p); p *= 2.03; a *= 0.5; } return v; }
+        void main(){ if (vDir.y < 0.02) discard; vec2 uv = vDir.xz / (vDir.y + 0.12) * 1.3 + vec2(uTime * 0.006, uTime * 0.002);
+          float c = smoothstep(uCover, uCover + 0.32, fbm(uv)); float edge = smoothstep(0.02, 0.25, vDir.y);
+          float sun = pow(max(dot(normalize(vDir), normalize(uSun)), 0.0), 8.0);
+          vec3 col = mix(vec3(0.07, 0.08, 0.11), vec3(0.96, 0.95, 0.93), uDay) * (0.75 + 0.25 * fbm(uv * 2.0 + 3.0)) + sun * vec3(0.5, 0.35, 0.2) * uDay;
+          gl_FragColor = vec4(col, c * edge * 0.92); }`,
+    }));
+    this.clouds.renderOrder = -1; this.clouds.frustumCulled = false; scene.add(this.clouds);
+
     scene.fog = new THREE.FogExp2(0xb9c6d2, this.q.fog);
     this.hemi = new THREE.HemisphereLight(0xbfd4f2, 0x4a4034, 0.42); scene.add(this.hemi);
     const sun = new THREE.DirectionalLight(0xffeccc, 2.1); this.sun = sun;
@@ -93,6 +112,7 @@ export class Engine {
     this.district = null; this.clock = new THREE.Timer(); this.t = 0; this.running = true;
     this.frames = 0; this.fpsT = 0; this.updaters = [];
 
+    this.fx = new FX(this);
     window.VH = this; // für Tests/Fehlersuche
     this.resize = this.resize.bind(this); window.addEventListener('resize', this.resize); this.resize();
     this.loop = this.loop.bind(this); r.setAnimationLoop(this.loop);
@@ -100,6 +120,7 @@ export class Engine {
 
   setupPost() {
     const c = new EffectComposer(this.renderer); c.addPass(new RenderPass(this.scene, this.camera));
+    try { const ao = new GTAOPass(this.scene, this.camera, 256, 256); ao.updateGtaoMaterial({ radius: 0.9, distanceExponent: 1.4, thickness: 1.2, scale: 1.1, samples: 12 }); ao.blendIntensity = 0.85; c.addPass(ao); this.ao = ao; } catch (e) { console.warn('AO nicht verfügbar', e); }
     this.bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.32, 0.55, 0.88); c.addPass(this.bloom);
     c.addPass(new OutputPass()); this.grade = new ShaderPass(GradeShader); c.addPass(this.grade); this.composer = c;
   }
@@ -131,6 +152,8 @@ export class Engine {
     this.traffic.update(dt, this.mode === 'play' && !this.vehicle ? this.pos : null, this.vehicle);
     this.crowd.update(dt, this.mode === 'play' ? this.pos : null, this.camera.position);
     for (const f of this.updaters) f(dt, this.t);
+    setCarNight(this.nightLights || 0);
+    if (this.clouds) { this.clouds.position.copy(this.camera.position); this.clouds.material.uniforms.uTime.value = this.t; this.clouds.material.uniforms.uSun.value.copy(this.sunDir); this.clouds.material.uniforms.uDay.value = this.dayLight ?? 1; }
     // Schatten-Kamera folgt dem Blickpunkt
     const focus = this.mode === 'play' ? this.pos : this.camFocus || new THREE.Vector3();
     this.sun.position.copy(focus).addScaledVector(this.sunDir, 150); this.sun.target.position.copy(focus); this.sun.target.updateMatrixWorld();

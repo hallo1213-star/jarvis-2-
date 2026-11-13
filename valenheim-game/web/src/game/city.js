@@ -90,16 +90,16 @@ function makeMaterials() {
   const M = {};
   const std = (o) => new THREE.MeshStandardMaterial({ roughness: 0.85, metalness: 0, ...o });
   TX.FACADE_STYLES.forEach((s, i) => {
-    M['fac' + i] = std({ map: TX.facadeTexture(i), roughness: 0.82, emissive: '#ffffff', emissiveMap: TX.facadeNightTexture(i), emissiveIntensity: 0 });
+    { const fm = TX.facadeMaps(i); M['fac' + i] = std({ map: TX.facadeTexture(i), normalMap: fm.normal, normalScale: new THREE.Vector2(1, -1), roughnessMap: fm.rough, roughness: 1, metalness: 0.05, emissive: '#ffffff', emissiveMap: TX.facadeNightTexture(i), emissiveIntensity: 0 }); }
     M['fac' + i + ':giebel'] = std({ color: s.wall, roughness: 0.9 });
   });
   for (let i = 0; i < 6; i++) M['shop' + i] = std({ map: TX.shopTexture(i), roughness: 0.6 });
   M.roof = std({ map: TX.roofTexture(), roughness: 0.75 });
   M['roof:giebel'] = std({ color: '#cbbfa8' });
   M.flatroof = std({ map: TX.flatRoofTexture(), roughness: 0.95 });
-  M.asphalt = std({ map: TX.asphaltTexture(), roughness: 0.92 });
-  M.sidewalk = std({ map: TX.pavingTexture(), roughness: 0.9 });
-  M.plaza = std({ map: TX.plazaTexture(), roughness: 0.88 });
+  { const am = TX.asphaltMaps(); M.asphalt = std({ map: TX.asphaltTexture(), normalMap: am.normal, normalScale: new THREE.Vector2(0.6, 0.6), roughnessMap: am.rough, roughness: 1 }); }
+  { const pm = TX.pavingMaps(); M.sidewalk = std({ map: TX.pavingTexture(), normalMap: pm.normal, roughnessMap: pm.rough, roughness: 1 }); }
+  { const zm = TX.plazaMaps(); M.plaza = std({ map: TX.plazaTexture(), normalMap: zm.normal, roughnessMap: zm.rough, roughness: 1 }); }
   M.grass = std({ map: TX.grassTexture(), roughness: 1 });
   M.gravel = std({ map: TX.gravelTexture(), roughness: 1 });
   M.concrete = std({ map: TX.concreteTexture(), roughness: 0.9 });
@@ -496,17 +496,34 @@ function buildProps(scene, M, L, quality, col) {
   const leafMat2 = new THREE.MeshStandardMaterial({ color: '#3d6629', roughness: 0.9, flatShading: true });
   const trunkMat = new THREE.MeshStandardMaterial({ color: '#5a4332', roughness: 1 });
 
-  // Bäume: Stamm + 3 Kronen-Kugeln (unregelmäßig)
-  const trunk = new THREE.CylinderGeometry(0.16, 0.26, 3.2, 7).translate(0, 1.6, 0);
-  const crownA = new THREE.IcosahedronGeometry(2.1, 1).translate(0, 4.6, 0);
-  const crownB = new THREE.IcosahedronGeometry(1.6, 1).translate(0.9, 5.6, 0.4);
-  const crownC = new THREE.IcosahedronGeometry(1.5, 1).translate(-0.8, 5.3, -0.6);
-  for (const g of [crownA, crownB, crownC]) { const p = g.attributes.position; for (let k = 0; k < p.count; k++) { const s = 1 + Math.sin(p.getX(k) * 3.1 + p.getZ(k) * 2.3) * 0.12; p.setXYZ(k, p.getX(k) * s, p.getY(k), p.getZ(k) * s); } g.computeVertexNormals(); }
-  const crown = mergeSimple([crownA, crownB, crownC]); crown.computeVertexNormals();
-  const tset = (o, [x, z, s], k) => { o.position.set(x, 0.15, z); o.rotation.set(0, k * 1.7, 0); o.scale.setScalar(s); };
-  add(instanced(trunk, trunkMat, L.trees, tset));
-  const tA = L.trees.filter((_, k) => k % 2 === 0), tB = L.trees.filter((_, k) => k % 2 === 1);
-  add(instanced(crown, leafMat, tA, tset)); add(instanced(crown, leafMat2, tB, tset));
+  // Bäume: zwei Arten (Linde rund, Ahorn breit) – Stamm mit Ästen, Krone aus vielen verformten Blattbüscheln mit Farbverlauf
+  function crownGeo(seed, clusters, spread, height, rMin, rMax) {
+    const rr = rng(seed); const parts = [];
+    for (let k = 0; k < clusters; k++) {
+      const a = rr() * Math.PI * 2, d = Math.sqrt(rr()) * spread, y = height + (rr() - 0.3) * spread * 0.9; const r0 = rMin + rr() * (rMax - rMin);
+      const g = new THREE.IcosahedronGeometry(r0, 2); const p = g.attributes.position;
+      for (let i = 0; i < p.count; i++) { const x = p.getX(i), yy = p.getY(i), z = p.getZ(i); const n = 1 + Math.sin(x * 4.1 + yy * 3.3 + seed) * 0.12 + Math.sin(z * 5.7 + x * 2.1) * 0.1; p.setXYZ(i, x * n, yy * n * 0.85, z * n); }
+      g.translate(Math.cos(a) * d, y, Math.sin(a) * d); parts.push(g);
+    }
+    const g = mergeSimple(parts); g.computeVertexNormals();
+    const p = g.attributes.position; const col = new Float32Array(p.count * 3); const c = new THREE.Color();
+    for (let i = 0; i < p.count; i++) { const t = THREE.MathUtils.clamp((p.getY(i) - height + spread) / (spread * 2.2), 0, 1); c.setHSL(0.24 + Math.sin(i * 0.37) * 0.015, 0.45, 0.17 + t * 0.15 + Math.sin(i * 1.7) * 0.02); col.set([c.r, c.g, c.b], i * 3); }
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3)); return g;
+  }
+  function trunkGeo(h) {
+    const parts = [new THREE.CylinderGeometry(0.14, 0.28, h, 8).translate(0, h / 2, 0)];
+    for (const [ang, tilt] of [[0.3, 0.7], [2.4, 0.8], [4.2, 0.65]]) { const b = new THREE.CylinderGeometry(0.05, 0.1, 1.8, 6).translate(0, 0.9, 0).rotateZ(tilt).rotateY(ang).translate(0, h * 0.8, 0); parts.push(b); }
+    return mergeSimple(parts);
+  }
+  const leafMatV = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9 });
+  const species = [{ trunk: trunkGeo(3.0), crown: crownGeo(3, 11, 1.7, 4.8, 0.9, 1.5) }, { trunk: trunkGeo(3.6), crown: crownGeo(7, 14, 2.4, 5.4, 0.8, 1.4) }];
+  const tset = (o, [x, z, s], k) => { o.position.set(x, 0.15, z); o.rotation.set(0, k * 1.7, 0); o.scale.set(s * (0.9 + (k % 5) * 0.05), s * (0.9 + (k % 3) * 0.08), s * (0.9 + (k % 4) * 0.05)); };
+  species.forEach((sp, si) => {
+    const list = L.trees.filter((_, k) => k % 2 === si);
+    add(instanced(sp.trunk, trunkMat, list, tset));
+    const cm = add(instanced(sp.crown, leafMatV, list, tset));
+    if (cm) list.forEach((_, k) => cm.setColorAt(k, new THREE.Color().setHSL(0.27 + ((k * 37) % 10) / 200, 0.25, 0.55 + ((k * 13) % 10) / 40)));
+  });
   for (const [x, z, s] of L.trees) col.add(x - 0.25 * s, z - 0.25 * s, x + 0.25 * s, z + 0.25 * s, 4, 'baum');
 
   // Wald am Stadtrand: Nadelbäume (Kegel)
@@ -520,6 +537,10 @@ function buildProps(scene, M, L, quality, col) {
   const lampHeadMat = new THREE.MeshStandardMaterial({ color: '#fff3d6', emissive: '#ffd89a', emissiveIntensity: 0, roughness: 0.4 });
   const lset = (o, [x, z, ry]) => { o.position.set(x, 0.15, z); o.rotation.set(0, ry + Math.PI, 0); o.scale.setScalar(1); };
   add(instanced(pole, M.metal, L.lamps, lset)); const heads = add(instanced(headGeo, lampHeadMat, L.lamps, lset, { cast: false }));
+  // Lichtkegel am Boden (nachts sichtbar)
+  const poolTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'); const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64); gr.addColorStop(0, 'rgba(255,214,150,1)'); gr.addColorStop(0.5, 'rgba(255,190,120,0.35)'); gr.addColorStop(1, 'rgba(255,180,100,0)'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+  const poolMat = new THREE.MeshBasicMaterial({ map: poolTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0, fog: true });
+  add(instanced(new THREE.PlaneGeometry(9, 9).rotateX(-Math.PI / 2).translate(0, 0.03, 1.1), poolMat, L.lamps, lset, { cast: false })).receiveShadow = false;
 
   // Autos: Karosserie (Instanzfarbe) + Fenster + Räder
   const carCols = ['#9a1b1b', '#1b3a6b', '#e8e8e8', '#2a2a2a', '#7d7f82', '#3f5a3a', '#c9b48a', '#f2c230'];
@@ -591,7 +612,7 @@ function buildProps(scene, M, L, quality, col) {
   }
 
   return {
-    root, heads, lampHeadMat,
+    root, heads, lampHeadMat, poolMat,
     update(t) {
       for (const f of flags) {
         const p = f.geometry.attributes.position; const b = f.userData.base;
