@@ -1,0 +1,16 @@
+# Render: zweiter, kostenloser Web-Service nur für die Testversion von VALENHEIM 2.0
+services:
+  - type: web
+    name: valenheim-v2
+    runtime: node
+    plan: free
+    region: frankfurt
+    rootDir: valenheim-v2
+    buildCommand: npm run install:all && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/status
+    envVars:
+      - key: NODE_VERSION
+        value: 22.12.0
+      - key: DATABASE_URL   # dieselbe Supabase-Datenbank; v2 nutzt nur eigene Tabellen mit Präfix v2_
+        sync: false

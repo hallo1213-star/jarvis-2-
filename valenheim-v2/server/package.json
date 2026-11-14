@@ -1,0 +1,7 @@
+{
+  "name": "valenheim-v2-server",
+  "private": true,
+  "type": "module",
+  "dependencies": { "ws": "8.23.0", "pg": "8.23.1" },
+  "devDependencies": { "@electric-sql/pglite": "0.5.16" }
+}
