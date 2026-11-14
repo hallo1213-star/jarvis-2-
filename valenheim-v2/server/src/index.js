@@ -17,7 +17,7 @@ process.on('unhandledRejection', (e) => console.error('Unbehandelter Fehler:', e
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 2600);
 const DIST = path.resolve(__dirname, '../../client/dist');
-const VERSION = '2.0.0-phase6';
+const VERSION = '2.0.0-test';
 
 // ---------- Helfer ----------
 const send = (res, status, data) => { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(data)); };
