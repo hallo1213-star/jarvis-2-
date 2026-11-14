@@ -9,14 +9,14 @@ export default function Spiel({ konto, onEnde }) {
   const [laedt, setLaedt] = useState(true); const [fehler, setFehler] = useState('');
   const [st, setSt] = useState({ fps: 0, netz: 'verbinde', online: 0, stufe: null, kamera: konto.spielstand.settings.kamera });
   const [menue, setMenue] = useState(false); const [hinweis, setHinweis] = useState(null);
-  const [joy, setJoy] = useState(null); const [rennen, setRennen] = useState(false);
+  const [joy, setJoy] = useState(null); const [ladung, setLadung] = useState({ text: 'Physik wird vorbereitet …', anteil: 0.1 }); const [rennen, setRennen] = useState(false);
   const touch = matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 1;
 
   useEffect(() => {
     let tot = false;
     import('../core/game.js').then(async ({ Game }) => {
       if (tot) return;
-      const g = await Game.erstelle(canvas.current, { konto, onStatus: (s) => setSt((a) => ({ ...a, ...s })), onHinweis: (text) => setHinweis({ text, k: Date.now() }) });
+      const g = await Game.erstelle(canvas.current, { konto, onStatus: (s) => setSt((a) => ({ ...a, ...s })), onHinweis: (text) => setHinweis({ text, k: Date.now() }), onFortschritt: (text, anteil) => setLadung({ text, anteil }) });
       if (tot) { g.beenden(); return; } gameRef.current = g; setSt((a) => ({ ...a, stufe: g.stufe })); setLaedt(false);
     }).catch((e) => { console.error(e); setFehler('Das Spiel konnte nicht starten: ' + e.message); });
     return () => { tot = true; gameRef.current?.beenden(); };
@@ -38,7 +38,7 @@ export default function Spiel({ konto, onEnde }) {
       {!laedt && (<>
         <div className="hud hud--lo">
           <div className="chip chip--name"><Emblem size={28} /> {konto.profil.name}</div>
-          <div className="chip"><small>Testgelände · Phase 1</small></div>
+          <div className="chip"><small>{gameRef.current?.welt === 'test' ? 'Testgelände' : 'Republik Valenheim'}</small></div>
         </div>
         <div className="hud hud--ro" style={{ top: 'calc(120px + var(--st))' }}>
           <div className="chip" style={{ '--c': st.netz === 'online' ? '#3cff8f' : '#ff6b6b' }}><span className="badge" style={{ border: 0, background: 'none', padding: 0, '--c': st.netz === 'online' ? '#3cff8f' : '#ffb347' }}>{st.netz === 'online' ? 'Gespeichert · online' : st.netz === 'getrennt' ? 'Verbindung weg …' : 'Verbinde …'}</span></div>
@@ -74,7 +74,7 @@ export default function Spiel({ konto, onEnde }) {
         <div className="lader">
           <Emblem size={110} />
           <div className="lader__titel">VALENHEIM WIRD GELADEN</div>
-          {fehler ? <div className="fehler">{fehler}</div> : <><div className="balken"><div style={{ width: '60%', animation: 'none' }} /></div><div className="lader__text">Physik und Welt werden vorbereitet …</div></>}
+          {fehler ? <div className="fehler">{fehler}</div> : <><div className="balken"><div style={{ width: `${Math.round(ladung.anteil * 100)}%` }} /></div><div className="lader__text">{ladung.text}</div></>}
           {fehler && <a className="btn btn--ghost" style={{ width: 'auto' }} href="#/">Zurück</a>}
         </div>
       )}

@@ -94,7 +94,7 @@ wss.on('connection', (ws) => {
       clearTimeout(timer);
       const old = clients.get(p.id); if (old) { old.ws.send(JSON.stringify({ t: 'doppelt' })); old.ws.close(4005, 'doppelt'); }
       const sv = await SAVE.getSave(p.id);
-      c = { id: p.id, name: p.username, ws, pos: { ...sv.pos }, lastT: Date.now(), dirty: false };
+      c = { id: p.id, name: p.username, ws, pos: { ...sv.pos, welt: sv.pos.welt || 'valenheim' }, lastT: Date.now(), dirty: false };
       clients.set(p.id, c);
       return ws.send(JSON.stringify({ t: 'willkommen', pos: c.pos, online: clients.size }));
     }

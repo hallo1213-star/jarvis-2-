@@ -1,7 +1,7 @@
 // Spielstände: Position + Einstellungen. Alle Werte werden vom Server geprüft.
 import { q, one } from './db.js';
 
-export const DEFAULT_POS = { x: 0, y: 1.2, z: 8, h: Math.PI, welt: 'test' };
+export const DEFAULT_POS = { x: 7, y: 1.22, z: 22, h: Math.PI, welt: 'valenheim' };
 export const SETTINGS = {
   grafik: (v) => ['auto', 'niedrig', 'mittel', 'hoch'].includes(v) ? v : undefined,
   kamera: (v) => ['verfolger', 'ego'].includes(v) ? v : undefined,
@@ -25,6 +25,6 @@ export async function saveSettings(playerId, input) {
   return settings;
 }
 export async function savePos(playerId, pos) {
-  const p = { x: +pos.x.toFixed(2), y: +pos.y.toFixed(2), z: +pos.z.toFixed(2), h: +pos.h.toFixed(3), welt: pos.welt || 'test' };
+  const p = { x: +pos.x.toFixed(2), y: +pos.y.toFixed(2), z: +pos.z.toFixed(2), h: +pos.h.toFixed(3), welt: pos.welt || 'valenheim' };
   await q('UPDATE v2_saves SET pos = ?, updated_at = ? WHERE player_id = ?', [JSON.stringify(p), Date.now(), playerId]);
 }

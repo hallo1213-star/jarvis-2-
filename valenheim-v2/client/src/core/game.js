@@ -6,6 +6,9 @@ import { PROFILE, STUFEN, autoStufe, geraet, zielFps, FpsWaechter } from './qual
 import { Input } from '../spieler/eingabe.js';
 import { Character, nameTag } from '../spieler/figur.js';
 import { baueTestgelaende } from '../welt/testgelaende.js';
+import { baueValenheim, SPAWN } from '../welt/karte.js';
+import { U as WELT_U } from '../welt/valenheim/world.js';
+import { Detailsteuerung } from './details.js';
 import { getToken } from '../lib/api.js';
 
 const GEHEN = 4.4, RENNEN = 7.4, SPRUNG = 5.6, SCHWERKRAFT = 18;
@@ -13,7 +16,9 @@ const KAPSEL = { halb: 0.55, r: 0.35 }; // Gesamthöhe 1,8 m
 const AUGEN = 1.62;
 
 export class Game {
-  static async erstelle(canvas, opts) { await RAPIER.init(); return new Game(canvas, opts); }
+  static async erstelle(canvas, opts) {
+    await RAPIER.init(); const g = new Game(canvas, opts); await g.ladeWelt(opts.onFortschritt); g.starte(); return g;
+  }
 
   constructor(canvas, { konto, onStatus, onHinweis }) {
     this.canvas = canvas; this.onStatus = onStatus; this.onHinweis = onHinweis;
@@ -23,27 +28,15 @@ export class Game {
 
     // Renderer
     const r = new THREE.WebGLRenderer({ canvas, antialias: P.aa, powerPreference: 'high-performance', stencil: false });
-    r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 0.5;
+    r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1;
     r.shadowMap.type = THREE.PCFShadowMap; this.renderer = r;
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(62, 1, 0.08, P.sicht);
 
-    // Himmel + Licht
-    const sky = new Sky(); sky.scale.setScalar(4000); this.scene.add(sky);
-    const u = sky.material.uniforms; u.turbidity.value = 5; u.rayleigh.value = 1.5; u.mieCoefficient.value = 0.004; u.mieDirectionalG.value = 0.8;
-    this.sunDir = new THREE.Vector3().setFromSphericalCoords(1, THREE.MathUtils.degToRad(52), THREE.MathUtils.degToRad(210)); u.sunPosition.value.copy(this.sunDir);
-    const pm = new THREE.PMREMGenerator(r); const env = new THREE.Scene(); const s2 = new Sky(); s2.scale.setScalar(1000); s2.material.uniforms.sunPosition.value.copy(this.sunDir); env.add(s2);
-    this.scene.environment = pm.fromScene(env, 0, 0.1, 2000).texture; this.scene.environmentIntensity = 0.35; pm.dispose();
-    this.scene.fog = new THREE.FogExp2('#9fb0c2', P.nebel);
-    this.scene.add(new THREE.HemisphereLight('#c4d6f0', '#4a4034', 0.45));
-    this.sun = new THREE.DirectionalLight('#ffecc8', 2.2); this.scene.add(this.sun, this.sun.target);
-
-    // Physik + Welt
+    this.welt = st.pos.welt === 'test' ? 'test' : 'valenheim';
     this.world = new RAPIER.World({ x: 0, y: -SCHWERKRAFT, z: 0 });
-    this.gelaende = baueTestgelaende(this.scene, RAPIER, this.world);
-
     // Spieler (kinematische Kapsel + Charakter-Controller)
-    const p = st.pos; this.spawn = { x: 0, y: 1.2, z: 8 };
+    const p = this.welt === 'valenheim' && !st.pos.welt ? { ...SPAWN } : st.pos; this.spawn = this.welt === 'valenheim' ? { x: SPAWN.x, y: SPAWN.y, z: SPAWN.z } : { x: 0, y: 1.2, z: 8 };
     this.body = this.world.createRigidBody(RAPIER.RigidBodyDesc.kinematicPositionBased().setTranslation(p.x, Math.max(p.y, 1.2), p.z));
     this.collider = this.world.createCollider(RAPIER.ColliderDesc.capsule(KAPSEL.halb, KAPSEL.r), this.body);
     this.ctrl = this.world.createCharacterController(0.02);
@@ -60,24 +53,52 @@ export class Game {
     // Netz: Position an den Server (10×/s), Server prüft + speichert
     this.netz(); this.sendT = 0;
 
-    // Qualität anwenden + Wächter
-    this.setzeStufe(this.stufe, false);
+    // Qualität + Wächter (angewendet in starte())
     this.waechter = new FpsWaechter(zielFps(this.geraet), () => {
       if (this.settings.grafik !== 'auto') return; const i = STUFEN.indexOf(this.stufe); if (i > 0) { this.setzeStufe(STUFEN[i - 1]); this.onHinweis?.(`Grafik automatisch auf „${PROFILE[this.stufe].name}“ gesenkt, damit es flüssig bleibt.`); }
     });
 
     this.timer = new THREE.Timer(); this.t = 0; this.fps = 0; this.frames = 0; this.fpsT = 0;
-    this.resize = this.resize.bind(this); addEventListener('resize', this.resize); this.resize();
+    this.resize = this.resize.bind(this); addEventListener('resize', this.resize);
     window.VH2 = this;
-    this.loop = this.loop.bind(this); r.setAnimationLoop(this.loop);
+  }
+
+  // Welt laden: Valenheim-Karte aus den Videos (Standard) oder Testgelände
+  async ladeWelt(onFortschritt) {
+    if (this.welt === 'test') {
+      const sky = new Sky(); sky.scale.setScalar(4000); this.scene.add(sky);
+      const u = sky.material.uniforms; u.turbidity.value = 5; u.rayleigh.value = 1.5; u.mieCoefficient.value = 0.004; u.mieDirectionalG.value = 0.8;
+      this.sunDir = new THREE.Vector3().setFromSphericalCoords(1, THREE.MathUtils.degToRad(52), THREE.MathUtils.degToRad(210)); u.sunPosition.value.copy(this.sunDir);
+      this.scene.fog = new THREE.FogExp2('#9fb0c2', PROFILE[this.stufe].nebel);
+      this.scene.add(new THREE.HemisphereLight('#c4d6f0', '#4a4034', 0.45));
+      this.sun = new THREE.DirectionalLight('#ffecc8', 2.2); this.scene.add(this.sun, this.sun.target);
+      this.gelaende = baueTestgelaende(this.scene, RAPIER, this.world); this.exposure = 0.5;
+    } else {
+      const karte = await baueValenheim(this.scene, RAPIER, this.world, { onFortschritt });
+      this.gelaende = karte; this.sun = karte.world.sun; this.hemi = karte.world.hemi;
+      this.sunDir = WELT_U.sunDir.value.clone();
+      this.exposure = karte.world.exposure || 1.1; this.kollisionen = karte.kollisionen;
+      this.details = new Detailsteuerung(this.scene);
+    }
+    // Umgebungslicht für Spiegelungen (Glas, Autos) – in der Video-Stadt nicht (dort wie in den Videos beleuchtet)
+    if (this.welt === 'valenheim') { this.renderer.toneMappingExposure = this.exposure; return; }
+    const pm = new THREE.PMREMGenerator(this.renderer); const env = new THREE.Scene(); const s2 = new Sky(); s2.scale.setScalar(1000); s2.material.uniforms.sunPosition.value.copy(this.sunDir); env.add(s2);
+    this.scene.environment = pm.fromScene(env, 0, 0.1, 2000).texture; this.scene.environmentIntensity = 0.3; pm.dispose();
+    this.renderer.toneMappingExposure = this.exposure;
+  }
+
+  starte() {
+    this.setzeStufe(this.stufe, false); this.resize();
+    this.loop = this.loop.bind(this); this.renderer.setAnimationLoop(this.loop);
   }
 
   setzeStufe(stufe, info = true) {
     this.stufe = stufe; const P = PROFILE[stufe]; const r = this.renderer;
-    r.setPixelRatio(Math.min(this.geraet.dpr, P.pr)); this.scene.fog.density = P.nebel; this.camera.far = P.sicht; this.camera.updateProjectionMatrix();
+    r.setPixelRatio(Math.min(this.geraet.dpr, P.pr)); if (this.scene.fog) this.scene.fog.density = this.welt === 'valenheim' ? P.nebelStadt : P.nebel; this.camera.far = this.welt === 'valenheim' ? P.sichtStadt : P.sicht; this.camera.updateProjectionMatrix();
     r.shadowMap.enabled = P.schatten > 0; this.sun.castShadow = P.schatten > 0;
     if (P.schatten) { this.sun.shadow.mapSize.set(P.schatten, P.schatten); const S = P.schattenWeite; Object.assign(this.sun.shadow.camera, { left: -S, right: S, top: S, bottom: -S, near: 1, far: 300 }); this.sun.shadow.camera.updateProjectionMatrix(); this.sun.shadow.bias = -0.0004; this.sun.shadow.normalBias = 0.03; this.sun.shadow.map?.dispose(); this.sun.shadow.map = null; }
     this.scene.traverse((o) => { if (o.material) [].concat(o.material).forEach((m) => { m.needsUpdate = true; }); });
+    this.details?.setzeRadius(P.detailRadius, P.schatten > 0 && stufe === 'hoch');
     this.resize(); if (info) this.onStatus?.({ stufe });
   }
 
@@ -109,10 +130,12 @@ export class Game {
     this.timer.update(); const dt = Math.min(0.05, this.timer.getDelta()); this.t += dt;
     this.spieler(dt);
     this.world.timestep = dt; this.world.step();
-    this.gelaende.update(this.t);
+    this.gelaende.update(this.t, this.camera);
+    this.details?.update(dt, this.camera.position);
     // Schatten folgen dem Spieler
-    const pos = this.body.translation(); const f = new THREE.Vector3(pos.x, 0, pos.z);
-    this.sun.position.copy(f).addScaledVector(this.sunDir, 120); this.sun.target.position.copy(f); this.sun.target.updateMatrixWorld();
+    const pos = this.body.translation();
+    if (this.welt === 'test') { const f = new THREE.Vector3(pos.x, 0, pos.z); this.sun.position.copy(f).addScaledVector(this.sunDir, 120); this.sun.target.position.copy(f); this.sun.target.updateMatrixWorld(); }
+    else this.sun.target.updateMatrixWorld();
     this.renderer.render(this.scene, this.camera);
     this.waechter.tick(dt); this.frames++; this.fpsT += dt; if (this.fpsT >= 0.5) { this.fps = Math.round(this.frames / this.fpsT); this.frames = 0; this.fpsT = 0; this.onStatus?.({ fps: this.fps }); }
     // Position senden

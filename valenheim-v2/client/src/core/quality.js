@@ -1,8 +1,8 @@
 // Grafikprofile + Geräteerkennung + automatische Anpassung an die Leistung.
 export const PROFILE = {
-  niedrig: { name: 'Niedrig', pr: 1.0, schatten: 0, schattenWeite: 0, aa: false, sicht: 350, nebel: 0.0055, details: 0.4, post: false },
-  mittel: { name: 'Mittel', pr: 1.5, schatten: 1024, schattenWeite: 50, aa: false, sicht: 650, nebel: 0.0032, details: 0.7, post: false },
-  hoch: { name: 'Hoch', pr: 2.0, schatten: 2048, schattenWeite: 80, aa: true, sicht: 1200, nebel: 0.0018, details: 1.0, post: true },
+  niedrig: { name: 'Niedrig', pr: 1.0, schatten: 0, schattenWeite: 0, aa: false, sicht: 350, nebel: 0.0055, sichtStadt: 520, nebelStadt: 0.0036, detailRadius: 150, details: 0.4, post: false },
+  mittel: { name: 'Mittel', pr: 1.5, schatten: 1024, schattenWeite: 50, aa: false, sicht: 650, nebel: 0.0032, sichtStadt: 1100, nebelStadt: 0.0014, detailRadius: 250, details: 0.7, post: false },
+  hoch: { name: 'Hoch', pr: 2.0, schatten: 2048, schattenWeite: 80, aa: true, sicht: 1200, nebel: 0.0018, sichtStadt: 2600, nebelStadt: 0.0006, detailRadius: 450, details: 1.0, post: true },
 };
 export const STUFEN = ['niedrig', 'mittel', 'hoch'];
 
