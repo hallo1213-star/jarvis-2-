@@ -5,3 +5,4 @@ blaetter.png + rinde.jpg = aus tree_small_02 zusammengesetzt, hdri/himmel_1k.hdr
 
 Menschen: modelle/mensch.glb = Ready-Player-Me-Avatar "rpm.glb" aus den Babylon.js Assets (https://github.com/BabylonJS/Assets), Lizenz CC BY 4.0 – © Babylon.js. Optimiert (Texturen verkleinert, Kleidung zum Einfärben grau).
 Bewegungen: modelle/bewegung.glb = Animationen aus "Xbot.glb" (three.js-Beispiele, Mixamo), modelle/tanz.glb = "Hip Hop Dancing" aus den Babylon.js Assets (Mixamo). Mixamo-Animationen sind für Spiele kostenlos nutzbar.
+Sportwagen: modelle/sportwagen.glb = "Car Concept" aus den Khronos glTF-Sample-Assets (https://github.com/KhronosGroup/glTF-Sample-Assets), © 2024 Darmstadt Graphics Group GmbH / Eric Chadwick, Lizenz CC BY 4.0. Optimiert (Innenraum entfernt, vereinfacht, Logos entfernt).

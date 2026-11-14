@@ -17,7 +17,7 @@ import { baueAmpeln } from '../welt/ampeln.js';
 import { getToken } from '../lib/api.js';
 import { AndereSpieler } from '../spieler/andere.js';
 import { Auto } from '../fahrzeuge/auto.js';
-import { setAutoNacht } from '../fahrzeuge/modelle.js';
+import { setAutoNacht, ladeAutos } from '../fahrzeuge/modelle.js';
 import { baueJobPunkte } from '../welt/jobs.js';
 import { Verkehr } from '../fahrzeuge/verkehr.js';
 import { Passanten } from '../spieler/passanten.js';
@@ -28,7 +28,7 @@ const AUGEN = 1.62;
 
 export class Game {
   static async erstelle(canvas, opts) {
-    opts.onFortschritt?.('Menschen werden geladen …', 0.12); await Promise.all([RAPIER.init(), ladeFiguren()]); const g = new Game(canvas, opts); await g.ladeWelt(opts.onFortschritt); g.starte(); return g;
+    opts.onFortschritt?.('Menschen werden geladen …', 0.12); await Promise.all([RAPIER.init(), ladeFiguren(), ladeAutos()]); const g = new Game(canvas, opts); await g.ladeWelt(opts.onFortschritt); g.starte(); return g;
   }
 
   constructor(canvas, { konto, onStatus, onHinweis, onChat, onAbgelehnt, onOeffne, raumWunsch }) {

@@ -1,6 +1,52 @@
 // VALENHEIM 2.0 – Automodelle (aus v1 weiterentwickelt): 6 Modelle, Tuning sichtbar, echtes Kennzeichen
 import * as THREE from 'three';
 import { verschmelze } from '../core/verschmelzen.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+// ---- Echtes Sportwagen-Modell (Khronos „Car Concept“, CC BY 4.0, optimiert) für Viper GT + Phantom R
+let sportVorlage = null, sportLaden = null;
+export function ladeAutos() {
+  if (sportLaden) return sportLaden;
+  sportLaden = new Promise((ok) => new GLTFLoader().load('/modelle/sportwagen.glb', (g) => { sportVorlage = g.scene; ok(); }, undefined, () => ok()));
+  return sportLaden;
+}
+const SPORT_T = { L: 4.36, W: 2.0, r: 0.31, wheels: [0.87, 3.67], body: [[0, 0.3], [0, 0.95]], cabin: [[1.2, 0.9], [1.8, 1.14], [2.8, 1.14], [3.4, 0.9]] };
+function baueSportwagen(look, M) {
+  const tu = look.tuning || {}; const root = new THREE.Group(); const body = new THREE.Group(); root.add(body);
+  const car = sportVorlage.clone(true); car.position.z = -0.24; body.add(car);
+  const lack = KATALOG.farben[look.farbe] || KATALOG.farben[0]; const fm = mats.felgen[tu.felgen || 0];
+  const wheels = []; const raeder = new Map();
+  car.traverse((o) => {
+    if (!o.isMesh) return; o.castShadow = true; o.receiveShadow = true;
+    const n = o.material.name || '';
+    if (/^Paint/.test(n)) { o.material = o.material.clone(); o.material.color.set(lack); if (o.material.clearcoat !== undefined) o.material.clearcoat = 1; }
+    else if (/^Rim/.test(n) && tu.felgen) o.material = fm;
+    else if (/Glass/.test(n)) { o.material = mats.glass[tu.toenung || 0]; }
+    else if (/License/.test(n)) o.material = kennzeichenMat(look.kennzeichen || 'VH-VA 100');
+    else if (/Headlight/.test(n)) o.material = mats.head; else if (/Brakelight/.test(n)) o.material = mats.tail;
+  });
+  // Räder: Felge + Reifen + Bremsscheibe um die Radmitte drehen
+  car.updateMatrixWorld(true);
+  const lst = []; car.traverse((o) => { if (o.isMesh && /^Wheel(Front|Rear)(L|R)(Rim|Tire|BrakeDisc)/.test(o.name)) lst.push(o); });
+  for (const o of lst) {
+    const key = o.name.match(/^Wheel(Front|Rear)(L|R)/)[0];
+    if (!raeder.has(key)) {
+      const front = /Front/.test(key), links = /L$/.test(key); const z = (front ? 1.49 : -1.31) - 0.24 + 0.24;
+      const g = new THREE.Group(); g.position.set(links ? 0.98 : -0.98, 0.385, z - 0.24); body.add(g); const spin = new THREE.Group(); g.add(spin);
+      raeder.set(key, { g, spin, front }); wheels.push(raeder.get(key));
+    }
+    const R = raeder.get(key); const w = new THREE.Vector3(); o.getWorldPosition(w);
+    // Mesh in den Dreh-Knoten umhängen, Weltlage beibehalten
+    R.spin.attach(o);
+  }
+  const tief = (tu.tiefer || 0) * 0.03; car.position.y = -tief;
+  const T = SPORT_T; const heckY = 0.95;
+  if (tu.spoiler === 1) { const sp = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.04, 0.2), mats.carbon); sp.position.set(0, heckY + 0.02, -T.L / 2 + 0.15); body.add(sp); }
+  if (tu.spoiler === 2) { const sp = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.05, 0.34), mats.carbon); sp.position.set(0, heckY + 0.3, -T.L / 2 + 0.25); body.add(sp); for (const s of [-1, 1]) { const st = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.3, 0.12), mats.carbon); st.position.set(s * 0.5, heckY + 0.15, -T.L / 2 + 0.28); body.add(st); } }
+  if (tu.neon) { const nm = new THREE.MeshBasicMaterial({ color: NEON[tu.neon], map: neonTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.9 }); const n = new THREE.Mesh(new THREE.PlaneGeometry(T.W + 1.4, T.L + 1.2).rotateX(-Math.PI / 2), nm); n.position.y = 0.03; root.add(n); }
+  const beam = new THREE.Mesh(BEAM_GEO, mats.beam); beam.position.set(0, 0.04, T.L / 2 + 5.5); root.add(beam);
+  root.userData = { type: M.typ, T, wheels, body, M }; return root;
+}
 import KATALOG from '../../../shared/katalog.json';
 
 export { KATALOG };
@@ -79,6 +125,7 @@ export function kennzeichenMat(text) {
 // look: { modell, farbe (Index), kennzeichen, tuning: { felgen, tiefer, spoiler, neon, toenung } }
 export function baueAuto(look) {
   const M = KATALOG.modelle[look.modell] || KATALOG.modelle.kompakt; const type = M.typ;
+  if ((type === 'sport' || type === 'super') && sportVorlage) return baueSportwagen(look, M);
   const G = typeGeos(type); const T = G.T; const tu = look.tuning || {};
   const root = new THREE.Group(); const body = new THREE.Group(); root.add(body);
   const add = (geo, m, parent = body) => { const x = new THREE.Mesh(geo, m); x.castShadow = true; x.receiveShadow = true; parent.add(x); return x; };
