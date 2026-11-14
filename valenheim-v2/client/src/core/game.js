@@ -300,6 +300,7 @@ export class Game {
     const pos = this.body.translation();
     if (this.welt === 'test') { const f = new THREE.Vector3(pos.x, 0, pos.z); this.sun.position.copy(f).addScaledVector(this.sunDir, 120); this.sun.target.position.copy(f); this.sun.target.updateMatrixWorld(); }
     else this.sun.target.updateMatrixWorld();
+    this.kameraHook?.(this); // für Video-Aufnahmen (Kamerafahrten)
     this.renderer.render(this.scene, this.camera);
     this.waechter.tick(dt); this.frames++; this.fpsT += dt; if (this.fpsT >= 0.5) { this.fps = Math.round(this.frames / this.fpsT); this.frames = 0; this.fpsT = 0; this.onStatus?.({ fps: this.fps }); }
     // Position senden
