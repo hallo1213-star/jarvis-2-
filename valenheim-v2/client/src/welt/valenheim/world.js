@@ -568,6 +568,7 @@ export const LICHT = {
   standard: { sunDir: [-1, 0.36, -0.42], sunCol: 0xffbf88, skyTop: 0x22385c, skyHor: 0xe39a66, fog: 0x8a7066, hemiSky: 0x9cb6de, hemiI: 1.35, sunI: 3.8, lit: 0.972, laternen: false, exposure: 1.2 },
   morgen: { sunDir: [1, 0.24, 0.32], sunCol: 0xffc39a, skyTop: 0x3a5a8c, skyHor: 0xf2b48c, fog: 0xa89090, hemiSky: 0xaec4ea, hemiI: 1.45, sunI: 3.6, lit: 0.99, laternen: false, exposure: 1.22 },
   nacht: { sunDir: [0.35, 0.55, -0.6], sunCol: 0xa8bcff, skyTop: 0x040814, skyHor: 0x1a2644, fog: 0x141a30, hemiSky: 0x5a6aa0, hemiI: 1.15, sunI: 1.6, lit: 0.86, laternen: true, exposure: 1.85 },
+  mittag: { sunDir: [0.35, 0.92, -0.25], sunCol: 0xfff1dc, skyTop: 0x2f63b4, skyHor: 0xb9d0e8, fog: 0xa8b8c8, hemiSky: 0xbcd3f0, hemiI: 1.25, sunI: 3.2, lit: 0.996, laternen: false, exposure: 0.8 },
   abend: { sunDir: [-1, 0.2, -0.3], sunCol: 0xff9a5c, skyTop: 0x1a2a4c, skyHor: 0xe0784e, fog: 0x7a5a58, hemiSky: 0x8096c8, hemiI: 1.15, sunI: 3.4, lit: 0.93, laternen: true, exposure: 1.25 },
 };
 
@@ -761,10 +762,13 @@ export function buildWorld(scene, { seed = 7071, licht = 'standard', zusatz = []
   const carMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.35, metalness: 0.45 });
   const treeMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9, flatShading: true });
   scene.add(instanced(lampGeometry(), propMat, lamps.map((l) => ({ ...l, y: SLAB }))));
-  if (L.laternen) {  // Straßenlaternen leuchten am Abend
-    const glowMat = new THREE.MeshStandardMaterial({ color: 0x111111, emissive: 0xffc27a, emissiveIntensity: 3.2 });
+  // Spiel (v2): Laternen-Licht immer anlegen, Helligkeit steuert die Tageszeit
+  const glowMat = new THREE.MeshStandardMaterial({ color: 0x111111, emissive: 0xffc27a, emissiveIntensity: L.laternen ? 3.2 : 0 });
+  let poolMatRef = null;
+  {
+
     scene.add(instanced(new THREE.BoxGeometry(0.5, 0.06, 0.24).translate(1.65, 7.28, 0), glowMat, lamps.map((l) => ({ ...l, y: SLAB })), { shadow: false }));
-    const poolMat = new THREE.MeshBasicMaterial({ color: 0xffb060, transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, depthWrite: false });
+    const poolMat = new THREE.MeshBasicMaterial({ color: 0xffb060, transparent: true, opacity: L.laternen ? 0.16 : 0, blending: THREE.AdditiveBlending, depthWrite: false }); poolMatRef = poolMat;
     scene.add(instanced(new THREE.CircleGeometry(4.5, 20).rotateX(-Math.PI / 2).translate(1.65, 0.05, 0), poolMat, lamps.map((l) => ({ ...l, y: SLAB })), { shadow: false, receive: false }));
   }
   scene.add(instanced(treeGeometry(), treeMat, trees.filter((p) => !inZusatz(p.x, p.z)), { colorFn: (p) => p.c }));
@@ -790,7 +794,7 @@ export function buildWorld(scene, { seed = 7071, licht = 'standard', zusatz = []
 
   const tmpV = new THREE.Vector3(); const ray = new THREE.Vector3();
   return {
-    sun, hemi, plaza, dust, market, exposure: L.exposure, gMat, bMat, propMat, treeMat, carMat,
+    sun, hemi, plaza, dust, market, exposure: L.exposure, glowMat, poolMat: poolMatRef, ampeln: lights, fogFarbe: scene.fog.color, gMat, bMat, propMat, treeMat, carMat,
     setLotFree(name, frei) { for (const o of lotObjs[name] || []) o.visible = frei; },
     lotPos(name) { const [i, j] = BAUPLAETZE[name]; return new THREE.Vector3(i * P, SLAB, j * P); },
     update(t, camera) {

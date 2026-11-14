@@ -9,6 +9,9 @@ import { baueTestgelaende } from '../welt/testgelaende.js';
 import { baueValenheim, SPAWN } from '../welt/karte.js';
 import { U as WELT_U } from '../welt/valenheim/world.js';
 import { Detailsteuerung } from './details.js';
+import { Tageszeit } from '../atmosphaere/tageszeit.js';
+import { Wetter, WETTER_NAME } from '../atmosphaere/wetter.js';
+import { baueAmpeln } from '../welt/ampeln.js';
 import { getToken } from '../lib/api.js';
 
 const GEHEN = 4.4, RENNEN = 7.4, SPRUNG = 5.6, SCHWERKRAFT = 18;
@@ -79,6 +82,10 @@ export class Game {
       this.sunDir = WELT_U.sunDir.value.clone();
       this.exposure = karte.world.exposure || 1.1; this.kollisionen = karte.kollisionen;
       this.details = new Detailsteuerung(this.scene);
+      this.tageszeit = new Tageszeit(karte.world, this.renderer);
+      this.ampeln = baueAmpeln(this.scene, karte.world.ampeln);
+      this.wetter = new Wetter(this.scene, this.renderer, { ton: this.settings.ton !== false });
+      this.weckTon = () => this.wetter?.ton.resume(); addEventListener('pointerdown', this.weckTon); addEventListener('keydown', this.weckTon);
     }
     // Umgebungslicht für Spiegelungen (Glas, Autos) – in der Video-Stadt nicht (dort wie in den Videos beleuchtet)
     if (this.welt === 'valenheim') { this.renderer.toneMappingExposure = this.exposure; return; }
@@ -132,6 +139,11 @@ export class Game {
     this.world.timestep = dt; this.world.step();
     this.gelaende.update(this.t, this.camera);
     this.details?.update(dt, this.camera.position);
+    if (this.tageszeit) {
+      const uhr = this.tageszeit.update(); this.ampeln.update();
+      this.wetter.update(dt, this.camera.position, this.welt === 'valenheim' ? PROFILE[this.stufe].nebelStadt : PROFILE[this.stufe].nebel, this.tageszeit.nacht);
+      this.uhrT = (this.uhrT || 0) + dt; if (this.uhrT > 1) { this.uhrT = 0; this.onStatus?.({ uhr, wetter: WETTER_NAME[this.wetter.art] }); }
+    }
     // Schatten folgen dem Spieler
     const pos = this.body.translation();
     if (this.welt === 'test') { const f = new THREE.Vector3(pos.x, 0, pos.z); this.sun.position.copy(f).addScaledVector(this.sunDir, 120); this.sun.target.position.copy(f); this.sun.target.updateMatrixWorld(); }
@@ -185,7 +197,7 @@ export class Game {
   }
 
   beenden() {
-    this.beendet = true; this.renderer.setAnimationLoop(null); removeEventListener('resize', this.resize); this.input.dispose();
+    this.beendet = true; this.renderer.setAnimationLoop(null); this.wetter?.dispose(); if (this.weckTon) { removeEventListener('pointerdown', this.weckTon); removeEventListener('keydown', this.weckTon); } removeEventListener('resize', this.resize); this.input.dispose();
     try { this.ws?.close(); } catch { /* egal */ }
     this.scene.traverse((o) => { o.geometry?.dispose(); [].concat(o.material || []).forEach((m) => { m.map?.dispose(); m.dispose(); }); });
     this.renderer.dispose(); this.world.free();

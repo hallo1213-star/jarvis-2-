@@ -42,6 +42,7 @@ export default function Spiel({ konto, onEnde }) {
         </div>
         <div className="hud hud--ro" style={{ top: 'calc(120px + var(--st))' }}>
           <div className="chip" style={{ '--c': st.netz === 'online' ? '#3cff8f' : '#ff6b6b' }}><span className="badge" style={{ border: 0, background: 'none', padding: 0, '--c': st.netz === 'online' ? '#3cff8f' : '#ffb347' }}>{st.netz === 'online' ? 'Gespeichert · online' : st.netz === 'getrennt' ? 'Verbindung weg …' : 'Verbinde …'}</span></div>
+          {st.uhr !== undefined && <div className="chip">{String(Math.floor(st.uhr)).padStart(2, '0')}:{String(Math.floor((st.uhr % 1) * 60)).padStart(2, '0')} <small>{st.wetter}</small></div>}
           <div className="chip"><small>{PROFILE[st.stufe]?.name} · {st.fps} FPS</small></div>
         </div>
         <button className="knopf knopf--menue" onClick={() => setMenue(true)} aria-label="Menü">☰</button>
