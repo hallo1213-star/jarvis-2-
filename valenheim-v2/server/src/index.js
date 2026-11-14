@@ -54,6 +54,10 @@ const routes = {
     await DB.q('UPDATE v2_players SET last_seen = ? WHERE id = ?', [Date.now(), p.id]);
     return [200, { profil: AUTH.publicProfile(p), spielstand: await SAVE.getSave(p.id) }];
   },
+  'PUT /api/charakter': async (req) => {
+    const p = await authed(req); if (!p) return [401, { fehler: 'Nicht angemeldet.' }];
+    return [200, { charakter: await SAVE.saveCharakter(p.id, await readJson(req)) }];
+  },
   'PUT /api/settings': async (req) => {
     const p = await authed(req); if (!p) return [401, { fehler: 'Nicht angemeldet.' }];
     return [200, { settings: await SAVE.saveSettings(p.id, await readJson(req)) }];

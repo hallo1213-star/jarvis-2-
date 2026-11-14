@@ -19,4 +19,5 @@ export const api = {
   abmelden: () => call('POST', '/api/auth/logout'),
   ich: () => call('GET', '/api/me'),
   einstellungen: (s) => call('PUT', '/api/settings', s),
+  charakter: (c) => call('PUT', '/api/charakter', c),
 };

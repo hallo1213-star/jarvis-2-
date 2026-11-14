@@ -48,3 +48,14 @@ const SCHEMA = [
 ];
 for (const s of SCHEMA) await q(s);
 if (!(await one("SELECT value FROM v2_meta WHERE key = 'schema'"))) await q("INSERT INTO v2_meta (key, value) VALUES ('schema', '1')");
+// ---------- Migrationen (nur hinzufügen, nie etwas löschen) ----------
+const MIGRATIONEN = {
+  2: ["ALTER TABLE v2_saves ADD COLUMN charakter TEXT NOT NULL DEFAULT '{}'"],
+};
+let version = Number((await one("SELECT value FROM v2_meta WHERE key = 'schema'")).value);
+for (const [v, befehle] of Object.entries(MIGRATIONEN)) {
+  if (Number(v) <= version) continue;
+  for (const b of befehle) { try { await q(b); } catch (e) { if (!/duplicate|exists/i.test(e.message)) throw e; } }
+  await q("UPDATE v2_meta SET value = ? WHERE key = 'schema'", [String(v)]); version = Number(v);
+}
+export const schemaVersion = () => version;

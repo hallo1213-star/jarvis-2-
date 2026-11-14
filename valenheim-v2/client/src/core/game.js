@@ -4,7 +4,7 @@ import { Sky } from 'three/addons/objects/Sky.js';
 import RAPIER from '@dimforge/rapier3d-compat';
 import { PROFILE, STUFEN, autoStufe, geraet, zielFps, FpsWaechter } from './quality.js';
 import { Input } from '../spieler/eingabe.js';
-import { Character, nameTag } from '../spieler/figur.js';
+import { Mensch, namensschild, zufall } from '../spieler/mensch.js';
 import { baueTestgelaende } from '../welt/testgelaende.js';
 import { baueValenheim, SPAWN } from '../welt/karte.js';
 import { U as WELT_U } from '../welt/valenheim/world.js';
@@ -46,7 +46,7 @@ export class Game {
     this.ctrl.enableAutostep(0.42, 0.25, true); this.ctrl.enableSnapToGround(0.45); this.ctrl.setMaxSlopeClimbAngle(THREE.MathUtils.degToRad(42));
     this.ctrl.setMinSlopeSlideAngle(THREE.MathUtils.degToRad(48)); this.ctrl.setApplyImpulsesToDynamicBodies(true); this.ctrl.setCharacterMass(70);
     this.velY = 0; this.boden = false; this.heading = p.h ?? Math.PI;
-    this.figur = new Character({ jacke: 0 }); this.figur.root.add(nameTag(konto.profil.name)); this.scene.add(this.figur.root);
+    this.figur = new Mensch(st.charakter?.aussehen || zufall()); this.figur.root.add(namensschild(konto.profil.name)); this.scene.add(this.figur.root);
 
     // Kamera
     this.modus = this.settings.kamera === 'ego' ? 'ego' : 'verfolger';

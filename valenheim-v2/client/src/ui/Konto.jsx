@@ -30,7 +30,7 @@ export default function Konto({ onFertig }) {
         <div className="codebox">{neuerCode}</div>
         <button className="btn btn--ghost" onClick={async () => { try { await navigator.clipboard.writeText(neuerCode); setKopiert(true); } catch { setKopiert(false); } }}>{kopiert ? 'KOPIERT ✓' : 'CODE KOPIEREN'}</button>
         <label className="check"><input type="checkbox" checked={notiert} onChange={(e) => setNotiert(e.target.checked)} />Ich habe meinen Code sicher aufgeschrieben.</label>
-        <button className="btn btn--gold" disabled={!notiert} onClick={onFertig}>WEITER</button>
+        <button className="btn btn--gold" disabled={!notiert} onClick={() => onFertig(modus === 'registrieren')}>WEITER</button>
       </div>
     </div></div>
   );

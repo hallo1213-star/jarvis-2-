@@ -58,8 +58,16 @@ test('Position: Teleport wird korrigiert, normale Bewegung wird beim Trennen ges
   assert.equal(msgs[0].t, 'willkommen');
   ws.send(JSON.stringify({ t: 'pos', x: 900, y: 1, z: 900, h: 0 })); await sleep(200);
   assert.ok(msgs.some((m) => m.t === 'korrektur'));
-  let x = 0; for (let i = 0; i < 10; i++) { x += 0.4; ws.send(JSON.stringify({ t: 'pos', x, y: 1.2, z: 8, h: 1 })); await sleep(110); }
+  const start = msgs[0].pos; let x = start.x; for (let i = 0; i < 10; i++) { x += 0.4; ws.send(JSON.stringify({ t: 'pos', x, y: start.y, z: start.z, h: 1 })); await sleep(110); }
   ws.close(); await sleep(400);
   const me = await api('GET', '/api/me', null, data.token);
-  assert.ok(Math.abs(me.data.spielstand.pos.x - 4) < 0.01, 'Position gespeichert: ' + JSON.stringify(me.data.spielstand.pos));
+  assert.ok(Math.abs(me.data.spielstand.pos.x - (start.x + 4)) < 0.01, 'Position gespeichert: ' + JSON.stringify(me.data.spielstand.pos));
+});
+
+test('Charakter wird geprüft und gespeichert', async () => {
+  const { data } = await api('POST', '/api/auth/login', { name: 'Mohammed', passwort: 'sicher123' });
+  const r = await api('PUT', '/api/charakter', { aussehen: { koerper: 'w', frisur: 'zopf', haut: 3, nase: 7, hack: 'x', oberteil: 'raumanzug' }, outfits: [{ name: 'Party<script>', oberteil: 'anzug', haut: 1 }] }, data.token);
+  assert.equal(r.status, 200); assert.deepEqual([r.data.charakter.aussehen.koerper, r.data.charakter.aussehen.frisur, r.data.charakter.aussehen.nase, r.data.charakter.aussehen.oberteil, r.data.charakter.aussehen.hack], ['w', 'zopf', 1, undefined, undefined]);
+  assert.equal(r.data.charakter.outfits[0].name, 'Partyscript'); assert.equal(r.data.charakter.outfits[0].haut, undefined);
+  const me = await api('GET', '/api/me', null, data.token); assert.equal(me.data.spielstand.charakter.aussehen.frisur, 'zopf');
 });
