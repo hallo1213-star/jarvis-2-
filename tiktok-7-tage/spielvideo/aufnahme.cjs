@@ -58,7 +58,7 @@ const name = process.argv[2]; if (!DAUER[name]) { console.log('Unbekannt:', name
     }
     if (name === 'autohaus') { // Showroom: Kamera fährt um den Phantom R
       g.tageszeit.manuell = 15.5; g.heading = -PI / 2;
-      g.kameraHook = (gg) => { gg.figur.root.visible = false; gg.gelaende.autohaus.gruppe.traverse((o) => { const M = o.userData?.M; if (M && M.typ !== 'sport' && M.typ !== 'super') o.visible = false; }); const k = gg.t / T.__len; const w = 0.9 + k * 1.5; const cx = 80, cz = -74; kam(cx + Math.sin(w) * 5.6, 1.35 + k * 0.5, cz + Math.cos(w) * 5.6, cx, 0.55, cz); };
+      g.kameraHook = (gg) => { gg.figur.root.visible = false; gg.gelaende.autohaus.gruppe.traverse((o) => { const M = o.userData?.M; if (M && M.typ !== 'sport' && M.typ !== 'super') o.visible = false; }); const k = gg.t / T.__len; const w = 1.0 + k * 1.2; const cx = 80, cz = -74; kam(cx + Math.sin(w) * 8.2, 2.1 + k * 0.4, cz + Math.cos(w) * 8.2, cx, 0.5, cz); };
     }
     if (name === 'fahren') { // Fahrt auf der Straße, Verfolgerkamera tief
       g.tageszeit.manuell = 17.6; verkehrHier([[0, -1, 1, 0.55], [0, 0, 1, 0.3]]);
