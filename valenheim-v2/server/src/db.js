@@ -51,6 +51,13 @@ if (!(await one("SELECT value FROM v2_meta WHERE key = 'schema'"))) await q("INS
 // ---------- Migrationen (nur hinzufügen, nie etwas löschen) ----------
 const MIGRATIONEN = {
   2: ["ALTER TABLE v2_saves ADD COLUMN charakter TEXT NOT NULL DEFAULT '{}'"],
+  3: [
+    `CREATE TABLE IF NOT EXISTS v2_konten (player_id TEXT PRIMARY KEY, bargeld BIGINT NOT NULL, bank BIGINT NOT NULL, gehalt_min BIGINT NOT NULL DEFAULT 0)`,
+    `CREATE TABLE IF NOT EXISTS v2_buchungen (id TEXT PRIMARY KEY, player_id TEXT NOT NULL, art TEXT NOT NULL, betrag BIGINT NOT NULL, text TEXT NOT NULL, zeit BIGINT NOT NULL)`,
+    'CREATE INDEX IF NOT EXISTS v2_idx_buchungen ON v2_buchungen(player_id, zeit)',
+    `CREATE TABLE IF NOT EXISTS v2_fahrzeuge (id TEXT PRIMARY KEY, player_id TEXT NOT NULL, modell TEXT NOT NULL, farbe INTEGER NOT NULL, kennzeichen TEXT NOT NULL UNIQUE, tuning TEXT NOT NULL DEFAULT '{}', gekauft BIGINT NOT NULL)`,
+    'CREATE INDEX IF NOT EXISTS v2_idx_fahrzeuge ON v2_fahrzeuge(player_id)',
+  ],
 };
 let version = Number((await one("SELECT value FROM v2_meta WHERE key = 'schema'")).value);
 for (const [v, befehle] of Object.entries(MIGRATIONEN)) {

@@ -8,12 +8,15 @@ import * as DB from './db.js';
 import * as AUTH from './auth.js';
 import * as SAVE from './saves.js';
 import * as RAUM from './raeume.js';
+import * as GELD from './geld.js';
+import * as FZ from './fahrzeuge.js';
+import { KATALOG } from './katalog.js';
 
 process.on('unhandledRejection', (e) => console.error('Unbehandelter Fehler:', e));
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 2600);
 const DIST = path.resolve(__dirname, '../../client/dist');
-const VERSION = '2.0.0-phase4';
+const VERSION = '2.0.0-phase6';
 
 // ---------- Helfer ----------
 const send = (res, status, data) => { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(data)); };
@@ -28,6 +31,20 @@ const buckets = new Map();
 const limited = (key, max, ms = 60_000) => { const now = Date.now(); const b = buckets.get(key) || { n: 0, t: now }; if (now - b.t > ms) { b.n = 0; b.t = now; } b.n++; buckets.set(key, b); return b.n > max; };
 setInterval(() => { const now = Date.now(); for (const [k, b] of buckets) if (now - b.t > 15 * 60_000) buckets.delete(k); }, 60_000).unref();
 
+// Geld-Aktion: angemeldet, Spamschutz, optional nur in/an Janniks Autohaus (Position kommt vom Server, nicht vom Client)
+async function geldAktion(req, fn, autohaus = false) {
+  const p = await authed(req); if (!p) return [401, { fehler: 'Nicht angemeldet.' }];
+  if (limited('geld:' + p.id, 30)) return [429, { fehler: 'Zu viele Aktionen. Bitte kurz warten.' }];
+  if (autohaus && process.env.ORT_PRUEFUNG !== 'aus') {
+    const c = clients.get(p.id); const A = KATALOG.autohaus;
+    if (!c || Math.hypot(c.pos.x - A.x, c.pos.z - A.z) > A.radius + 30) return [403, { fehler: 'Das geht nur bei Janniks Autohaus.' }];
+  }
+  const r = await fn(p, await readJson(req));
+  if (r.fehler) return [400, { fehler: r.fehler }];
+  const c = clients.get(p.id); if (c && r.bargeld !== undefined) c.ws.send(JSON.stringify({ t: 'geld', konto: { bargeld: r.bargeld, bank: r.bank } }));
+  if (c && r.konto) c.ws.send(JSON.stringify({ t: 'geld', konto: r.konto }));
+  return [200, r];
+}
 async function authed(req) { const p = await AUTH.playerFromToken(tokenOf(req)); return p; }
 
 // ---------- API ----------
@@ -66,6 +83,31 @@ const routes = {
     const r = RAUM.privatErstellen(p.id, (await readJson(req)).name);
     return r.fehler ? [503, { fehler: r.fehler }] : [200, { code: r.raum.code, name: r.raum.name, vorhanden: !!r.vorhanden }];
   },
+  // ---------- Phase 5: Bank ----------
+  'GET /api/geld': async (req) => {
+    const p = await authed(req); if (!p) return [401, { fehler: 'Nicht angemeldet.' }];
+    return [200, { konto: await GELD.konto(p.id), verlauf: await GELD.verlauf(p.id) }];
+  },
+  'POST /api/geld/einzahlen': async (req) => geldAktion(req, (p, b) => GELD.einzahlen(p.id, b.betrag)),
+  'POST /api/geld/abheben': async (req) => geldAktion(req, (p, b) => GELD.abheben(p.id, b.betrag)),
+  'POST /api/geld/ueberweisen': async (req) => geldAktion(req, async (p, b) => {
+    const r = await GELD.ueberweisen(p.id, p.username, b.an, b.betrag, b.text);
+    if (!r.fehler) { const z = clients.get(r.zielId); if (z) { z.ws.send(JSON.stringify({ t: 'geld', konto: await GELD.konto(r.zielId), text: `+${r.betrag.toLocaleString('de-DE')} € von ${p.username}` })); } }
+    return r;
+  }),
+  // ---------- Phase 6: Fahrzeuge ----------
+  'GET /api/fahrzeuge': async (req) => {
+    const p = await authed(req); if (!p) return [401, { fehler: 'Nicht angemeldet.' }];
+    return [200, { fahrzeuge: await FZ.liste(p.id), konto: await GELD.konto(p.id) }];
+  },
+  'POST /api/fahrzeuge/kaufen': async (req) => geldAktion(req, (p, b) => FZ.kaufen(p.id, b.modell, b.farbe), true),
+  'POST /api/fahrzeuge/kennzeichen': async (req) => geldAktion(req, (p, b) => FZ.kennzeichenAendern(p.id, b.id, b.kennzeichen), true),
+  'POST /api/fahrzeuge/tuning': async (req) => geldAktion(req, async (p, b) => {
+    const r = await FZ.tunen(p.id, b.id, b.tuning);
+    // Steht das Auto gerade in der Welt? Dann sehen alle sofort das neue Aussehen.
+    const c = clients.get(p.id); if (!r.fehler && c?.auto?.id === r.fahrzeug.id) { Object.assign(c.auto, FZ.aussehen(r.fahrzeug)); if (c.raum) RAUM.anAlle(c.raum, { t: 'auto', spieler: c.id, auto: c.auto }); }
+    return r;
+  }, true),
   'PUT /api/settings': async (req) => {
     const p = await authed(req); if (!p) return [401, { fehler: 'Nicht angemeldet.' }];
     return [200, { settings: await SAVE.saveSettings(p.id, await readJson(req)) }];
@@ -93,8 +135,8 @@ const server = http.createServer(async (req, res) => {
 
 // ---------- Echtzeit (Phase 4): Räume, andere Spieler, Chat ----------
 const clients = new Map(); // playerId -> client
-const MAX_SPEED = 13, BOUNDS = 2200;
-const info = (c) => ({ id: c.id, name: c.name, look: c.look, pos: c.pos });
+const MAX_SPEED = 13, MAX_AUTO = 100, BOUNDS = 2200;
+const info = (c) => ({ id: c.id, name: c.name, look: c.look, pos: c.pos, auto: c.auto || null, f: c.faehrt ? 1 : 0 });
 const wss = new WebSocketServer({ server, path: '/ws', maxPayload: 4096 });
 wss.on('connection', (ws) => {
   let c = null; ws.alive = true; ws.on('pong', () => { ws.alive = true; });
@@ -110,10 +152,11 @@ wss.on('connection', (ws) => {
       if (f.fehler) { ws.send(JSON.stringify({ t: 'abgelehnt', grund: f.fehler })); return ws.close(4010, 'voll'); }
       const sv = await SAVE.getSave(p.id);
       c = { id: p.id, name: p.username, ws, look: sv.charakter?.aussehen || null, pos: { ...sv.pos, welt: sv.pos.welt || 'valenheim' }, lastT: Date.now(), dirty: false, raum: null };
+      const konto = await GELD.konto(p.id);
       if (ws.readyState !== 1) return;
       clients.set(p.id, c); RAUM.betreten(f.raum, c);
       const r = f.raum;
-      ws.send(JSON.stringify({ t: 'willkommen', du: c.id, pos: c.pos, online: clients.size, raum: { id: r.id, name: r.name, privat: r.privat, code: r.privat ? r.code : null, max: RAUM.MAX_SPIELER }, andere: [...r.spieler.values()].filter((o) => o !== c).map(info) }));
+      ws.send(JSON.stringify({ t: 'willkommen', du: c.id, konto, pos: c.pos, online: clients.size, raum: { id: r.id, name: r.name, privat: r.privat, code: r.privat ? r.code : null, max: RAUM.MAX_SPIELER }, andere: [...r.spieler.values()].filter((o) => o !== c).map(info) }));
       RAUM.anAlle(r, { t: 'neu', ...info(c) }, c);
       return;
     }
@@ -121,12 +164,27 @@ wss.on('connection', (ws) => {
       const x = +m.x, y = +m.y, z = +m.z, h = +m.h; if (![x, y, z, h].every(Number.isFinite)) return;
       const now = Date.now(); const dt = Math.max(0.05, (now - c.lastT) / 1000);
       const d = Math.hypot(x - c.pos.x, z - c.pos.z);
-      if (Math.abs(x) > BOUNDS || Math.abs(z) > BOUNDS || y < -50 || y > 400 || d > MAX_SPEED * dt + 2) { c.lastT = now; return ws.send(JSON.stringify({ t: 'korrektur', pos: c.pos })); }
+      // Fahren nur im eigenen, ausgeparkten Auto – und nur, wenn man direkt daneben eingestiegen ist
+      let f = m.f === 1 && !!c.auto;
+      if (f && !c.faehrt && Math.hypot(c.pos.x - c.auto.x, c.pos.z - c.auto.z) > 7) f = false;
+      const max = f || c.faehrt ? MAX_AUTO : MAX_SPEED;
+      if (Math.abs(x) > BOUNDS || Math.abs(z) > BOUNDS || y < -50 || y > 400 || d > max * dt + 2) { c.lastT = now; return ws.send(JSON.stringify({ t: 'korrektur', pos: c.pos })); }
       c.pos = { x, y, z, h, welt: c.pos.welt }; c.lastT = now; c.dirty = true; c.neu = true;
+      if (f) Object.assign(c.auto, { x, y, z, h });
+      if (f !== !!c.faehrt) { c.faehrt = f; if (c.raum) RAUM.anAlle(c.raum, { t: 'auto', spieler: c.id, auto: c.auto, f: f ? 1 : 0 }); }
     } else if (m.t === 'chat') {
       const text = RAUM.filtere(m.text); if (!text || !c.raum) return;
       const nein = RAUM.darfChatten(c, text); if (nein) return ws.send(JSON.stringify({ t: 'chat', system: true, text: nein }));
       RAUM.anAlle(c.raum, { t: 'chat', id: c.id, von: c.name, text });
+    } else if (m.t === 'auto_raus') {
+      // Eigenes Auto neben sich abstellen lassen (max. 15 m vom Spieler entfernt)
+      if (limited('auto:' + c.id, 10)) return ws.send(JSON.stringify({ t: 'chat', system: true, text: 'Bitte kurz warten.' }));
+      const fz = await FZ.eins(c.id, m.id); if (!fz) return;
+      const x = +m.x, y = +m.y, z = +m.z, h = +m.h; if (![x, y, z, h].every(Number.isFinite) || Math.hypot(x - c.pos.x, z - c.pos.z) > 15) return;
+      c.auto = { ...FZ.aussehen(fz), x, y, z, h }; c.faehrt = false;
+      if (c.raum) RAUM.anAlle(c.raum, { t: 'auto', spieler: c.id, auto: c.auto, f: 0 });
+    } else if (m.t === 'auto_weg') {
+      c.auto = null; c.faehrt = false; if (c.raum) RAUM.anAlle(c.raum, { t: 'auto', spieler: c.id, auto: null, f: 0 });
     } else if (m.t === 'look') {
       // Aussehen neu vom Server laden (nach Änderung im Editor) – nie vom Client übernehmen
       if (limited('look:' + c.id, 6)) return;
@@ -147,10 +205,12 @@ wss.on('connection', (ws) => {
 // Positionen aller Spieler eines Raums 10×/s an alle im Raum
 setInterval(() => {
   const proRaum = new Map();
-  for (const c of clients.values()) { if (!c.raum || !c.neu) continue; c.neu = false; const l = proRaum.get(c.raum) || []; l.push([c.id, +c.pos.x.toFixed(2), +c.pos.y.toFixed(2), +c.pos.z.toFixed(2), +(c.pos.h || 0).toFixed(2)]); proRaum.set(c.raum, l); }
+  for (const c of clients.values()) { if (!c.raum || !c.neu) continue; c.neu = false; const l = proRaum.get(c.raum) || []; l.push([c.id, +c.pos.x.toFixed(2), +c.pos.y.toFixed(2), +c.pos.z.toFixed(2), +(c.pos.h || 0).toFixed(2), c.faehrt ? 1 : 0]); proRaum.set(c.raum, l); }
   for (const [r, p] of proRaum) RAUM.anAlle(r, { t: 's', p });
 }, 100).unref();
 setInterval(() => RAUM.aufraeumen(), 30_000).unref();
+// Gehalt: jede Minute online zählt, alle 10 Minuten gibt es Bürgergeld aufs Konto
+setInterval(() => { for (const c of clients.values()) GELD.gehaltTick(c.id).then((k) => { if (k && c.ws.readyState === 1) c.ws.send(JSON.stringify({ t: 'geld', konto: k, text: `+${KATALOG.gehalt.betrag} € ${KATALOG.gehalt.text}` })); }).catch(console.error); }, 60_000).unref();
 // Automatisch speichern (alle 30 s) + tote Verbindungen schließen
 setInterval(() => { for (const c of clients.values()) if (c.dirty) { c.dirty = false; SAVE.savePos(c.id, c.pos).catch(console.error); } }, 30_000).unref();
 setInterval(() => { for (const ws of wss.clients) { if (!ws.alive) { ws.terminate(); continue; } ws.alive = false; ws.ping(); } }, 20_000).unref();

@@ -5,6 +5,7 @@ import { buildWorld, P, SLAB, U, BAUPLAETZE, KOLLISION } from './valenheim/world
 import { baueRepublik } from './valenheim/republik.js';
 import { buildBuilding, buildObjekt } from './valenheim/catalog.js';
 import STATUS from '../../../shared/serienstand.json';
+import { baueAutohaus } from './autohaus.js';
 import m600 from '@fontsource/montserrat/files/montserrat-latin-600-normal.woff2?url';
 import m700 from '@fontsource/montserrat/files/montserrat-latin-700-normal.woff2?url';
 import m800 from '@fontsource/montserrat/files/montserrat-latin-800-normal.woff2?url';
@@ -25,7 +26,7 @@ const _m = new THREE.Matrix4(), _p = new THREE.Vector3(), _q = new THREE.Quatern
 export async function baueValenheim(scene, RAPIER, physik, { onFortschritt } = {}) {
   await ladeSchriften(); onFortschritt?.('Stadt wird gebaut …', 0.2);
   KOLLISION.liste.length = 0; KOLLISION.aktiv = true;
-  const zusatz = [...new Set((STATUS.gebaeude || []).map((b) => b.platz))];
+  const zusatz = [...new Set([...(STATUS.gebaeude || []).map((b) => b.platz), 'B15'])]; // B15 = Janniks Autohaus
   const world = buildWorld(scene, { seed: STATUS.welt_seed || 7071, licht: 'standard', zusatz, republik: true });
   // Gebäude der Community (wie in den Folgen)
   const sonder = [];
@@ -40,6 +41,8 @@ export async function baueValenheim(scene, RAPIER, physik, { onFortschritt } = {
   onFortschritt?.('Republik wird gebaut …', 0.45);
   const rep = baueRepublik(scene, world, U, { villen: [], megaVilla: 'PRÄSIDENTENVILLA' });
   KOLLISION.aktiv = false;
+  // Janniks Autohaus (Phase 6) – vor der Kollision bauen, damit Wände automatisch fest sind
+  world.setLotFree('B15', false); const autohaus = baueAutohaus(scene, { slab: SLAB });
 
   // ---------- Kollision ----------
   onFortschritt?.('Kollision wird berechnet …', 0.7);
@@ -62,7 +65,7 @@ export async function baueValenheim(scene, RAPIER, physik, { onFortschritt } = {
   });
   onFortschritt?.('Fertig', 1);
   return {
-    world, rep, sonder, kollisionen: n,
-    update(t, camera) { U.time.value = t; world.update?.(t, camera); rep?.update?.(t); },
+    world, rep, sonder, autohaus, zonen: autohaus.zonen, kollisionen: n,
+    update(t, camera) { U.time.value = t; world.update?.(t, camera); rep?.update?.(t); autohaus.update(t); },
   };
 }

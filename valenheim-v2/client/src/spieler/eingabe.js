@@ -12,7 +12,8 @@ export class Input {
       if (!this.enabled || e.target.tagName === 'INPUT') return;
       this.keys.add(e.code);
       if (e.code === 'Space') { this.jump = true; e.preventDefault(); }
-      if (e.code === 'KeyE') this.interact = true;
+      if (e.code === 'KeyE' || e.code === 'KeyF') this.interact = true;
+      if (e.code === 'KeyH') this.handy = true;
       if (e.code === 'KeyV') this.kameraWechsel = true;
     });
     on(window, 'keyup', (e) => this.keys.delete(e.code));

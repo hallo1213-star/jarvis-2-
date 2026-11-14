@@ -17,7 +17,7 @@ function wsConnect(token) {
 }
 
 before(async () => {
-  proc = spawn(process.execPath, [path.join(dir, '../src/index.js')], { env: { ...process.env, PORT: String(PORT), DB_PGLITE: '1', DATABASE_URL: '', REG_LIMIT: '100' }, stdio: ['ignore', 'pipe', 'pipe'] });
+  proc = spawn(process.execPath, [path.join(dir, '../src/index.js')], { env: { ...process.env, PORT: String(PORT), DB_PGLITE: '1', DATABASE_URL: '', REG_LIMIT: '100', ORT_PRUEFUNG: 'aus' }, stdio: ['ignore', 'pipe', 'pipe'] });
   for (let i = 0; i < 50; i++) { try { await fetch(BASE + '/api/status'); return; } catch { await sleep(200); } }
   throw new Error('Server startet nicht');
 });
@@ -100,4 +100,57 @@ test('Phase 4: privater Server mit Code, falscher Code abgelehnt', async () => {
   const B = await new Promise((ok) => { const ws = new WebSocket(`ws://localhost:${PORT}/ws`); const msgs = []; ws.on('message', (m) => msgs.push(JSON.parse(m))); ws.on('open', () => { ws.send(JSON.stringify({ t: 'hallo', token: b.data.token, code: p.data.code.toLowerCase() })); setTimeout(() => ok({ ws, msgs }), 300); }); });
   const w = B.msgs.find((m) => m.t === 'willkommen'); assert.equal(w.raum.privat, true); assert.equal(w.raum.name, 'Meine Villa'); assert.equal(w.andere[0].name, 'Chef4');
   A.ws.close(); B.ws.close();
+});
+
+test('Phase 5: Startguthaben, Einzahlen/Abheben ohne Minus, Überweisung an anderen Spieler', async () => {
+  const a = (await api('POST', '/api/auth/register', { name: 'Geld5', passwort: 'passwort1' })).data.token;
+  await api('POST', '/api/auth/register', { name: 'Ziel5', passwort: 'passwort1' });
+  const g = await api('GET', '/api/geld', null, a); assert.deepEqual(g.data.konto, { bargeld: 1500, bank: 25000 });
+  assert.equal((await api('POST', '/api/geld/einzahlen', { betrag: 2000 }, a)).status, 400);
+  assert.deepEqual((await api('POST', '/api/geld/einzahlen', { betrag: 500 }, a)).data, { bargeld: 1000, bank: 25500 });
+  assert.equal((await api('POST', '/api/geld/abheben', { betrag: -5 }, a)).status, 400);
+  assert.equal((await api('POST', '/api/geld/abheben', { betrag: 99999 }, a)).status, 400);
+  assert.equal((await api('POST', '/api/geld/ueberweisen', { an: 'gibtsnicht', betrag: 10 }, a)).status, 400);
+  assert.equal((await api('POST', '/api/geld/ueberweisen', { an: 'Geld5', betrag: 10 }, a)).status, 400);
+  const u = await api('POST', '/api/geld/ueberweisen', { an: 'ziel5', betrag: 5500, text: 'Miete' }, a); assert.equal(u.data.bank, 20000);
+  const z = await api('POST', '/api/auth/login', { name: 'Ziel5', passwort: 'passwort1' });
+  const gz = await api('GET', '/api/geld', null, z.data.token); assert.equal(gz.data.konto.bank, 30500); assert.match(gz.data.verlauf[0].text, /Von Geld5: Miete/);
+  // Gleichzeitige Abbuchungen dürfen nie ins Minus führen
+  const r = await Promise.all(Array.from({ length: 8 }, () => api('POST', '/api/geld/abheben', { betrag: 5000 }, a)));
+  assert.equal(r.filter((x) => x.status === 200).length, 4); assert.equal((await api('GET', '/api/geld', null, a)).data.konto.bank, 0);
+});
+
+test('Phase 6: Auto kaufen (Geld geprüft), Kennzeichen, Tuning nur gegen Bezahlung', async () => {
+  const t = (await api('POST', '/api/auth/register', { name: 'Fahrer6', passwort: 'passwort1' })).data.token;
+  assert.equal((await api('POST', '/api/fahrzeuge/kaufen', { modell: 'super', farbe: 0 }, t)).status, 400);
+  assert.equal((await api('POST', '/api/fahrzeuge/kaufen', { modell: 'rakete', farbe: 0 }, t)).status, 400);
+  const k = await api('POST', '/api/fahrzeuge/kaufen', { modell: 'kompakt', farbe: 3 }, t); assert.equal(k.status, 200);
+  assert.equal(k.data.konto.bank, 7000); assert.match(k.data.fahrzeug.kennzeichen, /^VH-[A-Z]{2} \d{3,4}$/);
+  const id = k.data.fahrzeug.id;
+  assert.equal((await api('POST', '/api/fahrzeuge/kennzeichen', { id, kennzeichen: 'VH-SS 88' }, t)).status, 400);
+  assert.equal((await api('POST', '/api/fahrzeuge/kennzeichen', { id, kennzeichen: 'BLA' }, t)).status, 400);
+  const kz = await api('POST', '/api/fahrzeuge/kennzeichen', { id, kennzeichen: 'vh-mo 7' }, t); assert.equal(kz.data.fahrzeug.kennzeichen, 'VH-MO 7'); assert.equal(kz.data.konto.bank, 4500);
+  const t2 = (await api('POST', '/api/auth/register', { name: 'Fahrer7', passwort: 'passwort1' })).data.token;
+  const k2 = await api('POST', '/api/fahrzeuge/kaufen', { modell: 'kompakt', farbe: 1 }, t2);
+  assert.equal((await api('POST', '/api/fahrzeuge/kennzeichen', { id: k2.data.fahrzeug.id, kennzeichen: 'VH-MO 7' }, t2)).status, 400);
+  assert.equal((await api('POST', '/api/fahrzeuge/tuning', { id, tuning: { motor: 3 } }, t)).status, 400); // zu teuer
+  const tu = await api('POST', '/api/fahrzeuge/tuning', { id, tuning: { felgen: 1, tiefer: 1, motor: 0 } }, t);
+  assert.equal(tu.data.summe, 3500); assert.equal(tu.data.konto.bank, 1000); assert.deepEqual(tu.data.fahrzeug.tuning, { felgen: 1, tiefer: 1 });
+  assert.equal((await api('POST', '/api/fahrzeuge/tuning', { id: k2.data.fahrzeug.id, tuning: { felgen: 1 } }, t)).status, 400); // fremdes Auto
+  assert.equal((await api('GET', '/api/fahrzeuge', null, t)).data.fahrzeuge.length, 1);
+});
+
+test('Phase 6: Auto ausparken, schnell fahren nur im eigenen Auto', async () => {
+  const t = (await api('POST', '/api/auth/register', { name: 'Raser6', passwort: 'passwort1' })).data.token;
+  const fz = (await api('POST', '/api/fahrzeuge/kaufen', { modell: 'kompakt', farbe: 0 }, t)).data.fahrzeug;
+  const { ws, msgs } = await wsConnect(t); const w = msgs.find((m) => m.t === 'willkommen'); assert.deepEqual(w.konto, { bargeld: 1500, bank: 7000 });
+  const p = w.pos;
+  ws.send(JSON.stringify({ t: 'pos', x: p.x + 8, y: p.y, z: p.z, h: 0 })); await sleep(150); // zu Fuß zu schnell
+  assert.ok(msgs.some((m) => m.t === 'korrektur'));
+  ws.send(JSON.stringify({ t: 'auto_raus', id: fz.id, x: p.x + 3, y: p.y, z: p.z, h: 0 })); await sleep(200);
+  assert.ok(msgs.some((m) => m.t === 'auto' && m.auto?.id === fz.id));
+  const n = msgs.filter((m) => m.t === 'korrektur').length;
+  ws.send(JSON.stringify({ t: 'pos', x: p.x + 3, y: p.y, z: p.z, h: 0, f: 1 })); await sleep(150);
+  ws.send(JSON.stringify({ t: 'pos', x: p.x + 9, y: p.y, z: p.z, h: 0, f: 1 })); await sleep(150);
+  assert.equal(msgs.filter((m) => m.t === 'korrektur').length, n); ws.close();
 });

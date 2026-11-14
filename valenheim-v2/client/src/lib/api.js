@@ -21,6 +21,14 @@ export const api = {
   einstellungen: (s) => call('PUT', '/api/settings', s),
   charakter: (c) => call('PUT', '/api/charakter', c),
   server: () => call('GET', '/api/server'),
+  geld: () => call('GET', '/api/geld'),
+  einzahlen: (betrag) => call('POST', '/api/geld/einzahlen', { betrag }),
+  abheben: (betrag) => call('POST', '/api/geld/abheben', { betrag }),
+  ueberweisen: (an, betrag, text) => call('POST', '/api/geld/ueberweisen', { an, betrag, text }),
+  fahrzeuge: () => call('GET', '/api/fahrzeuge'),
+  kaufen: (modell, farbe) => call('POST', '/api/fahrzeuge/kaufen', { modell, farbe }),
+  kennzeichen: (id, kennzeichen) => call('POST', '/api/fahrzeuge/kennzeichen', { id, kennzeichen }),
+  tuning: (id, tuning) => call('POST', '/api/fahrzeuge/tuning', { id, tuning }),
   privatServer: (name) => call('POST', '/api/server/privat', { name }),
 };
 

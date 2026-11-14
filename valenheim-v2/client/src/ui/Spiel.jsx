@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Emblem } from './Logo.jsx';
 import { PROFILE } from '../core/quality.js';
 import { api, raumWahl } from '../lib/api.js';
+import { Autohaus, Werkstatt, Handy, euro } from './Laden.jsx';
 
 // Spielansicht Phase 1: Testgelände, HUD, Pausenmenü, Touch-Bedienung
 export default function Spiel({ konto, onEnde }) {
@@ -11,14 +12,14 @@ export default function Spiel({ konto, onEnde }) {
   const [menue, setMenue] = useState(false); const [hinweis, setHinweis] = useState(null);
   const [joy, setJoy] = useState(null); const [ladung, setLadung] = useState({ text: 'Physik wird vorbereitet …', anteil: 0.1 }); const [rennen, setRennen] = useState(false);
   const [chat, setChat] = useState([]); const [chatOffen, setChatOffen] = useState(false); const [eingabe, setEingabe] = useState(''); const [liste, setListe] = useState(false); const [abgelehnt, setAbgelehnt] = useState(null);
-  const chatRef = useRef(null);
+  const chatRef = useRef(null); const [fenster, setFenster] = useState(null); // 'handy' | 'autohaus' | 'werkstatt'
   const touch = matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 1;
 
   useEffect(() => {
     let tot = false;
     import('../core/game.js').then(async ({ Game }) => {
       if (tot) return;
-      const g = await Game.erstelle(canvas.current, { konto, raumWunsch: raumWahl.hole(), onChat: (m) => setChat((c) => [...c.slice(-39), { ...m, k: Date.now() + Math.random() }]), onAbgelehnt: (grund) => setAbgelehnt(grund), onStatus: (s) => setSt((a) => ({ ...a, ...s })), onHinweis: (text) => setHinweis({ text, k: Date.now() }), onFortschritt: (text, anteil) => setLadung({ text, anteil }) });
+      const g = await Game.erstelle(canvas.current, { konto, raumWunsch: raumWahl.hole(), onChat: (m) => setChat((c) => [...c.slice(-39), { ...m, k: Date.now() + Math.random() }]), onAbgelehnt: (grund) => setAbgelehnt(grund), onOeffne: (art) => setFenster(art), onStatus: (s) => setSt((a) => ({ ...a, ...s })), onHinweis: (text) => setHinweis({ text, k: Date.now() }), onFortschritt: (text, anteil) => setLadung({ text, anteil }) });
       if (tot) { g.beenden(); return; } gameRef.current = g; setSt((a) => ({ ...a, stufe: g.stufe })); setLaedt(false);
     }).catch((e) => { console.error(e); setFehler('Das Spiel konnte nicht starten: ' + e.message); });
     return () => { tot = true; gameRef.current?.beenden(); };
@@ -28,13 +29,14 @@ export default function Spiel({ konto, onEnde }) {
   useEffect(() => {
     const k = (e) => {
       if (chatOffen) { if (e.code === 'Escape') setChatOffen(false); return; }
+      if (fenster) { if (e.code === 'Escape' || e.code === 'KeyH') setFenster(null); return; }
       if (e.code === 'Escape') setMenue((m) => !m);
       else if (!menue && !laedt && (e.code === 'KeyT' || e.code === 'Enter')) { e.preventDefault(); setChatOffen(true); }
       else if (e.code === 'Tab') { e.preventDefault(); setListe((l) => !l); }
     };
     addEventListener('keydown', k); return () => removeEventListener('keydown', k);
-  }, [chatOffen, menue, laedt]);
-  useEffect(() => { const g = gameRef.current; if (!g) return; g.input.enabled = !menue && !chatOffen; if ((menue || chatOffen) && document.pointerLockElement) document.exitPointerLock(); if (chatOffen) setTimeout(() => chatRef.current?.focus(), 0); }, [menue, laedt, chatOffen]);
+  }, [chatOffen, menue, laedt, fenster]);
+  useEffect(() => { const g = gameRef.current; if (!g) return; g.input.enabled = !menue && !chatOffen && !fenster; if (!g.input.enabled) g.input.keys.clear(); if ((menue || chatOffen || fenster) && document.pointerLockElement) document.exitPointerLock(); if (chatOffen) setTimeout(() => chatRef.current?.focus(), 0); }, [menue, laedt, chatOffen, fenster]);
   const [, tick] = useState(0); useEffect(() => { const id = setInterval(() => tick((n) => n + 1), 2000); return () => clearInterval(id); }, []);
   const senden = (e) => { e.preventDefault(); gameRef.current?.chat(eingabe); setEingabe(''); setChatOffen(false); };
   useEffect(() => { if (!touch || laedt) return; let raf; const f = () => { setJoy(gameRef.current?.input.joystick() || null); raf = requestAnimationFrame(f); }; f(); return () => cancelAnimationFrame(raf); }, [touch, laedt]);
@@ -60,19 +62,24 @@ export default function Spiel({ konto, onEnde }) {
         </div>
         <div className="hud hud--ro" style={{ top: 'calc(120px + var(--st))' }}>
           <div className="chip" style={{ '--c': st.netz === 'online' ? '#3cff8f' : '#ff6b6b' }}><span className="badge" style={{ border: 0, background: 'none', padding: 0, '--c': st.netz === 'online' ? '#3cff8f' : '#ffb347' }}>{st.netz === 'online' ? 'Gespeichert · online' : st.netz === 'getrennt' ? 'Verbindung weg …' : 'Verbinde …'}</span></div>
+          {st.konto && <div className="chip chip--geld"><b>{euro(st.konto.bargeld)}</b> <small>Bank {euro(st.konto.bank)}</small></div>}
           {st.uhr !== undefined && <div className="chip">{String(Math.floor(st.uhr)).padStart(2, '0')}:{String(Math.floor((st.uhr % 1) * 60)).padStart(2, '0')} <small>{st.wetter}</small></div>}
           <div className="chip"><small>{PROFILE[st.stufe]?.name} · {st.fps} FPS</small></div>
         </div>
         <button className="knopf knopf--menue" onClick={() => setMenue(true)} aria-label="Menü">☰</button>
         <button className="knopf knopf--kamera" style={{ fontSize: 13 }} onClick={kamera} aria-label="Kamera wechseln" title="Kamera (V)">{st.kamera === 'ego' ? '1P' : '3P'}</button>
-        {!touch && !menue && <div className="hilfe">Klick zum Umsehen · <kbd>W A S D</kbd> laufen · <kbd>Shift</kbd> rennen · <kbd>Leertaste</kbd> springen · <kbd>V</kbd> Kamera · <kbd>T</kbd> Chat · <kbd>Tab</kbd> Spieler · <kbd>Esc</kbd> Menü</div>}
+        {!touch && !menue && <div className="hilfe">Klick zum Umsehen · <kbd>W A S D</kbd> laufen · <kbd>Shift</kbd> rennen · <kbd>Leertaste</kbd> springen · <kbd>V</kbd> Kamera · <kbd>E</kbd> Aktion · <kbd>H</kbd> Handy · <kbd>T</kbd> Chat · <kbd>Tab</kbd> Spieler · <kbd>Esc</kbd> Menü</div>}
         {touch && (<>
           {joy && <div className="joy" style={{ left: joy.ox, top: joy.oy }}><div style={{ transform: `translate(${joy.kx}px, ${joy.ky}px)` }} /></div>}
           <button className="knopf knopf--chat" onClick={() => setChatOffen(true)} aria-label="Chat">💬</button>
           <button className={`knopf knopf--rennen ${rennen ? 'an' : ''}`} onClick={() => setRennen(!rennen)}>RENNEN</button>
-          <button className="knopf knopf--sprung" onTouchStart={(e) => { e.preventDefault(); if (gameRef.current) gameRef.current.input.jump = true; }}>SPRUNG</button>
+          {st.faehrt ? <button className="knopf knopf--sprung" onTouchStart={(e) => { e.preventDefault(); if (gameRef.current) gameRef.current.input.bremse = true; }} onTouchEnd={() => { if (gameRef.current) gameRef.current.input.bremse = false; }}>BREMSE</button>
+            : <button className="knopf knopf--sprung" onTouchStart={(e) => { e.preventDefault(); if (gameRef.current) gameRef.current.input.jump = true; }}>SPRUNG</button>}
         </>)}
         {hinweis && <div key={hinweis.k} className="toast">{hinweis.text}</div>}
+        {st.aktion && !fenster && <button className="aktion" onClick={() => gameRef.current?.aktionAusfuehren()}><kbd>E</kbd> {st.aktion.text}</button>}
+        {st.faehrt && <div className="tacho"><b>{st.kmh || 0}</b><small>km/h</small></div>}
+        <button className="knopf knopf--handy" onClick={() => setFenster('handy')} aria-label="Handy (H)" title="Handy (H)">📱</button>
       </>)}
 
       {menue && (
@@ -92,6 +99,10 @@ export default function Spiel({ konto, onEnde }) {
           </div>
         </div>
       )}
+
+      {fenster === 'handy' && <Handy konto={st.konto} aktuell={st.meinAuto} onZu={() => setFenster(null)} onHolen={(a) => gameRef.current?.autoHolen(a)} onWeg={() => gameRef.current?.autoWegbringen()} />}
+      {fenster === 'autohaus' && <Autohaus konto={st.konto} onZu={() => setFenster(null)} onGekauft={(a) => { setFenster(null); gameRef.current?.autoHolen(a); setHinweis({ text: `Glückwunsch zum ${a.kennzeichen}! Dein Auto steht vor dir.`, k: Date.now() }); }} />}
+      {fenster === 'werkstatt' && <Werkstatt konto={st.konto} aktuell={st.meinAuto} onZu={() => setFenster(null)} onGetunt={(a) => gameRef.current?.autoAktualisieren(a)} />}
 
       {abgelehnt && (
         <div className="overlay"><div className="card stack" style={{ width: 'min(420px, 100%)' }}>

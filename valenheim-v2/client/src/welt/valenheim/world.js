@@ -17,7 +17,7 @@ export const BAUPLAETZE = {
 
 // Zusätzliche Bauplätze (ab Folge 5). Dort stehende Altbauten werden abgerissen, ohne den Zufallsgenerator
 // der Stadt zu verändern – alle anderen Gebäude bleiben dadurch exakt gleich.
-export const ZUSATZ_PLAETZE = { B9: [2, 1], B10: [2, -1], B11: [-2, -1], B12: [1, 2], B13: [-1, 2], B14: [2, 2] };
+export const ZUSATZ_PLAETZE = { B9: [2, 1], B10: [2, -1], B11: [-2, -1], B12: [1, 2], B13: [-1, 2], B14: [2, 2], B15: [1, -1] }; // B15 = Janniks Autohaus (nur im Spiel)
 // Nur Zusatz-Plätze, die im Serienstand/der Folge benutzt werden, werden freigeräumt (ältere Folgen bleiben unverändert)
 let AKTIVE_ZUSATZ = [];
 const inZusatz = (x, z) => AKTIVE_ZUSATZ.some((k) => { const [i, j] = ZUSATZ_PLAETZE[k]; return Math.abs(x - i * P) < HB - 3.5 && Math.abs(z - j * P) < HB - 3.5; });

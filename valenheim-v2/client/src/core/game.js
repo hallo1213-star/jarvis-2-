@@ -14,6 +14,8 @@ import { Wetter, WETTER_NAME } from '../atmosphaere/wetter.js';
 import { baueAmpeln } from '../welt/ampeln.js';
 import { getToken } from '../lib/api.js';
 import { AndereSpieler } from '../spieler/andere.js';
+import { Auto } from '../fahrzeuge/auto.js';
+import { setAutoNacht } from '../fahrzeuge/modelle.js';
 
 const GEHEN = 4.4, RENNEN = 7.4, SPRUNG = 5.6, SCHWERKRAFT = 18;
 const KAPSEL = { halb: 0.55, r: 0.35 }; // Gesamthöhe 1,8 m
@@ -24,8 +26,8 @@ export class Game {
     await RAPIER.init(); const g = new Game(canvas, opts); await g.ladeWelt(opts.onFortschritt); g.starte(); return g;
   }
 
-  constructor(canvas, { konto, onStatus, onHinweis, onChat, onAbgelehnt, raumWunsch }) {
-    this.canvas = canvas; this.onStatus = onStatus; this.onHinweis = onHinweis; this.onChat = onChat; this.onAbgelehnt = onAbgelehnt; this.raumWunsch = raumWunsch || {};
+  constructor(canvas, { konto, onStatus, onHinweis, onChat, onAbgelehnt, onOeffne, raumWunsch }) {
+    this.onOeffne = onOeffne; this.canvas = canvas; this.onStatus = onStatus; this.onHinweis = onHinweis; this.onChat = onChat; this.onAbgelehnt = onAbgelehnt; this.raumWunsch = raumWunsch || {};
     const st = konto.spielstand; this.settings = { ...st.settings };
     this.geraet = geraet(); this.stufe = this.settings.grafik === 'auto' ? autoStufe(this.geraet) : this.settings.grafik;
     const P = PROFILE[this.stufe];
@@ -80,7 +82,7 @@ export class Game {
       this.gelaende = baueTestgelaende(this.scene, RAPIER, this.world); this.exposure = 0.5;
     } else {
       const karte = await baueValenheim(this.scene, RAPIER, this.world, { onFortschritt });
-      this.gelaende = karte; this.sun = karte.world.sun; this.hemi = karte.world.hemi;
+      this.gelaende = karte; this.zonen = karte.zonen || []; this.sun = karte.world.sun; this.hemi = karte.world.hemi;
       this.sunDir = WELT_U.sunDir.value.clone();
       this.exposure = karte.world.exposure || 1.1; this.kollisionen = karte.kollisionen;
       this.details = new Detailsteuerung(this.scene);
@@ -118,7 +120,7 @@ export class Game {
     ws.onmessage = (e) => {
       const m = JSON.parse(e.data);
       if (m.t === 'willkommen') {
-        this.ich = m.du; this.raum = m.raum; this.raumWunsch = m.raum.privat ? { code: m.raum.code } : { raum: m.raum.id };
+        this.ich = m.du; this.raum = m.raum; this.konto = m.konto; this.onStatus?.({ konto: m.konto }); this.raumWunsch = m.raum.privat ? { code: m.raum.code } : { raum: m.raum.id };
         this.andere.alleWeg(); for (const o of m.andere) this.andere.setze(o);
         // Steht schon jemand genau hier (z. B. am Startpunkt)? Dann ein paar Meter daneben erscheinen.
         const ich = this.body.translation();
@@ -135,11 +137,86 @@ export class Game {
       if (m.t === 'look') this.andere.aussehen(m.id, m.look);
       if (m.t === 's') this.andere.snapshot(m.p, this.ich);
       if (m.t === 'chat') this.onChat?.(m);
+      if (m.t === 'geld') { this.konto = m.konto; this.onStatus?.({ konto: m.konto }); if (m.text) this.onHinweis?.(m.text); }
+      if (m.t === 'auto' && m.spieler !== this.ich) this.andere.auto(m.spieler, m.auto, m.f);
       if (m.t === 'abgelehnt') { this.ende = true; this.onAbgelehnt?.(m.grund); }
-      if (m.t === 'korrektur') { this.body.setTranslation(m.pos, true); this.velY = 0; }
+      if (m.t === 'korrektur') { if (this.faehrt) this.aussteigen(true); this.body.setTranslation(m.pos, true); this.velY = 0; }
       if (m.t === 'doppelt') { this.ende = true; this.onHinweis?.('Du hast dich auf einem anderen Gerät angemeldet.'); }
     };
-    ws.onclose = (e) => { if (this.beendet || this.ende || e.code === 4005 || e.code === 4010) return; this.andere.alleWeg(); this.onStatus?.({ netz: 'getrennt' }); setTimeout(() => !this.beendet && this.netz(), 3000); };
+    ws.onclose = (e) => { if (this.beendet || this.ende || e.code === 4005 || e.code === 4010) return; this.andere.alleWeg(); if (this.faehrt) this.aussteigen(true); this.meinAuto?.entferne(); this.meinAuto = null; this.onStatus?.({ meinAuto: null }); this.onStatus?.({ netz: 'getrennt' }); setTimeout(() => !this.beendet && this.netz(), 3000); };
+  }
+
+  // ---------- Fahrzeuge (Phase 6) ----------
+  autoHolen(wagen) {
+    if (this.faehrt) this.aussteigen(true);
+    this.meinAuto?.entferne(); this.meinAuto = null;
+    // 5 m vor dem Spieler – wenn dort eine Wand ist, hinter ihm
+    const p = this.body.translation(); const fx = Math.sin(this.heading), fzr = Math.cos(this.heading); let d = 5;
+    const frei = (s) => !this.world.castRay(new RAPIER.Ray({ x: p.x, y: p.y, z: p.z }, { x: fx * s, y: 0, z: fzr * s }), 7.5, true, undefined, undefined, this.collider);
+    const s = frei(1) ? 1 : frei(-1) ? -1 : 0; if (!s) d = 0;
+    const pose = { x: p.x + fx * d * (s || 1), y: p.y - KAPSEL.halb - KAPSEL.r, z: p.z + fzr * d * (s || 1), h: this.heading + Math.PI / 2 };
+    if (!s) { pose.x += Math.cos(this.heading) * 3; pose.z -= Math.sin(this.heading) * 3; }
+    this.meinAuto = new Auto(this.scene, RAPIER, this.world, wagen, pose, { lokal: true }); this.meinAutoInfo = wagen;
+    this.ws?.readyState === 1 && this.ws.send(JSON.stringify({ t: 'auto_raus', id: wagen.id, x: +pose.x.toFixed(2), y: +(pose.y + 0.9).toFixed(2), z: +pose.z.toFixed(2), h: +pose.h.toFixed(3) }));
+    this.onStatus?.({ meinAuto: wagen.id }); this.onHinweis?.(`${this.meinAuto.M.name} steht bereit – geh hin und drück E.`);
+  }
+  autoWegbringen() { if (this.faehrt) this.aussteigen(true); this.meinAuto?.entferne(); this.meinAuto = null; this.ws?.readyState === 1 && this.ws.send(JSON.stringify({ t: 'auto_weg' })); this.onStatus?.({ meinAuto: null }); }
+  // Nach Tuning: Auto mit neuem Aussehen an derselben Stelle neu aufbauen
+  autoAktualisieren(fz) {
+    if (!this.meinAuto || this.meinAutoInfo?.id !== fz.id) return; const a = this.meinAuto; const pose = { x: a.pos.x, y: a.pos.y, z: a.pos.z, h: a.heading };
+    const fuhr = this.faehrt; a.entferne(); this.meinAuto = new Auto(this.scene, RAPIER, this.world, fz, pose, { lokal: true }); this.meinAutoInfo = fz; if (fuhr) this.meinAuto.speed = 0;
+  }
+  einsteigen() { this.faehrt = true; this.collider.setEnabled(false); this.figur.root.visible = false; this.yaw = this.meinAuto.heading + Math.PI; this.pitch = 0.2; this.onStatus?.({ faehrt: true }); }
+  aussteigen(sofort = false) {
+    const a = this.meinAuto; if (!a) return;
+    if (!sofort && Math.abs(a.speed) > 3) { this.onHinweis?.('Erst anhalten.'); return; }
+    const p = a.ausstieg(); this.body.setTranslation({ x: p.x, y: a.pos.y + KAPSEL.halb + KAPSEL.r + 0.15, z: p.z }, true);
+    this.collider.setEnabled(true); this.faehrt = false; a.speed = 0; this.velY = 0; this.heading = a.heading; this.onStatus?.({ faehrt: false, kmh: 0 });
+  }
+  // Was kann man hier gerade tun? (Hinweis unten in der Mitte, E / Antippen)
+  aktionPruefen() {
+    const p = this.body.translation(); let a = null;
+    if (this.faehrt) a = { art: 'aussteigen', text: 'Aussteigen' };
+    else if (this.meinAuto && this.meinAuto.abstand(p) < this.meinAuto.T.L / 2 + 1.6) a = { art: 'einsteigen', text: `Einsteigen – ${this.meinAuto.M.name}` };
+    else for (const z of this.zonen || []) if (Math.hypot(p.x - z.x, p.z - z.z) < z.r) { a = { art: z.art, text: z.text }; break; }
+    if ((a?.text || null) !== (this.aktion?.text || null)) { this.aktion = a; this.onStatus?.({ aktion: a }); }
+  }
+  aktionAusfuehren() {
+    const a = this.aktion; if (!a) return;
+    if (a.art === 'einsteigen') this.einsteigen(); else if (a.art === 'aussteigen') this.aussteigen(); else this.onOeffne?.(a.art);
+  }
+
+  fahren(dt) {
+    const inp = this.input; inp.update(); const a = this.meinAuto;
+    if (inp.consume('kameraWechsel')) this.wechsleKamera();
+    const look = inp.consumeLook(); const emp = 0.0032 * (this.settings.empfindlichkeit || 1);
+    if (look.dx || look.dy) this.lookT = this.t;
+    this.yaw -= look.dx * emp; this.pitch = THREE.MathUtils.clamp(this.pitch + look.dy * emp * 0.8 * (this.settings.yInvertiert ? -1 : 1), -0.3, 1.0);
+    const bremse = inp.keys.has('Space') || inp.bremse;
+    a.fahre(dt, { gas: inp.move.y, lenk: inp.move.x, bremse }, this.collider);
+    if (a.stoss > 9) this.onHinweis?.('Rums!');
+    // Kamera: hinter dem Auto, kehrt nach kurzem Umsehen automatisch zurück
+    if (this.t - (this.lookT || -9) > 1.4) {
+      let d = (a.heading + Math.PI) - this.yaw; d = Math.atan2(Math.sin(d), Math.cos(d)); this.yaw += d * Math.min(1, dt * 2.5);
+      this.pitch += (0.2 - this.pitch) * Math.min(1, dt * 1.5);
+    }
+    const fuss = a.pos.y;
+    if (this.modus === 'ego') {
+      const s = a.T.W / 2 - 0.55; const kopf = new THREE.Vector3(a.pos.x - Math.cos(a.heading) * -s + Math.sin(a.heading) * 0.2, fuss + Math.max(...a.T.cabin.map((q) => q[1])) - 0.28, a.pos.z + Math.sin(a.heading) * -s + Math.cos(a.heading) * 0.2);
+      this.camera.position.copy(kopf); const yaw = this.yaw + Math.PI;
+      this.camera.lookAt(kopf.x + Math.sin(yaw) * 10, kopf.y - Math.sin(this.pitch - 0.2) * 10, kopf.z + Math.cos(yaw) * 10);
+    } else {
+      const ziel = new THREE.Vector3(a.pos.x, fuss + 1.5, a.pos.z);
+      const dir = new THREE.Vector3(Math.sin(this.yaw) * Math.cos(this.pitch), Math.sin(this.pitch), Math.cos(this.yaw) * Math.cos(this.pitch));
+      const weite = 4.2 + a.T.L * 0.55 + Math.min(2, Math.abs(a.speed) * 0.04);
+      let dist = weite; const hit = this.world.castRay(new RAPIER.Ray(ziel, dir), weite, true, undefined, undefined, a.collider);
+      if (hit) dist = Math.max(1.2, hit.timeOfImpact - 0.3);
+      this.camAbstand = this.camAbstand === undefined ? dist : (dist < this.camAbstand ? dist : this.camAbstand + (dist - this.camAbstand) * Math.min(1, dt * 3));
+      this.camera.position.copy(ziel).addScaledVector(dir, this.camAbstand); this.camera.lookAt(ziel);
+    }
+    // Spielerkörper reist (deaktiviert) mit
+    this.body.setNextKinematicTranslation({ x: a.pos.x, y: fuss + KAPSEL.halb + KAPSEL.r, z: a.pos.z }); this.heading = a.heading;
+    this.kmhT = (this.kmhT || 0) + dt; if (this.kmhT > 0.1) { this.kmhT = 0; this.onStatus?.({ kmh: Math.round(a.kmh()) }); }
   }
 
   spielerListe() { return [{ id: this.ich, name: this.name, du: true }, ...this.andere.namen()]; }
@@ -158,13 +235,16 @@ export class Game {
   loop() {
     if (this.beendet) return;
     this.timer.update(); const dt = Math.min(0.05, this.timer.getDelta()); this.t += dt;
-    this.spieler(dt);
+    if (this.faehrt && this.meinAuto) this.fahren(dt); else this.spieler(dt);
+    if (this.input.consume('interact')) this.aktionAusfuehren();
+    if (this.input.consume('handy')) this.onOeffne?.('handy');
+    this.aktionT = (this.aktionT || 0) + dt; if (this.aktionT > 0.15) { this.aktionT = 0; this.aktionPruefen(); }
     this.andere.update(dt, this.camera);
     this.world.timestep = dt; this.world.step();
     this.gelaende.update(this.t, this.camera);
     this.details?.update(dt, this.camera.position);
     if (this.tageszeit) {
-      const uhr = this.tageszeit.update(); this.ampeln.update();
+      const uhr = this.tageszeit.update(); this.ampeln.update(); setAutoNacht(this.tageszeit.nacht || 0);
       this.wetter.update(dt, this.camera.position, this.welt === 'valenheim' ? PROFILE[this.stufe].nebelStadt : PROFILE[this.stufe].nebel, this.tageszeit.nacht);
       this.uhrT = (this.uhrT || 0) + dt; if (this.uhrT > 1) { this.uhrT = 0; this.onStatus?.({ uhr, wetter: WETTER_NAME[this.wetter.art] }); }
     }
@@ -175,7 +255,8 @@ export class Game {
     this.renderer.render(this.scene, this.camera);
     this.waechter.tick(dt); this.frames++; this.fpsT += dt; if (this.fpsT >= 0.5) { this.fps = Math.round(this.frames / this.fpsT); this.frames = 0; this.fpsT = 0; this.onStatus?.({ fps: this.fps }); }
     // Position senden
-    this.sendT += dt; if (this.sendT > 0.1 && this.ws?.readyState === 1) { this.sendT = 0; this.ws.send(JSON.stringify({ t: 'pos', x: +pos.x.toFixed(2), y: +pos.y.toFixed(2), z: +pos.z.toFixed(2), h: +this.heading.toFixed(3) })); }
+    this.sendT += dt; if (this.sendT > 0.1 && this.ws?.readyState === 1) { this.sendT = 0; const a = this.faehrt ? this.meinAuto : null; const q = a ? { x: a.pos.x, y: a.pos.y + 0.9, z: a.pos.z } : pos;
+      this.ws.send(JSON.stringify({ t: 'pos', x: +q.x.toFixed(2), y: +q.y.toFixed(2), z: +q.z.toFixed(2), h: +this.heading.toFixed(3), ...(a ? { f: 1 } : {}) })); }
   }
 
   spieler(dt) {
@@ -224,6 +305,6 @@ export class Game {
     this.beendet = true; this.renderer.setAnimationLoop(null); this.wetter?.dispose(); if (this.weckTon) { removeEventListener('pointerdown', this.weckTon); removeEventListener('keydown', this.weckTon); } removeEventListener('resize', this.resize); this.input.dispose();
     try { this.ws?.close(); } catch { /* egal */ }
     this.scene.traverse((o) => { o.geometry?.dispose(); [].concat(o.material || []).forEach((m) => { m.map?.dispose(); m.dispose(); }); });
-    this.andere.alleWeg(); this.renderer.dispose(); this.world.free();
+    this.meinAuto?.entferne(); this.andere.alleWeg(); this.renderer.dispose(); this.world.free();
   }
 }
