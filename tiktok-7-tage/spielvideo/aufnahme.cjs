@@ -7,7 +7,7 @@ const B = process.env.URL || 'http://localhost:2600'; const FPS = 24;
 const laengen = JSON.parse(fs.readFileSync(path.join(__dirname, 'build/laengen.json')));
 // Dauer je Einstellung = Sprechzeit + Luft
 const DAUER = { intro: laengen.intro + 0.9, strasse: laengen.strasse + 0.8, leute: laengen.leute + 0.8, autohaus: laengen.autohaus + 0.9, fahren: 3.6, leben: laengen.leben + 0.8, nacht: laengen.nacht + 1.0, ende: laengen.ende + 1.4 };
-const START = { intro: [7, -6], strasse: [-30, 26.5], leute: [30, 25.5], autohaus: [80, -70], fahren: [37.5, -40], leben: [10, 20], nacht: [-33, 26.5], ende: [7, 22] };
+const START = { intro: [7, -6], strasse: [-22, 14], leute: [30, 25.5], autohaus: [80, -70], fahren: [37.5, -40], leben: [10, 20], nacht: [-33, 26.5], ende: [7, 22] };
 
 const name = process.argv[2]; if (!DAUER[name]) { console.log('Unbekannt:', name); process.exit(1); }
 (async () => {
@@ -50,7 +50,7 @@ const name = process.argv[2]; if (!DAUER[name]) { console.log('Unbekannt:', name
     }
     if (name === 'strasse') { // Spieler läuft den Gehweg entlang, Kamera fährt seitlich mit
       g.heading = PI / 2; g.input.keys.add('KeyW'); g.yaw = g.heading + PI; leuteHier(-30, 26);
-      g.kameraHook = (gg) => { const p = gg.figur.root.position; kam(p.x - 2.6, p.y + 1.25, p.z - 3.4, p.x + 3, p.y + 1.0, p.z + 0.5); };
+      g.kameraHook = (gg) => { const p = gg.figur.root.position; const k = gg.t / T.__len; kam(p.x + 3.6 - k * 0.8, p.y + 1.5, p.z - 2.6 + k * 0.6, p.x - 0.4, p.y + 1.05, p.z + 0.3); };
     }
     if (name === 'leute') { // Straßenecke: Verkehr fährt vorbei, Passanten laufen
       verkehrHier([[0, 0, 0, 0.0], [1, 0, 2, 0.25], [-1, 0, 0, 0.5], [0, -1, 1, 0.1], [0, 1, 3, 0.4]]); leuteHier(37, 0);
