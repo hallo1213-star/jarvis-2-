@@ -12,7 +12,15 @@ let q; // q(sql, params) -> rows   (Platzhalter: ?)
 if (PG) {
   const { default: pg } = await import('pg');
   pg.types.setTypeParser(20, (v) => Number(v)); // BIGINT als Zahl
-  const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 5, ssl: process.env.DATABASE_SSL === 'aus' ? false : { rejectUnauthorized: false } });
+  // DATABASE_URL robust lesen: Leerzeichen/Anführungszeichen entfernen, Passwort darf Sonderzeichen enthalten
+  // (getrennt am LETZTEN '@', daher keine URL-Kodierung nötig).
+  const raw = process.env.DATABASE_URL.trim().replace(/^['"]|['"]$/g, '').trim();
+  const m = /^postgres(?:ql)?:\/\/([^:/@]+):(.*)@([^@/:]+)(?::(\d+))?\/([^?\s]+)/s.exec(raw);
+  if (!m) { console.error('DATABASE_URL hat ein unbekanntes Format. Erwartet: postgresql://BENUTZER:PASSWORT@HOST:5432/postgres'); process.exit(1); }
+  const [, user, password, host, port, database] = m;
+  if (password.includes('[YOUR-PASSWORD]') || password === 'PASSWORT' || password === 'DEINPASSWORT') { console.error('DATABASE_URL: Bitte das echte Datenbank-Passwort einsetzen.'); process.exit(1); }
+  console.log(`Datenbank: ${user}@${host}:${port || 5432}/${database}`);
+  const pool = new pg.Pool({ user, password, host, port: Number(port || 5432), database, max: 5, ssl: process.env.DATABASE_SSL === 'aus' ? false : { rejectUnauthorized: false } });
   q = async (sql, params = []) => { let i = 0; const r = await pool.query(sql.replace(/\?/g, () => `$${++i}`), params); return r.rows; };
 } else if (process.env.DB_PGLITE) {
   // Nur für Tests: echte Postgres-Engine im Speicher
