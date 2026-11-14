@@ -58,7 +58,7 @@ const name = process.argv[2]; if (!DAUER[name]) { console.log('Unbekannt:', name
     }
     if (name === 'autohaus') { // Showroom: Kamera fährt um den Phantom R
       g.tageszeit.manuell = 15.5; g.heading = -PI / 2;
-      g.kameraHook = (gg) => { gg.figur.root.visible = false; const a = gg.autohaus; const z = a?.pos; if (!z) return; const k = gg.t / T.__len; const w = -0.4 + k * 1.6; kam(z.x + Math.sin(w) * 6.5, 1.5 + k * 0.6, z.z + Math.cos(w) * 6.5, z.x, 0.6, z.z); };
+      g.kameraHook = (gg) => { gg.figur.root.visible = false; gg.gelaende.autohaus.gruppe.traverse((o) => { const M = o.userData?.M; if (M && M.typ !== 'sport' && M.typ !== 'super') o.visible = false; }); const k = gg.t / T.__len; const w = 0.9 + k * 1.5; const cx = 80, cz = -74; kam(cx + Math.sin(w) * 5.6, 1.35 + k * 0.5, cz + Math.cos(w) * 5.6, cx, 0.55, cz); };
     }
     if (name === 'fahren') { // Fahrt auf der Straße, Verfolgerkamera tief
       g.tageszeit.manuell = 17.6; verkehrHier([[0, -1, 1, 0.55], [0, 0, 1, 0.3]]);
@@ -86,6 +86,7 @@ const name = process.argv[2]; if (!DAUER[name]) { console.log('Unbekannt:', name
       if (!r.fahrzeug) throw new Error('Kauf: ' + JSON.stringify(r));
       g.autoHolen({ ...r.fahrzeug, tuning: { felgen: 3, tiefer: 1, toenung: 1 } }); g.autohaus = g.meinAuto;
     });
+    if (name === 'autohaus') await pg.evaluate(() => { const g = VH2, a = g.meinAuto; a.body.setTranslation({ x: 80, y: 1.0, z: -74 }, true); a.pos.set(80, 0.24, -74); a.heading = 0.6; a.setzeDrehung(); a.sync(0); g.body.setTranslation({ x: 88, y: 1.4, z: -66 }, true); });
     if (name === 'fahren') await pg.evaluate(() => { const g = VH2, a = g.meinAuto; a.body.setTranslation({ x: 37.5 - 2.6, y: 1.0, z: -40 }, true); a.pos.set(37.5 - 2.6, 0.22, -40); a.heading = 0; a.setzeDrehung(); g.einsteigen(); g.input.keys.add('KeyW'); });
   }
   // kurz einschwingen (Texturen, Licht) ohne Aufnahme
