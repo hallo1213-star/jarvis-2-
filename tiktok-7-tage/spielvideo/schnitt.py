@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'pipeline'))
 import audio as A  # Klangbausteine aus der Serie (prozedural, lizenzfrei)
 
 HIER = Path(__file__).resolve().parent; BUILD = HIER / 'build'; SR = A.SR; FPS = 24
-L = json.load(open(BUILD / 'laengen.json')); TEXT = {s['id']: s['text'] for s in json.load(open(HIER / 'text.json'))}
+L = json.load(open(BUILD / 'laengen.json')); TEXT = {s['id']: s['text'].replace('zwei Punkt null', '2.0').replace('zwölf', '12') for s in json.load(open(HIER / 'text.json'))}
 DAUER = {'intro': L['intro'] + 0.9, 'strasse': L['strasse'] + 0.8, 'leute': L['leute'] + 0.8, 'autohaus': L['autohaus'] + 0.9, 'fahren': 3.6, 'leben': L['leben'] + 0.8, 'nacht': L['nacht'] + 1.0, 'ende': L['ende'] + 1.4}
 FOLGE = ['intro', 'strasse', 'leute', 'autohaus', 'fahren', 'leben', 'nacht', 'ende']
 # tatsächliche Bildanzahl je Einstellung
@@ -79,5 +79,5 @@ with open(liste, 'w') as f:
 aus = HIER.parent / 'ausgabe' / 'valenheim-2-0.mp4'
 cmd = ['ffmpeg', '-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', str(liste), '-i', str(BUILD / 'ton.wav'),
        '-vf', f"fps={FPS},scale=1080:1920:flags=lanczos,eq=contrast=1.06:saturation=1.12,unsharp=5:5:0.5,ass={BUILD / 'untertitel.ass'}:fontsdir={HIER / 'schrift'}",
-       '-c:v', 'libx264', '-preset', 'slow', '-crf', '18', '-pix_fmt', 'yuv420p', '-r', str(FPS), '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', str(aus)]
+       '-c:v', 'libx264', '-preset', 'slow', '-crf', '23', '-maxrate', '9M', '-bufsize', '18M', '-pix_fmt', 'yuv420p', '-r', str(FPS), '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', str(aus)]
 subprocess.run(cmd, check=True); print('Fertig:', aus)
