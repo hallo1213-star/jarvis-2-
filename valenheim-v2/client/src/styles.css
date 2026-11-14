@@ -224,3 +224,9 @@ input[type=range] { accent-color: var(--gold); width: 180px; }
   .auftrag { top: auto; bottom: calc(176px + var(--sb)); max-width: calc(100vw - 32px); width: max-content; }
   .aktion { max-width: calc(100vw - 32px); }
 }
+/* ---------- Emotes ---------- */
+.emotes { position: absolute; right: calc(174px + var(--sr)); top: calc(66px + var(--st)); display: flex; gap: 6px; z-index: 4; flex-direction: row-reverse; }
+.knopf--emote { position: static; width: 46px; height: 46px; font-size: 20px; }
+.emote { background: var(--glass); border: 1px solid var(--line); color: #fff; border-radius: 12px; height: 46px; padding: 0 10px; font-size: 20px; display: flex; align-items: center; gap: 6px; cursor: pointer; animation: rein 0.15s ease both; }
+.emote small { font: 700 12px Inter, sans-serif; }
+@media (pointer: coarse) { .emotes { flex-direction: column; right: calc(174px + var(--sr)); } .emote small { display: none; } }

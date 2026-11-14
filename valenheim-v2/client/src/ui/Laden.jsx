@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../lib/api.js';
 import { KATALOG } from '../fahrzeuge/modelle.js';
 import AutoVorschau from './AutoVorschau.jsx';
+import STAND from '../../../shared/serienstand.json';
 
 export const euro = (n) => `${Math.round(n).toLocaleString('de-DE')} €`;
 const Farbwahl = ({ wert, onWahl }) => <div className="farben">{KATALOG.farben.map((c, i) => <button key={c} className={`farbe ${wert === i ? 'an' : ''}`} style={{ background: c }} onClick={() => onWahl(i)} aria-label={`Farbe ${i + 1}`} />)}</div>;
@@ -81,6 +82,7 @@ export function Handy({ konto, aktuell, onZu, onHolen, onWeg }) {
             <button onClick={() => setApp('bank')}><span style={{ background: '#0a3a9e' }}>🏦</span>Josuas Bank</button>
             <button onClick={() => setApp('garage')}><span style={{ background: '#b56a1d' }}>🚗</span>Garage</button>
             <button onClick={() => setApp('info')}><span style={{ background: '#2f4b33' }}>🗺️</span>Orte</button>
+            <button onClick={() => setApp('regierung')}><span style={{ background: '#7a1f2b' }}>🏛️</span>Regierung</button>
             <button onClick={onZu}><span style={{ background: '#5d2a6e' }}>✕</span>Schließen</button>
           </div></div>) : (
           <div className="handy__app">
@@ -103,6 +105,7 @@ export function Handy({ konto, aktuell, onZu, onHolen, onWeg }) {
                   {aktuell === a.id ? <button className="btn btn--ghost" style={{ width: 'auto' }} onClick={() => { onWeg(); onZu(); }}>WEGBRINGEN</button> : <button className="btn btn--gold" style={{ width: 'auto' }} onClick={() => { onHolen(a); onZu(); }}>HERBRINGEN</button>}</div>)}
               {msg && <small role="status">{msg}</small>}
             </div>}
+            {app === 'regierung' && <Regierung />}
             {app === 'info' && <div className="stack">
               <div className="umsatz"><span><b>Janniks Autohaus</b><small>Autos kaufen · Werkstatt · Kennzeichen</small></span><small>Goldene Lichtsäule</small></div>
               <div className="umsatz"><span><b>Stadtplatz</b><small>Rathaus · Startpunkt</small></span></div>
@@ -111,6 +114,23 @@ export function Handy({ konto, aktuell, onZu, onHolen, onWeg }) {
             </div>}
           </div>)}
       </div>
+    </div>
+  );
+}
+
+// Phase 10: Regierung der Republik Valenheim – Stand aus der TikTok-Serie (shared/serienstand.json)
+const AEMTER = [['praesident', 'Präsident'], ['regierungschef', 'Regierungschef'], ['inneres', 'Innenministerium'], ['finanzen', 'Finanzministerium'], ['gesundheit', 'Gesundheitsministerium'], ['verkehr', 'Verkehrsministerium'], ['aussen', 'Außenministerium'], ['bildung', 'Bildungsministerium']];
+function Regierung() {
+  const R = STAND.regierung || {}; const name = (k) => (k === 'praesident' ? 'Der Gründer der Republik' : R[k] || 'offen');
+  return (
+    <div className="stack">
+      <div className="handy__saldo"><small>Republik {STAND.stadt?.[0]}{STAND.stadt?.slice(1).toLowerCase()} · Stand Folge {STAND.letzte_folge}</small><b>{euro(STAND.stadtkasse || 0)}</b><small>Staatskasse · {STAND.einwohner} Einwohner · Entwicklung {STAND.entwicklung_prozent} %</small></div>
+      <div className="eyebrow">Regierung</div>
+      <div className="umsaetze">{AEMTER.map(([k, l]) => <div key={k} className="umsatz"><span><b>{l}</b><small>{name(k)}</small></span>{String(R[k] || '').startsWith('offen') && k !== 'praesident' ? <small style={{ color: '#ffb347' }}>frei</small> : <small style={{ color: '#6dff9e' }}>besetzt</small>}</div>)}</div>
+      <div className="eyebrow">Im Bau / neu</div>
+      <div className="umsaetze">{(STAND.bauliste || []).map((b, i) => <div key={i} className="umsatz"><span><b>{b.was}</b><small>gewünscht von {b.wer}</small></span>{/autohaus/i.test(b.was) ? <small style={{ color: '#6dff9e' }}>im Spiel offen</small> : <small>geplant</small>}</div>)}</div>
+      {STAND.ziel?.text && <p className="hinweis">Nächstes Ziel der Community: {STAND.ziel.text}</p>}
+      <p className="hinweis">Ämter werden in den TikTok-Folgen vergeben. Kommentiere, wenn du ein freies Ministerium willst!</p>
     </div>
   );
 }

@@ -14,6 +14,7 @@ export class Input {
       if (e.code === 'Space') { this.jump = true; e.preventDefault(); }
       if (e.code === 'KeyE' || e.code === 'KeyF') this.interact = true;
       if (e.code === 'KeyH') this.handy = true;
+      if (e.code === 'Digit1') this.emoteWahl = 'winken'; if (e.code === 'Digit2') this.emoteWahl = 'jubeln'; if (e.code === 'Digit3') this.emoteWahl = 'tanzen';
       if (e.code === 'KeyV') this.kameraWechsel = true;
     });
     on(window, 'keyup', (e) => this.keys.delete(e.code));

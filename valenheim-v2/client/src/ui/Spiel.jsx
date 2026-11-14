@@ -14,7 +14,7 @@ export default function Spiel({ konto, onEnde }) {
   const [menue, setMenue] = useState(false); const [hinweis, setHinweis] = useState(null);
   const [joy, setJoy] = useState(null); const [ladung, setLadung] = useState({ text: 'Physik wird vorbereitet …', anteil: 0.1 }); const [rennen, setRennen] = useState(false);
   const [chat, setChat] = useState([]); const [chatOffen, setChatOffen] = useState(false); const [eingabe, setEingabe] = useState(''); const [liste, setListe] = useState(false); const [abgelehnt, setAbgelehnt] = useState(null);
-  const chatRef = useRef(null); const [fenster, setFenster] = useState(null); // 'handy' | 'autohaus' | 'werkstatt'
+  const chatRef = useRef(null); const [fenster, setFenster] = useState(null); const [emoteOffen, setEmoteOffen] = useState(false); // 'handy' | 'autohaus' | 'werkstatt'
   const touch = matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 1;
 
   useEffect(() => {
@@ -70,7 +70,7 @@ export default function Spiel({ konto, onEnde }) {
         </div>
         <button className="knopf knopf--menue" onClick={() => setMenue(true)} aria-label="Menü">☰</button>
         <button className="knopf knopf--kamera" style={{ fontSize: 13 }} onClick={kamera} aria-label="Kamera wechseln" title="Kamera (V)">{st.kamera === 'ego' ? '1P' : '3P'}</button>
-        {!touch && !menue && <div className="hilfe">Klick zum Umsehen · <kbd>W A S D</kbd> laufen · <kbd>Shift</kbd> rennen · <kbd>Leertaste</kbd> springen · <kbd>V</kbd> Kamera · <kbd>E</kbd> Aktion · <kbd>H</kbd> Handy · <kbd>T</kbd> Chat · <kbd>Tab</kbd> Spieler · <kbd>Esc</kbd> Menü</div>}
+        {!touch && !menue && <div className="hilfe">Klick zum Umsehen · <kbd>W A S D</kbd> laufen · <kbd>Shift</kbd> rennen · <kbd>Leertaste</kbd> springen · <kbd>V</kbd> Kamera · <kbd>E</kbd> Aktion · <kbd>H</kbd> Handy · <kbd>1 2 3</kbd> Emotes · <kbd>T</kbd> Chat · <kbd>Tab</kbd> Spieler · <kbd>Esc</kbd> Menü</div>}
         {touch && (<>
           {joy && <div className="joy" style={{ left: joy.ox, top: joy.oy }}><div style={{ transform: `translate(${joy.kx}px, ${joy.ky}px)` }} /></div>}
           <button className="knopf knopf--chat" onClick={() => setChatOffen(true)} aria-label="Chat">💬</button>
@@ -83,6 +83,10 @@ export default function Spiel({ konto, onEnde }) {
         {st.job && <div className="auftrag"><small>{st.job.name} · Lieferung</small><b>{st.job.ware} → {st.job.adresse}</b><small>{st.job.d} m · Lohn {euro(st.job.lohn)} · Trinkgeld, wenn du in {Math.floor(st.job.frist / 60)}:{String(st.job.frist % 60).padStart(2, '0')} da bist</small></div>}
         {st.aktion && !fenster && <button className="aktion" onClick={() => gameRef.current?.aktionAusfuehren()}><kbd>E</kbd> {st.aktion.text}</button>}
         {st.faehrt && <div className="tacho"><b>{st.kmh || 0}</b><small>km/h</small></div>}
+ <div className={`emotes ${emoteOffen ? 'emotes--offen' : ''}`}>
+          <button className="knopf knopf--emote" onClick={() => setEmoteOffen(!emoteOffen)} aria-label="Emotes" title="Emotes (1 2 3)">😀</button>
+          {emoteOffen && [['winken', '👋', 'Winken'], ['jubeln', '🙌', 'Jubeln'], ['tanzen', '💃', 'Tanzen']].map(([k, i, l], n) => <button key={k} className="emote" onClick={() => { gameRef.current?.emote(k); setEmoteOffen(false); }} title={`${l} (${n + 1})`}>{i}<small>{l}</small></button>)}
+        </div>
         <button className="knopf knopf--handy" onClick={() => setFenster('handy')} aria-label="Handy (H)" title="Handy (H)">📱</button>
       </>)}
 

@@ -196,3 +196,12 @@ test('Phase 8: komplette Lieferung mit dem Auto wird bezahlt (bar)', { timeout: 
   const geld = msgs.filter((m) => m.t === 'geld').at(-1); assert.equal(geld.konto.bargeld, 1500 + r.lohn + r.bonus);
   assert.equal(msgs.filter((m) => m.t === 'korrektur').length, 0); ws.close();
 });
+
+test('Phase 11: Emotes kommen bei den anderen an, ungültige nicht', async () => {
+  const a = (await api('POST', '/api/auth/register', { name: 'Tanz11', passwort: 'passwort1' })).data.token;
+  const b = (await api('POST', '/api/auth/register', { name: 'Guck11', passwort: 'passwort1' })).data.token;
+  const A = await wsConnect(a), B = await wsConnect(b);
+  A.ws.send(JSON.stringify({ t: 'emote', art: 'tanzen' })); A.ws.send(JSON.stringify({ t: 'emote', art: 'hacken' })); await sleep(250);
+  const e = B.msgs.filter((m) => m.t === 'emote'); assert.equal(e.length, 1); assert.equal(e[0].art, 'tanzen');
+  A.ws.close(); B.ws.close();
+});

@@ -147,6 +147,7 @@ export class Game {
       if (m.t === 'neu') { this.andere.setze(m); this.onStatus?.({ spieler: this.spielerListe() }); this.onChat?.({ system: true, text: `${m.name} ist da.` }); }
       if (m.t === 'weg') { this.andere.entferne(m.id); this.onStatus?.({ spieler: this.spielerListe() }); this.onChat?.({ system: true, text: `${m.name} hat den Server verlassen.` }); }
       if (m.t === 'look') this.andere.aussehen(m.id, m.look);
+      if (m.t === 'emote') this.andere.map.get(m.id)?.fig.zeige(m.art);
       if (m.t === 's') this.andere.snapshot(m.p, this.ich);
       if (m.t === 'chat') this.onChat?.(m);
       if (m.t === 'geld') { this.konto = m.konto; this.onStatus?.({ konto: m.konto }); if (m.text) this.onHinweis?.(m.text); }
@@ -241,6 +242,7 @@ export class Game {
     this.kmhT = (this.kmhT || 0) + dt; if (this.kmhT > 0.1) { this.kmhT = 0; this.onStatus?.({ kmh: Math.round(a.kmh()) }); }
   }
 
+  emote(art) { if (this.faehrt) return; this.figur.zeige(art); this.sende({ t: 'emote', art }); }
   sende(m) { if (this.ws?.readyState === 1) this.ws.send(JSON.stringify(m)); }
   // Daten für die Minikarte
   karte() {
@@ -268,6 +270,7 @@ export class Game {
     if (this.faehrt && this.meinAuto) this.fahren(dt); else this.spieler(dt);
     if (this.input.consume('interact')) this.aktionAusfuehren();
     if (this.input.consume('handy')) this.onOeffne?.('handy');
+    const em = this.input.consume('emoteWahl'); if (em) this.emote(em);
     this.aktionT = (this.aktionT || 0) + dt; if (this.aktionT > 0.15) { this.aktionT = 0; this.aktionPruefen(); }
     this.andere.update(dt, this.camera);
     if (this.verkehr) {

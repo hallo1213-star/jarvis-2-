@@ -194,6 +194,9 @@ wss.on('connection', (ws) => {
       const r = m.t === 'job_start' ? BERUF.starten(c, String(m.firma || '')) : m.t === 'job_liefern' ? await BERUF.liefern(c) : BERUF.abbrechen(c);
       ws.send(JSON.stringify({ t: 'job', ...r, job: c.job || null }));
       if (r.konto) ws.send(JSON.stringify({ t: 'geld', konto: r.konto, text: `+${(r.lohn + r.bonus).toLocaleString('de-DE')} € Lohn${r.bonus ? ' inkl. Trinkgeld' : ''}` }));
+    } else if (m.t === 'emote') {
+      if (!['winken', 'jubeln', 'tanzen'].includes(m.art) || limited('emote:' + c.id, 12) || !c.raum || c.faehrt) return;
+      RAUM.anAlle(c.raum, { t: 'emote', id: c.id, art: m.art }, c);
     } else if (m.t === 'look') {
       // Aussehen neu vom Server laden (nach Änderung im Editor) – nie vom Client übernehmen
       if (limited('look:' + c.id, 6)) return;

@@ -16,17 +16,20 @@ Neuaufbau als Open-World-Lebenssimulation. Läuft **getrennt** vom alten Spiel (
 | Extra | Minikarte (dreht mit der Kamera): Straßen, Spieler, dein Auto, Autohaus, Jobs, Lieferziel | ✅ |
 | 9 NPCs | Straßenverkehr (Rechtsverkehr, Abbiegen, bremst vor Spielern/Autos, mit Kollision) und Passanten auf den Gehwegen – instanziert, damit es auf dem Handy flüssig bleibt | ✅ |
 | Extra | Leistung: Figuren/Autos/Autohaus verschmolzen (weniger Zeichenaufrufe), Touch-Layout für iPhone hoch + quer | ✅ |
-| 10–12 | Regierung/Story, Interaktion, Tests | geplant |
+| 10 Regierung | Handy-App „Regierung“: Präsident, Minister, Staatskasse, Einwohner, Bauliste – direkt aus dem Serienstand (keine erfundene Story, kein Krieg) | ✅ |
+| 11 Interaktion | Emotes Winken/Jubeln/Tanzen (`1` `2` `3` oder 😀), für alle im Server sichtbar; Geld überweisen, Chat | ✅ |
+| 12 Tests | 15 Server-Tests + Browser-Rundgang `test-e2e/rundgang.cjs` (Kauf, Fahren, Tuning, Emote, Handy) | ✅ |
 
 Schutz gegen Schummeln: Geld, Preise, Kauf, Tuning, Kennzeichen, Tempo und Position prüft immer der Server.
 Kaufen/Tunen geht nur, wenn der Server dich wirklich bei Janniks Autohaus sieht.
 
 ## Steuerung
-PC: `WASD` laufen/fahren · `Shift` rennen · `Leertaste` springen/Handbremse · `E`/`F` Aktion (Einsteigen, Autohaus …) · `H` Handy · `V` Kamera · `T` Chat · `Tab` Spieler · `Esc` Menü
+PC: `WASD` laufen/fahren · `Shift` rennen · `Leertaste` springen/Handbremse · `E`/`F` Aktion (Einsteigen, Autohaus …) · `H` Handy · `1` `2` `3` Emotes · `V` Kamera · `T` Chat · `Tab` Spieler · `Esc` Menü
 Handy/Tablet: Joystick links, rechts wischen zum Umsehen, Knöpfe für Rennen/Sprung (im Auto: Bremse), 📱, 💬, Aktionsknopf unten.
 
 ## Tests
-`cd server && node --test test/*.test.js` – 14 Tests mit echter Postgres-Engine (Konto, Speicher, Charakter, Räume, Chat-Filter, Bank inkl. gleichzeitiger Abbuchungen, Autokauf, Kennzeichen, Tuning, Tempo im Auto, Parken, Lieferjobs).
+`cd server && node --test test/*.test.js` – 15 Tests mit echter Postgres-Engine (Konto, Speicher, Charakter, Räume, Chat-Filter, Bank inkl. gleichzeitiger Abbuchungen, Autokauf, Kennzeichen, Tuning, Tempo im Auto, Parken, Lieferjobs, Emotes).
+Browser: `DB_PATH=/tmp/vh2.db npm start`, dann `DB_PATH=/tmp/vh2.db node test-e2e/rundgang.cjs`.
 
 ## Lokal
 ```bash

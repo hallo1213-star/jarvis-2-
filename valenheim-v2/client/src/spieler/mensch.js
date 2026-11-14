@@ -191,6 +191,7 @@ export class Mensch {
   }
 
   // Bewegung: speed in m/s
+  zeige(art) { const t = performance.now() / 1000; this.emote = { art, start: t, bis: t + (art === 'tanzen' ? 20 : 3) }; }
   animate(dt, speed, inLuft = false) {
     this.v += (speed - this.v) * Math.min(1, dt * 10); const v = this.v;
     const rennen = THREE.MathUtils.clamp((v - 4.5) / 2.5, 0, 1); const geht = v > 0.15;
@@ -206,6 +207,19 @@ export class Mensch {
       A.el.rotation.x = -(0.15 + rennen * 1.0 + (geht ? 0.15 : 0));
     }
     const ruhe = 1 - Math.min(1, v / 0.4); const t = performance.now() / 1000;
+    // Phase 11: Emotes (enden, sobald man losläuft)
+    const e = this.emote; if (e && (geht || inLuft || t > e.bis)) this.emote = null;
+    if (this.emote) {
+      const a = (t - e.start); const R = this.arme.find((x) => x.s < 0) || this.arme[0], Li = this.arme.find((x) => x.s > 0) || this.arme[1];
+      if (e.art === 'winken') { R.sh.rotation.set(0, 0, -2.5); R.el.rotation.set(0, 0, 0); R.el.rotation.z = Math.sin(a * 9) * 0.45; }
+      else if (e.art === 'jubeln') { for (const A of [R, Li]) { A.sh.rotation.set(0, 0, A.s * (2.7 + Math.sin(a * 8) * 0.15)); A.el.rotation.x = -0.2; } this.hips.position.y = 0.98 + Math.abs(Math.sin(a * 6)) * 0.12; }
+      else if (e.art === 'tanzen') {
+        const b = a * 7; for (const A of [R, Li]) { A.sh.rotation.set(-1.0 + Math.sin(b + (A.s > 0 ? 0 : Math.PI)) * 0.5, 0, A.s * -0.4); A.el.rotation.x = -1.3; }
+        this.hips.position.y = 0.95 + Math.abs(Math.sin(b)) * 0.05; this.hips.rotation.y = Math.sin(b * 0.5) * 0.4; this.torso.rotation.y = -this.hips.rotation.y * 0.5;
+        for (const B of this.beine) { B.hp.rotation.x = Math.max(0, Math.sin(b + (B.s > 0 ? 0 : Math.PI))) * -0.4; B.kn.rotation.x = -B.hp.rotation.x * 1.6; }
+      }
+      this.kopf.rotation.y = Math.sin(a * 2) * 0.2; return;
+    }
     this.hips.position.y = 0.98 + (geht ? Math.abs(Math.cos(p)) * 0.045 * amp : 0) - rennen * 0.04;
     this.hips.rotation.y = geht ? Math.sin(p) * 0.08 * amp : 0; this.torso.rotation.y = -this.hips.rotation.y * 1.4;
     this.torso.rotation.x = rennen * 0.2 + (inLuft ? 0.08 : 0); this.torso.scale.y = 1 + Math.sin(t * 1.6) * 0.008 * ruhe;
