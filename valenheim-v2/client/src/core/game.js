@@ -5,7 +5,8 @@ import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
 import RAPIER from '@dimforge/rapier3d-compat';
 import { PROFILE, STUFEN, autoStufe, geraet, zielFps, FpsWaechter } from './quality.js';
 import { Input } from '../spieler/eingabe.js';
-import { Mensch, zufall } from '../spieler/mensch.js';
+import { zufall } from '../spieler/mensch.js';
+import { Mensch3D, ladeFiguren } from '../spieler/figur3d.js';
 import { baueTestgelaende } from '../welt/testgelaende.js';
 import { baueValenheim, SPAWN } from '../welt/karte.js';
 import { U as WELT_U } from '../welt/valenheim/world.js';
@@ -27,7 +28,7 @@ const AUGEN = 1.62;
 
 export class Game {
   static async erstelle(canvas, opts) {
-    await RAPIER.init(); const g = new Game(canvas, opts); await g.ladeWelt(opts.onFortschritt); g.starte(); return g;
+    opts.onFortschritt?.('Menschen werden geladen …', 0.12); await Promise.all([RAPIER.init(), ladeFiguren()]); const g = new Game(canvas, opts); await g.ladeWelt(opts.onFortschritt); g.starte(); return g;
   }
 
   constructor(canvas, { konto, onStatus, onHinweis, onChat, onAbgelehnt, onOeffne, raumWunsch }) {
@@ -53,7 +54,7 @@ export class Game {
     this.ctrl.enableAutostep(0.42, 0.25, true); this.ctrl.enableSnapToGround(0.45); this.ctrl.setMaxSlopeClimbAngle(THREE.MathUtils.degToRad(42));
     this.ctrl.setMinSlopeSlideAngle(THREE.MathUtils.degToRad(48)); this.ctrl.setApplyImpulsesToDynamicBodies(true); this.ctrl.setCharacterMass(70);
     this.velY = 0; this.boden = false; this.heading = p.h ?? Math.PI;
-    this.name = konto.profil.name; this.figur = new Mensch(st.charakter?.aussehen || zufall()); this.scene.add(this.figur.root);
+    this.name = konto.profil.name; this.figur = new Mensch3D(st.charakter?.aussehen || zufall()); this.scene.add(this.figur.root);
 
     // Kamera
     this.modus = this.settings.kamera === 'ego' ? 'ego' : 'verfolger';
@@ -88,7 +89,7 @@ export class Game {
       const karte = await baueValenheim(this.scene, RAPIER, this.world, { onFortschritt });
       this.gelaende = karte; this.jobPunkte = baueJobPunkte(this.scene);
       // Phase 9: Leben in der Stadt (Menge je nach Grafikstufe)
-      const viel = { niedrig: [8, 12], mittel: [14, 22], hoch: [20, 34] }[this.stufe] || [12, 20];
+      const viel = { niedrig: [8, 6], mittel: [14, 10], hoch: [20, 16] }[this.stufe] || [12, 8];
       this.verkehr = new Verkehr(this.scene, RAPIER, this.world, { anzahl: viel[0] }); this.passanten = new Passanten(this.scene, { anzahl: viel[1] }); this.zonen = [...(karte.zonen || []), ...this.jobPunkte.zonen]; this.sun = karte.world.sun; this.hemi = karte.world.hemi;
       this.sunDir = WELT_U.sunDir.value.clone();
       this.exposure = karte.world.exposure || 1.1; this.kollisionen = karte.kollisionen;

@@ -1,6 +1,7 @@
 // VALENHEIM 2.0 – Phase 4: andere Spieler im selben Server (Aussehen, weiche Bewegung, Kollision, Namensschild)
 import * as THREE from 'three';
-import { Mensch, namensschild, zufall } from './mensch.js';
+import { namensschild, zufall } from './mensch.js';
+import { Mensch3D } from './figur3d.js';
 import { Auto } from '../fahrzeuge/auto.js';
 
 const VERZOEGERUNG = 0.15; // s – Puffer für flüssige Interpolation
@@ -11,7 +12,7 @@ export class AndereSpieler {
 
   setze(info) { // { id, name, look, pos }
     this.entferne(info.id);
-    const fig = new Mensch(info.look || zufall()); const schild = namensschild(info.name); fig.root.add(schild);
+    const fig = new Mensch3D(info.look || zufall()); const schild = namensschild(info.name); fig.root.add(schild);
     const p = info.pos || { x: 0, y: 1, z: 0, h: 0 };
     fig.root.position.set(p.x, p.y - FUSS, p.z); fig.root.rotation.y = p.h || 0; this.scene.add(fig.root);
     const body = this.world.createRigidBody(this.RAPIER.RigidBodyDesc.kinematicPositionBased().setTranslation(p.x, p.y, p.z));
@@ -33,7 +34,7 @@ export class AndereSpieler {
   aussehen(id, look) { const o = this.map.get(id); if (o && look) o.fig.setzeAussehen(look); }
   entferne(id) {
     const o = this.map.get(id); if (!o) return;
-    this.scene.remove(o.fig.root); o.fig.root.traverse((m) => { m.geometry?.dispose(); if (m.material) { m.material.map?.dispose(); m.material.dispose(); } });
+    this.scene.remove(o.fig.root); o.fig.dispose(); o.schild.material.map?.dispose(); o.schild.material.dispose();
     o.wagen?.entferne(); this.world.removeRigidBody(o.body); this.map.delete(id);
   }
   snapshot(liste, ich) {

@@ -2,3 +2,6 @@ Texturen, Himmel und Blatt-/Rinden-Bilder: Poly Haven (https://polyhaven.com), L
 asphalt=asphalt_02, gehweg=concrete_pavement_02, pflaster=cobblestone_floor_08, schotter=gravel_road, erde=forrest_ground_01,
 putz=grey_plaster_02, beige=beige_wall_001, ziegel=red_brick_03, beton=concrete_wall_008, dach=concrete_layers_02, gras=leafy_grass,
 blaetter.png + rinde.jpg = aus tree_small_02 zusammengesetzt, hdri/himmel_1k.hdr = kloofendal_48d_partly_cloudy_puresky.
+
+Menschen: modelle/mensch.glb = Ready-Player-Me-Avatar "rpm.glb" aus den Babylon.js Assets (https://github.com/BabylonJS/Assets), Lizenz CC BY 4.0 – © Babylon.js. Optimiert (Texturen verkleinert, Kleidung zum Einfärben grau).
+Bewegungen: modelle/bewegung.glb = Animationen aus "Xbot.glb" (three.js-Beispiele, Mixamo), modelle/tanz.glb = "Hip Hop Dancing" aus den Babylon.js Assets (Mixamo). Mixamo-Animationen sind für Spiele kostenlos nutzbar.
