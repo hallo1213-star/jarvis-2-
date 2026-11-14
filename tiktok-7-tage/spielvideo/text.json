@@ -1,0 +1,10 @@
+[
+  {"id": "intro",   "text": "Das ist Valenheim zwei Punkt null. Meine Stadt, jetzt so echt wie nie."},
+  {"id": "strasse", "text": "Echte Straßen, echtes Pflaster, echte Bäume."},
+  {"id": "leute",   "text": "Menschen laufen durch die Stadt, und der Verkehr fährt wirklich."},
+  {"id": "autohaus","text": "In Janniks Autohaus kaufst du dein eigenes Auto, mit Wunschkennzeichen und Tuning."},
+  {"id": "fahren",  "text": "Dann ab auf die Straße."},
+  {"id": "leben",   "text": "Bis zu zwölf Spieler pro Server. Mit Chat, Jobs, Bank und Handy."},
+  {"id": "nacht",   "text": "Tag und Nacht, Regen und Gewitter."},
+  {"id": "ende",    "text": "Bald könnt ihr alle mitspielen. Folgt mir, damit ihr den Start nicht verpasst!"}
+]
