@@ -20,4 +20,12 @@ export const api = {
   ich: () => call('GET', '/api/me'),
   einstellungen: (s) => call('PUT', '/api/settings', s),
   charakter: (c) => call('PUT', '/api/charakter', c),
+  server: () => call('GET', '/api/server'),
+  privatServer: (name) => call('POST', '/api/server/privat', { name }),
+};
+
+// Gewünschter Server für die nächste Runde (nur in diesem Tab)
+export const raumWahl = {
+  hole: () => { try { return JSON.parse(sessionStorage.getItem('vh2_raum') || '{}'); } catch { return {}; } },
+  setze: (w) => { try { sessionStorage.setItem('vh2_raum', JSON.stringify(w || {})); } catch { /* egal */ } },
 };

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Logo from './Logo.jsx';
-import { api } from '../lib/api.js';
+import { api, raumWahl } from '../lib/api.js';
 import { testErgebnis, PROFILE } from '../core/quality.js';
 
 // Hintergrund: ruhige Nachtsilhouette von Valenheim (Canvas 2D – lädt sofort, kostet keine Leistung).
@@ -38,11 +38,11 @@ export default function Hauptmenue({ konto, laedt, onAbmelden }) {
       <div className="menue__schatten" />
       <div className="menue__inhalt">
         <Logo />
-        <p className="sub" style={{ maxWidth: 420 }}>Die Republik Valenheim. Ein eigenes Land, ein eigenes Leben. <b style={{ color: '#fff' }}>Testversion</b>: Die Stadt aus der Serie, eigener Charakter, Tag &amp; Nacht, Wetter.</p>
+        <p className="sub" style={{ maxWidth: 420 }}>Die Republik Valenheim. Ein eigenes Land, ein eigenes Leben. <b style={{ color: '#fff' }}>Testversion</b>: Die Stadt aus der Serie, eigener Charakter, Tag &amp; Nacht, Wetter – mit bis zu 12 Spielern pro Server.</p>
         {laedt ? <div className="spinner" /> : (
           <nav className="menue__liste">
-            <a className="menue__punkt menue__punkt--haupt" href="#/spielen">SPIELEN <small>{konto ? `als ${konto.profil.name}` : 'Anmelden nötig'}</small></a>
-            <button className="menue__punkt menue__punkt--aus" disabled title="Kommt in Phase 4">SERVER AUSWÄHLEN <small>Phase 4</small></button>
+            <a className="menue__punkt menue__punkt--haupt" href="#/spielen" onClick={() => raumWahl.setze({})}>SPIELEN <small>{konto ? `als ${konto.profil.name}` : 'Anmelden nötig'}</small></a>
+            <a className="menue__punkt" href="#/server">SERVER AUSWÄHLEN <small>Öffentlich · Privat mit Code</small></a>
             <a className="menue__punkt" href="#/charakter">CHARAKTER <small>{konto?.spielstand.charakter?.aussehen ? 'Aussehen ändern' : 'Jetzt erstellen'}</small></a>
             <a className="menue__punkt" href="#/leistung">LEISTUNGSTEST <small>{lt ? `Empfehlung: ${PROFILE[lt.empfehlung].name}` : 'Noch nicht gemacht'}</small></a>
             <a className="menue__punkt" href="#/einstellungen">EINSTELLUNGEN <small>Grafik · Kamera · Ton</small></a>

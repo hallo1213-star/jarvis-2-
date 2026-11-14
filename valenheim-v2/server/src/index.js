@@ -7,12 +7,13 @@ import { WebSocketServer } from 'ws';
 import * as DB from './db.js';
 import * as AUTH from './auth.js';
 import * as SAVE from './saves.js';
+import * as RAUM from './raeume.js';
 
 process.on('unhandledRejection', (e) => console.error('Unbehandelter Fehler:', e));
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 2600);
 const DIST = path.resolve(__dirname, '../../client/dist');
-const VERSION = '2.0.0-phase1';
+const VERSION = '2.0.0-phase4';
 
 // ---------- Helfer ----------
 const send = (res, status, data) => { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(data)); };
@@ -33,7 +34,7 @@ async function authed(req) { const p = await AUTH.playerFromToken(tokenOf(req));
 const routes = {
   'GET /api/status': async () => [200, { ok: true, spiel: 'VALENHEIM 2.0', version: VERSION, datenbank: DB.backend, online: clients.size }],
   'POST /api/auth/register': async (req) => {
-    if (limited('reg:' + ipOf(req), 5)) return [429, { fehler: 'Zu viele Versuche. Bitte warte eine Minute.' }];
+    if (limited('reg:' + ipOf(req), Number(process.env.REG_LIMIT || 5))) return [429, { fehler: 'Zu viele Versuche. Bitte warte eine Minute.' }];
     const b = await readJson(req); const r = await AUTH.register(b.name, b.passwort, req.headers['user-agent']);
     return r.fehler ? [r.status || 400, { fehler: r.fehler }] : [201, r];
   },
@@ -57,6 +58,13 @@ const routes = {
   'PUT /api/charakter': async (req) => {
     const p = await authed(req); if (!p) return [401, { fehler: 'Nicht angemeldet.' }];
     return [200, { charakter: await SAVE.saveCharakter(p.id, await readJson(req)) }];
+  },
+  'GET /api/server': async () => [200, { server: RAUM.liste(), max: RAUM.MAX_SPIELER }],
+  'POST /api/server/privat': async (req) => {
+    const p = await authed(req); if (!p) return [401, { fehler: 'Nicht angemeldet.' }];
+    if (limited('priv:' + p.id, 5)) return [429, { fehler: 'Zu viele Versuche.' }];
+    const r = RAUM.privatErstellen(p.id, (await readJson(req)).name);
+    return r.fehler ? [503, { fehler: r.fehler }] : [200, { code: r.raum.code, name: r.raum.name, vorhanden: !!r.vorhanden }];
   },
   'PUT /api/settings': async (req) => {
     const p = await authed(req); if (!p) return [401, { fehler: 'Nicht angemeldet.' }];
@@ -83,9 +91,10 @@ const server = http.createServer(async (req, res) => {
   res.writeHead(405); res.end();
 });
 
-// ---------- Echtzeit (Phase 1: eigene Position, vom Server geprüft und gespeichert) ----------
+// ---------- Echtzeit (Phase 4): Räume, andere Spieler, Chat ----------
 const clients = new Map(); // playerId -> client
 const MAX_SPEED = 13, BOUNDS = 2200;
+const info = (c) => ({ id: c.id, name: c.name, look: c.look, pos: c.pos });
 const wss = new WebSocketServer({ server, path: '/ws', maxPayload: 4096 });
 wss.on('connection', (ws) => {
   let c = null; ws.alive = true; ws.on('pong', () => { ws.alive = true; });
@@ -96,23 +105,52 @@ wss.on('connection', (ws) => {
       if (m.t !== 'hallo' || ws.busy) return; ws.busy = true;
       const p = await AUTH.playerFromToken(String(m.token || '')); if (!p) return ws.close(4003, 'ungültig');
       clearTimeout(timer);
-      const old = clients.get(p.id); if (old) { old.ws.send(JSON.stringify({ t: 'doppelt' })); old.ws.close(4005, 'doppelt'); }
+      const old = clients.get(p.id); if (old) { old.ws.send(JSON.stringify({ t: 'doppelt' })); old.ws.close(4005, 'doppelt'); const r0 = old.raum; RAUM.verlassen(old); if (r0) RAUM.anAlle(r0, { t: 'weg', id: old.id, name: old.name }); }
+      const f = RAUM.finde({ raum: m.raum, code: m.code });
+      if (f.fehler) { ws.send(JSON.stringify({ t: 'abgelehnt', grund: f.fehler })); return ws.close(4010, 'voll'); }
       const sv = await SAVE.getSave(p.id);
-      c = { id: p.id, name: p.username, ws, pos: { ...sv.pos, welt: sv.pos.welt || 'valenheim' }, lastT: Date.now(), dirty: false };
-      clients.set(p.id, c);
-      return ws.send(JSON.stringify({ t: 'willkommen', pos: c.pos, online: clients.size }));
+      c = { id: p.id, name: p.username, ws, look: sv.charakter?.aussehen || null, pos: { ...sv.pos, welt: sv.pos.welt || 'valenheim' }, lastT: Date.now(), dirty: false, raum: null };
+      if (ws.readyState !== 1) return;
+      clients.set(p.id, c); RAUM.betreten(f.raum, c);
+      const r = f.raum;
+      ws.send(JSON.stringify({ t: 'willkommen', du: c.id, pos: c.pos, online: clients.size, raum: { id: r.id, name: r.name, privat: r.privat, code: r.privat ? r.code : null, max: RAUM.MAX_SPIELER }, andere: [...r.spieler.values()].filter((o) => o !== c).map(info) }));
+      RAUM.anAlle(r, { t: 'neu', ...info(c) }, c);
+      return;
     }
     if (m.t === 'pos') {
       const x = +m.x, y = +m.y, z = +m.z, h = +m.h; if (![x, y, z, h].every(Number.isFinite)) return;
       const now = Date.now(); const dt = Math.max(0.05, (now - c.lastT) / 1000);
       const d = Math.hypot(x - c.pos.x, z - c.pos.z);
       if (Math.abs(x) > BOUNDS || Math.abs(z) > BOUNDS || y < -50 || y > 400 || d > MAX_SPEED * dt + 2) { c.lastT = now; return ws.send(JSON.stringify({ t: 'korrektur', pos: c.pos })); }
-      c.pos = { x, y, z, h, welt: c.pos.welt }; c.lastT = now; c.dirty = true;
+      c.pos = { x, y, z, h, welt: c.pos.welt }; c.lastT = now; c.dirty = true; c.neu = true;
+    } else if (m.t === 'chat') {
+      const text = RAUM.filtere(m.text); if (!text || !c.raum) return;
+      const nein = RAUM.darfChatten(c, text); if (nein) return ws.send(JSON.stringify({ t: 'chat', system: true, text: nein }));
+      RAUM.anAlle(c.raum, { t: 'chat', id: c.id, von: c.name, text });
+    } else if (m.t === 'look') {
+      // Aussehen neu vom Server laden (nach Änderung im Editor) – nie vom Client übernehmen
+      if (limited('look:' + c.id, 6)) return;
+      const sv = await SAVE.getSave(c.id); c.look = sv.charakter?.aussehen || null;
+      if (c.raum) RAUM.anAlle(c.raum, { t: 'look', id: c.id, look: c.look }, c);
     }
   });
-  ws.on('close', async () => { clearTimeout(timer); if (c && clients.get(c.id) === c) { clients.delete(c.id); if (c.dirty) await SAVE.savePos(c.id, c.pos).catch(console.error); } });
+  ws.on('close', async () => {
+    clearTimeout(timer);
+    if (c && clients.get(c.id) === c) {
+      clients.delete(c.id); const r = c.raum; RAUM.verlassen(c);
+      if (r) RAUM.anAlle(r, { t: 'weg', id: c.id, name: c.name });
+      if (c.dirty) await SAVE.savePos(c.id, c.pos).catch(console.error);
+    }
+  });
   ws.on('error', () => {});
 });
+// Positionen aller Spieler eines Raums 10×/s an alle im Raum
+setInterval(() => {
+  const proRaum = new Map();
+  for (const c of clients.values()) { if (!c.raum || !c.neu) continue; c.neu = false; const l = proRaum.get(c.raum) || []; l.push([c.id, +c.pos.x.toFixed(2), +c.pos.y.toFixed(2), +c.pos.z.toFixed(2), +(c.pos.h || 0).toFixed(2)]); proRaum.set(c.raum, l); }
+  for (const [r, p] of proRaum) RAUM.anAlle(r, { t: 's', p });
+}, 100).unref();
+setInterval(() => RAUM.aufraeumen(), 30_000).unref();
 // Automatisch speichern (alle 30 s) + tote Verbindungen schließen
 setInterval(() => { for (const c of clients.values()) if (c.dirty) { c.dirty = false; SAVE.savePos(c.id, c.pos).catch(console.error); } }, 30_000).unref();
 setInterval(() => { for (const ws of wss.clients) { if (!ws.alive) { ws.terminate(); continue; } ws.alive = false; ws.ping(); } }, 20_000).unref();

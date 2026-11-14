@@ -5,6 +5,7 @@ import Leistungstest from './Leistungstest.jsx';
 import Einstellungen from './Einstellungen.jsx';
 import Spiel from './Spiel.jsx';
 import Charakter from './Charakter.jsx';
+import Serverwahl from './Serverwahl.jsx';
 import { api, getToken, setToken } from '../lib/api.js';
 
 // Seiten über den Hash: #/, #/spielen, #/konto, #/leistung, #/einstellungen
@@ -30,6 +31,7 @@ export default function App() {
   if (seite === 'spielen') return konto ? <Spiel konto={konto} onEnde={() => { neuLaden(); geh(''); }} /> : <Konto onFertig={async () => { await neuLaden(); geh('spielen'); }} />;
   if (seite === 'konto') return <Konto onFertig={async (neu) => { await neuLaden(); geh(neu ? 'charakter' : ''); }} />;
   if (seite === 'charakter') return konto ? <Charakter konto={konto} onGespeichert={neuLaden} /> : <Konto onFertig={async () => { await neuLaden(); geh('charakter'); }} />;
+  if (seite === 'server') return <Serverwahl konto={konto} />;
   if (seite === 'leistung') return <Leistungstest />;
   if (seite === 'einstellungen') return <Einstellungen konto={konto} onGespeichert={neuLaden} />;
   return <Hauptmenue konto={konto} laedt={laedt} onAbmelden={abmelden} />;

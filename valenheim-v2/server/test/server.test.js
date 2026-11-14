@@ -17,7 +17,7 @@ function wsConnect(token) {
 }
 
 before(async () => {
-  proc = spawn(process.execPath, [path.join(dir, '../src/index.js')], { env: { ...process.env, PORT: String(PORT), DB_PGLITE: '1', DATABASE_URL: '' }, stdio: ['ignore', 'pipe', 'pipe'] });
+  proc = spawn(process.execPath, [path.join(dir, '../src/index.js')], { env: { ...process.env, PORT: String(PORT), DB_PGLITE: '1', DATABASE_URL: '', REG_LIMIT: '100' }, stdio: ['ignore', 'pipe', 'pipe'] });
   for (let i = 0; i < 50; i++) { try { await fetch(BASE + '/api/status'); return; } catch { await sleep(200); } }
   throw new Error('Server startet nicht');
 });
@@ -70,4 +70,34 @@ test('Charakter wird geprüft und gespeichert', async () => {
   assert.equal(r.status, 200); assert.deepEqual([r.data.charakter.aussehen.koerper, r.data.charakter.aussehen.frisur, r.data.charakter.aussehen.nase, r.data.charakter.aussehen.oberteil, r.data.charakter.aussehen.hack], ['w', 'zopf', 1, undefined, undefined]);
   assert.equal(r.data.charakter.outfits[0].name, 'Partyscript'); assert.equal(r.data.charakter.outfits[0].haut, undefined);
   const me = await api('GET', '/api/me', null, data.token); assert.equal(me.data.spielstand.charakter.aussehen.frisur, 'zopf');
+});
+
+test('Phase 4: Server-Liste, gemeinsamer Raum, Positionen anderer, Chat-Filter, Spamschutz', async () => {
+  const a = await api('POST', '/api/auth/register', { name: 'Anna4', passwort: 'passwort1' });
+  const b = await api('POST', '/api/auth/register', { name: 'Ben4', passwort: 'passwort1' });
+  const liste = await api('GET', '/api/server'); assert.equal(liste.data.max, 12); assert.ok(liste.data.server.find((s) => s.id === 'v1'));
+  const A = await wsConnect(a.data.token); const B = await wsConnect(b.data.token);
+  const wa = A.msgs.find((m) => m.t === 'willkommen'), wb = B.msgs.find((m) => m.t === 'willkommen');
+  assert.equal(wa.raum.id, wb.raum.id); assert.ok(wb.andere.some((o) => o.name === 'Anna4'));
+  assert.ok(A.msgs.some((m) => m.t === 'neu' && m.name === 'Ben4'));
+  B.ws.send(JSON.stringify({ t: 'pos', x: wb.pos.x + 1, y: wb.pos.y, z: wb.pos.z, h: 1 })); await sleep(300);
+  assert.ok(A.msgs.some((m) => m.t === 's' && m.p.some((p) => p[0] === wb.andere.find((o) => o.name === 'Anna4') ? true : p[1] === +(wb.pos.x + 1).toFixed(2))));
+  B.ws.send(JSON.stringify({ t: 'chat', text: 'Hallo du f1ck www.betrug.de' })); await sleep(250);
+  const ch = A.msgs.find((m) => m.t === 'chat'); assert.equal(ch.von, 'Ben4'); assert.equal(ch.text, 'Hallo du **** [Link entfernt]');
+  B.ws.send(JSON.stringify({ t: 'chat', text: 'zweite' })); await sleep(150);
+  assert.ok(B.msgs.some((m) => m.t === 'chat' && m.system));
+  B.ws.close(); await sleep(300); assert.ok(A.msgs.some((m) => m.t === 'weg' && m.name === 'Ben4')); A.ws.close();
+});
+
+test('Phase 4: privater Server mit Code, falscher Code abgelehnt', async () => {
+  const a = await api('POST', '/api/auth/register', { name: 'Chef4', passwort: 'passwort1' });
+  const b = await api('POST', '/api/auth/register', { name: 'Gast4', passwort: 'passwort1' });
+  const p = await api('POST', '/api/server/privat', { name: 'Meine Villa' }, a.data.token); assert.match(p.data.code, /^[A-Z2-9]{6}$/);
+  assert.equal((await api('GET', '/api/server')).data.server.some((s) => s.name === 'Meine Villa'), false);
+  const falsch = await new Promise((ok) => { const ws = new WebSocket(`ws://localhost:${PORT}/ws`); const msgs = []; ws.on('message', (m) => msgs.push(JSON.parse(m))); ws.on('open', () => ws.send(JSON.stringify({ t: 'hallo', token: b.data.token, code: 'ZZZZZZ' }))); ws.on('close', (code) => ok({ code, msgs })); });
+  assert.equal(falsch.code, 4010); assert.equal(falsch.msgs[0].t, 'abgelehnt');
+  const A = await new Promise((ok) => { const ws = new WebSocket(`ws://localhost:${PORT}/ws`); const msgs = []; ws.on('message', (m) => msgs.push(JSON.parse(m))); ws.on('open', () => { ws.send(JSON.stringify({ t: 'hallo', token: a.data.token, code: p.data.code })); setTimeout(() => ok({ ws, msgs }), 300); }); });
+  const B = await new Promise((ok) => { const ws = new WebSocket(`ws://localhost:${PORT}/ws`); const msgs = []; ws.on('message', (m) => msgs.push(JSON.parse(m))); ws.on('open', () => { ws.send(JSON.stringify({ t: 'hallo', token: b.data.token, code: p.data.code.toLowerCase() })); setTimeout(() => ok({ ws, msgs }), 300); }); });
+  const w = B.msgs.find((m) => m.t === 'willkommen'); assert.equal(w.raum.privat, true); assert.equal(w.raum.name, 'Meine Villa'); assert.equal(w.andere[0].name, 'Chef4');
+  A.ws.close(); B.ws.close();
 });

@@ -4,7 +4,7 @@ import { Sky } from 'three/addons/objects/Sky.js';
 import RAPIER from '@dimforge/rapier3d-compat';
 import { PROFILE, STUFEN, autoStufe, geraet, zielFps, FpsWaechter } from './quality.js';
 import { Input } from '../spieler/eingabe.js';
-import { Mensch, namensschild, zufall } from '../spieler/mensch.js';
+import { Mensch, zufall } from '../spieler/mensch.js';
 import { baueTestgelaende } from '../welt/testgelaende.js';
 import { baueValenheim, SPAWN } from '../welt/karte.js';
 import { U as WELT_U } from '../welt/valenheim/world.js';
@@ -13,6 +13,7 @@ import { Tageszeit } from '../atmosphaere/tageszeit.js';
 import { Wetter, WETTER_NAME } from '../atmosphaere/wetter.js';
 import { baueAmpeln } from '../welt/ampeln.js';
 import { getToken } from '../lib/api.js';
+import { AndereSpieler } from '../spieler/andere.js';
 
 const GEHEN = 4.4, RENNEN = 7.4, SPRUNG = 5.6, SCHWERKRAFT = 18;
 const KAPSEL = { halb: 0.55, r: 0.35 }; // Gesamthöhe 1,8 m
@@ -23,8 +24,8 @@ export class Game {
     await RAPIER.init(); const g = new Game(canvas, opts); await g.ladeWelt(opts.onFortschritt); g.starte(); return g;
   }
 
-  constructor(canvas, { konto, onStatus, onHinweis }) {
-    this.canvas = canvas; this.onStatus = onStatus; this.onHinweis = onHinweis;
+  constructor(canvas, { konto, onStatus, onHinweis, onChat, onAbgelehnt, raumWunsch }) {
+    this.canvas = canvas; this.onStatus = onStatus; this.onHinweis = onHinweis; this.onChat = onChat; this.onAbgelehnt = onAbgelehnt; this.raumWunsch = raumWunsch || {};
     const st = konto.spielstand; this.settings = { ...st.settings };
     this.geraet = geraet(); this.stufe = this.settings.grafik === 'auto' ? autoStufe(this.geraet) : this.settings.grafik;
     const P = PROFILE[this.stufe];
@@ -46,14 +47,15 @@ export class Game {
     this.ctrl.enableAutostep(0.42, 0.25, true); this.ctrl.enableSnapToGround(0.45); this.ctrl.setMaxSlopeClimbAngle(THREE.MathUtils.degToRad(42));
     this.ctrl.setMinSlopeSlideAngle(THREE.MathUtils.degToRad(48)); this.ctrl.setApplyImpulsesToDynamicBodies(true); this.ctrl.setCharacterMass(70);
     this.velY = 0; this.boden = false; this.heading = p.h ?? Math.PI;
-    this.figur = new Mensch(st.charakter?.aussehen || zufall()); this.figur.root.add(namensschild(konto.profil.name)); this.scene.add(this.figur.root);
+    this.name = konto.profil.name; this.figur = new Mensch(st.charakter?.aussehen || zufall()); this.scene.add(this.figur.root);
 
     // Kamera
     this.modus = this.settings.kamera === 'ego' ? 'ego' : 'verfolger';
     this.yaw = this.heading + Math.PI; this.pitch = 0.28; this.abstand = 5.5; this.camAbstand = undefined;
     this.input = new Input(canvas);
 
-    // Netz: Position an den Server (10×/s), Server prüft + speichert
+    // Netz: Position an den Server (10×/s), Server prüft + speichert; andere Spieler im selben Raum
+    this.andere = new AndereSpieler(this.scene, RAPIER, this.world);
     this.netz(); this.sendT = 0;
 
     // Qualität + Wächter (angewendet in starte())
@@ -112,15 +114,36 @@ export class Game {
   netz() {
     const url = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`;
     const ws = new WebSocket(url); this.ws = ws; this.onStatus?.({ netz: 'verbinde' });
-    ws.onopen = () => ws.send(JSON.stringify({ t: 'hallo', token: getToken() }));
+    ws.onopen = () => ws.send(JSON.stringify({ t: 'hallo', token: getToken(), ...this.raumWunsch }));
     ws.onmessage = (e) => {
       const m = JSON.parse(e.data);
-      if (m.t === 'willkommen') this.onStatus?.({ netz: 'online', online: m.online });
+      if (m.t === 'willkommen') {
+        this.ich = m.du; this.raum = m.raum; this.raumWunsch = m.raum.privat ? { code: m.raum.code } : { raum: m.raum.id };
+        this.andere.alleWeg(); for (const o of m.andere) this.andere.setze(o);
+        // Steht schon jemand genau hier (z. B. am Startpunkt)? Dann ein paar Meter daneben erscheinen.
+        const ich = this.body.translation();
+        if (m.andere.some((o) => o.pos && Math.hypot(o.pos.x - ich.x, o.pos.z - ich.z) < 1.5)) {
+          for (let i = 0; i < 12; i++) {
+            const w = Math.random() * Math.PI * 2, d = 2 + Math.random() * 2.5; const x = ich.x + Math.cos(w) * d, z = ich.z + Math.sin(w) * d;
+            if (m.andere.every((o) => !o.pos || Math.hypot(o.pos.x - x, o.pos.z - z) > 1.5) && !this.world.castRay(new RAPIER.Ray({ x: ich.x, y: ich.y, z: ich.z }, { x: (x - ich.x) / d, y: 0, z: (z - ich.z) / d }), d + 0.5, true, undefined, undefined, this.collider)) { this.body.setTranslation({ x, y: ich.y, z }, true); break; }
+          }
+        }
+        this.onStatus?.({ netz: 'online', online: m.online, raum: m.raum, spieler: this.spielerListe() });
+      }
+      if (m.t === 'neu') { this.andere.setze(m); this.onStatus?.({ spieler: this.spielerListe() }); this.onChat?.({ system: true, text: `${m.name} ist da.` }); }
+      if (m.t === 'weg') { this.andere.entferne(m.id); this.onStatus?.({ spieler: this.spielerListe() }); this.onChat?.({ system: true, text: `${m.name} hat den Server verlassen.` }); }
+      if (m.t === 'look') this.andere.aussehen(m.id, m.look);
+      if (m.t === 's') this.andere.snapshot(m.p, this.ich);
+      if (m.t === 'chat') this.onChat?.(m);
+      if (m.t === 'abgelehnt') { this.ende = true; this.onAbgelehnt?.(m.grund); }
       if (m.t === 'korrektur') { this.body.setTranslation(m.pos, true); this.velY = 0; }
       if (m.t === 'doppelt') { this.ende = true; this.onHinweis?.('Du hast dich auf einem anderen Gerät angemeldet.'); }
     };
-    ws.onclose = (e) => { if (this.beendet || this.ende || e.code === 4005) return; this.onStatus?.({ netz: 'getrennt' }); setTimeout(() => !this.beendet && this.netz(), 3000); };
+    ws.onclose = (e) => { if (this.beendet || this.ende || e.code === 4005 || e.code === 4010) return; this.andere.alleWeg(); this.onStatus?.({ netz: 'getrennt' }); setTimeout(() => !this.beendet && this.netz(), 3000); };
   }
+
+  spielerListe() { return [{ id: this.ich, name: this.name, du: true }, ...this.andere.namen()]; }
+  chat(text) { if (this.ws?.readyState === 1 && text.trim()) this.ws.send(JSON.stringify({ t: 'chat', text: text.slice(0, 140) })); }
 
   resize() {
     const w = this.canvas.clientWidth || innerWidth, h = this.canvas.clientHeight || innerHeight;
@@ -136,6 +159,7 @@ export class Game {
     if (this.beendet) return;
     this.timer.update(); const dt = Math.min(0.05, this.timer.getDelta()); this.t += dt;
     this.spieler(dt);
+    this.andere.update(dt, this.camera);
     this.world.timestep = dt; this.world.step();
     this.gelaende.update(this.t, this.camera);
     this.details?.update(dt, this.camera.position);
@@ -200,6 +224,6 @@ export class Game {
     this.beendet = true; this.renderer.setAnimationLoop(null); this.wetter?.dispose(); if (this.weckTon) { removeEventListener('pointerdown', this.weckTon); removeEventListener('keydown', this.weckTon); } removeEventListener('resize', this.resize); this.input.dispose();
     try { this.ws?.close(); } catch { /* egal */ }
     this.scene.traverse((o) => { o.geometry?.dispose(); [].concat(o.material || []).forEach((m) => { m.map?.dispose(); m.dispose(); }); });
-    this.renderer.dispose(); this.world.free();
+    this.andere.alleWeg(); this.renderer.dispose(); this.world.free();
   }
 }
