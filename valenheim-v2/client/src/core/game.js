@@ -286,7 +286,7 @@ export class Game {
     if (this.verkehr) {
       const p = this.body.translation(); const h = [{ x: p.x, z: p.z }]; if (this.meinAuto) h.push({ x: this.meinAuto.pos.x, z: this.meinAuto.pos.z });
       for (const o of this.andere.map.values()) { h.push({ x: o.fig.root.position.x, z: o.fig.root.position.z }); if (o.wagen) h.push({ x: o.wagen.pos.x, z: o.wagen.pos.z }); }
-      this.verkehr.update(dt, h, this.camera); this.passanten.update(dt, this.camera);
+      this.verkehr.update(dt, h, this.camera); this.passanten.update(dt, this.camera, this.stufe === 'hoch' ? 130 : 80);
     }
     this.world.timestep = dt; this.world.step();
     this.gelaende.update(this.t, this.camera); this.jobPunkte?.update(this.t);

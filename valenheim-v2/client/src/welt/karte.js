@@ -6,6 +6,7 @@ import { baueRepublik } from './valenheim/republik.js';
 import { buildBuilding, buildObjekt } from './valenheim/catalog.js';
 import STATUS from '../../../shared/serienstand.json';
 import { baueAutohaus } from './autohaus.js';
+import { verschmelze } from '../core/verschmelzen.js';
 import m600 from '@fontsource/montserrat/files/montserrat-latin-600-normal.woff2?url';
 import m700 from '@fontsource/montserrat/files/montserrat-latin-700-normal.woff2?url';
 import m800 from '@fontsource/montserrat/files/montserrat-latin-800-normal.woff2?url';
@@ -64,6 +65,8 @@ export async function baueValenheim(scene, RAPIER, physik, { onFortschritt } = {
     _c.applyMatrix4(o.matrixWorld); box(_c.x, _c.y, _c.z, sx, sy, sz, { x: _q.x, y: _q.y, z: _q.z, w: _q.w });
   });
   autohaus.optimieren();
+  // Weniger Zeichenaufrufe: statische Bauteile der Sondergebäude/Republik pro Material verschmelzen (nach der Kollision!)
+  const st = verschmelze(scene); console.info('Verschmolzen:', st);
   onFortschritt?.('Fertig', 1);
   return {
     world, rep, sonder, autohaus, zonen: autohaus.zonen, kollisionen: n,

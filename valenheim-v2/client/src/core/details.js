@@ -32,9 +32,10 @@ export class Detailsteuerung {
   update(dt, cam) {
     this.t += dt; if (this.t < 0.25) return; this.t = 0;
     if (cam.distanceToSquared(this.letzte) < 36) return; this.letzte.copy(cam);
-    const R = this.radius + Math.min(400, Math.max(0, cam.y - 20) * 2); const R2 = R * R; // von oben weiter sehen
+    const R = this.radius + Math.min(400, Math.max(0, cam.y - 20) * 2); const R2Alle = R * R; // von oben weiter sehen
     for (const it of this.inst) {
       const { o, n, mats, pos, cols } = it; const dst = o.instanceMatrix.array; const dc = o.instanceColor?.array; let k = 0;
+      const eigen = o.userData.detailRadius; const R2 = eigen ? Math.min(R, eigen) ** 2 : R2Alle;
       for (let i = 0; i < n; i++) {
         const dx = pos[i * 2] - cam.x, dz = pos[i * 2 + 1] - cam.z; if (dx * dx + dz * dz > R2) continue;
         dst.set(mats.subarray(i * 16, i * 16 + 16), k * 16); if (cols && dc) dc.set(cols.subarray(i * 3, i * 3 + 3), k * 3); k++;

@@ -4,13 +4,17 @@ import { verschmelze } from '../core/verschmelzen.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 // ---- Echtes Sportwagen-Modell (Khronos „Car Concept“, CC BY 4.0, optimiert) für Viper GT + Phantom R
-let sportVorlage = null, sportLaden = null;
+let sportVorlage = null, verkehrVorlage = null, parkVorlage = null, sportLaden = null;
 export function ladeAutos() {
   if (sportLaden) return sportLaden;
-  sportLaden = new Promise((ok) => new GLTFLoader().load('/modelle/sportwagen.glb', (g) => { sportVorlage = g.scene; ok(); }, undefined, () => ok()));
+  const L = new GLTFLoader(); const ld = (f, setze) => new Promise((ok) => L.load(f, (g) => { setze(g.scene); ok(); }, undefined, () => ok()));
+  sportLaden = Promise.all([ld('/modelle/sportwagen.glb', (x) => { sportVorlage = x; }), ld('/modelle/verkehr.glb', (x) => { verkehrVorlage = x; }), ld('/modelle/parken.glb', (x) => { parkVorlage = x; })]);
   return sportLaden;
 }
-const SPORT_T = { L: 4.36, W: 2.0, r: 0.31, wheels: [0.87, 3.67], body: [[0, 0.3], [0, 0.95]], cabin: [[1.2, 0.9], [1.8, 1.14], [2.8, 1.14], [3.4, 0.9]] };
+export const verkehrsModell = () => verkehrVorlage;
+export const parkModell = () => parkVorlage;
+export const SPORT_MASSE = { L: 4.36, W: 2.0, r: 0.31, wheels: [0.87, 3.67], body: [[0, 0.3], [0, 0.95]], cabin: [[1.2, 0.9], [1.8, 1.14], [2.8, 1.14], [3.4, 0.9]] };
+const SPORT_T = SPORT_MASSE;
 function baueSportwagen(look, M) {
   const tu = look.tuning || {}; const root = new THREE.Group(); const body = new THREE.Group(); root.add(body);
   const car = sportVorlage.clone(true); car.position.z = -0.24; body.add(car);

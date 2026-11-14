@@ -3,6 +3,8 @@
 import * as THREE from 'three';
 import { makeRng, hash1 } from './rng.js';
 import { baumGeometrie, baumMaterialien, BAUM_ZEIT } from './baum.js';
+import { parkModell } from '../../fahrzeuge/modelle.js';
+import { backe } from '../../fahrzeuge/verkehr.js';
 
 // ---- Echte Foto-Texturen (Poly Haven, CC0) – nur im Spiel. Laden im Hintergrund, Shader nutzen sie sofort.
 const TEX_NAMEN = ['asphalt', 'gehweg', 'pflaster', 'schotter', 'erde', 'putz', 'beige', 'ziegel', 'beton', 'dach'];
@@ -809,7 +811,10 @@ export function buildWorld(scene, { seed = 7071, licht = 'standard', zusatz = []
   // Realistische Bäume (Stamm + Foto-Laubkrone), Farbton leicht variiert
   { const bg = baumGeometrie(), bm = baumMaterialien(); const liste = trees.filter((p) => !inZusatz(p.x, p.z)); const TON = [0xffffff, 0xe6efd2, 0xf3f0d6, 0xd9e6c4, 0xfff4dc];
     scene.add(instanced(bg.stamm, bm.stamm, liste)); scene.add(instanced(bg.krone, bm.krone, liste, { colorFn: (p, i) => TON[i % TON.length] })); }
-  scene.add(instanced(carGeometry(), carMat, carsF.map((c) => ({ ...c, y: 0 })), { colorFn: (p) => p.c }));
+  // Geparkte Autos: echtes Automodell (leichte Version), sonst alte Kisten
+  if (parkModell()) { const b = backe('echt', parkModell()); const liste = carsF.filter((c, i) => hash1(i * 7.13 + 0.5) < 0.33).map((c) => ({ ...c, y: 0 })); const FARBEN = ['#9a1b1b', '#1b3a6b', '#e8e8e8', '#202226', '#7d7f82', '#2f4b33', '#c9b48a', '#0b0b0d', '#f5f5f0', '#5a6a7a'];
+    for (const t of b.teile) { const m = instanced(t.geo, t.mat, liste, { shadow: t.lack, colorFn: t.lack ? (p, i) => FARBEN[i % FARBEN.length] : undefined }); m.userData.detailRadius = 140; scene.add(m); } }
+  else scene.add(instanced(carGeometry(), carMat, carsF.map((c) => ({ ...c, y: 0 })), { colorFn: (p) => p.c }));
   scene.add(instanced(benchGeometry(), propMat, benches.filter((p) => !inZusatz(p.x, p.z))));
   scene.add(instanced(trafficLightGeometry(), propMat, lights));
   scene.add(instanced(bagGeometry(), propMat, bags.filter((p) => !inZusatz(p.x, p.z))));

@@ -34,6 +34,7 @@ export class Passanten {
       p.pos.copy(neu);
       const r = p.fig.root; const sichtbar = p.pos.distanceToSquared(kamera.position) < sicht * sicht; r.visible = sichtbar;
       if (!sichtbar) continue;
+      const schatten = p.pos.distanceToSquared(kamera.position) < 30 * 30; if (schatten !== p.schatten) { p.schatten = schatten; r.traverse((m) => { if (m.isMesh) m.castShadow = schatten; }); }
       r.position.copy(p.pos); r.rotation.y = p.h; p.fig.animate(dt, p.tempo, false);
     }
   }

@@ -2,24 +2,25 @@
 // (eins pro Material), damit es auch auf dem Handy flüssig bleibt. Rechtsverkehr auf dem Straßenraster.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { baueAuto, KATALOG } from './modelle.js';
+import { baueAuto, KATALOG, verkehrsModell, SPORT_MASSE } from './modelle.js';
 
 const P = 74, SPUR = 2.6, BEREICH = 5, ECKE = 9;
 const MODELLE = ['kompakt', 'kombi', 'limousine', 'suv'];
 
 // Ein Automodell in je eine Geometrie pro Material „backen“ (Lack wird später pro Instanz eingefärbt)
-function backe(modell) {
-  const car = baueAuto({ modell, farbe: 4, kennzeichen: 'VH-VK 100', tuning: {} }); car.updateMatrixWorld(true);
-  const lack = car.userData.body.children[0].material; const gruppen = new Map();
+export function backe(modell, vorlage) {
+  const echt = modell === 'echt' ? (vorlage || verkehrsModell()) : null;
+  const car = echt ? echt.clone(true) : baueAuto({ modell, farbe: 4, kennzeichen: 'VH-VK 100', tuning: {} }); if (echt) car.position.z = -0.24; car.updateMatrixWorld(true);
+  const istLack = (m) => (echt ? /^Paint/.test(m.name) : m === car.userData.body.children[0].material); const gruppen = new Map();
   car.traverse((o) => {
     if (!o.isMesh || o.material.blending === THREE.AdditiveBlending) return;
-    const key = o.material === lack ? 'lack' : o.material.uuid; const g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone();
+    const key = istLack(o.material) ? 'lack' : o.material.uuid; const g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone();
     g.applyMatrix4(o.matrixWorld); for (const n of Object.keys(g.attributes)) if (!['position', 'normal', 'uv'].includes(n)) g.deleteAttribute(n);
     if (!g.attributes.uv) g.setAttribute('uv', new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count * 2), 2));
     if (!gruppen.has(key)) gruppen.set(key, { mat: key === 'lack' ? new THREE.MeshPhysicalMaterial({ color: '#ffffff', roughness: 0.32, metalness: 0.5, clearcoat: 0.8 }) : o.material, geos: [] });
     gruppen.get(key).geos.push(g);
   });
-  return { T: car.userData.T, teile: [...gruppen.entries()].map(([k, v]) => ({ lack: k === 'lack', mat: v.mat, geo: mergeGeometries(v.geos) })) };
+  return { T: echt ? SPORT_MASSE : car.userData.T, teile: [...gruppen.entries()].map(([k, v]) => ({ lack: k === 'lack', mat: v.mat, geo: mergeGeometries(v.geos) })) };
 }
 
 const knoten = (i, j) => new THREE.Vector3((i + 0.5) * P, 0, (j + 0.5) * P);
@@ -30,9 +31,9 @@ const spur = (f) => new THREE.Vector3(-f[1] * SPUR, 0, f[0] * SPUR);
 export class Verkehr {
   constructor(scene, RAPIER, world, { anzahl = 16 } = {}) {
     this.world = world; this.autos = []; this.meshes = []; let s = 4242; this.rnd = () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
-    const proModell = Math.ceil(anzahl / MODELLE.length);
-    MODELLE.forEach((modell, mi) => {
-      const b = backe(modell); const inst = b.teile.map((t) => { const m = new THREE.InstancedMesh(t.geo, t.mat, proModell); m.userData.dynamisch = true; m.castShadow = true; m.receiveShadow = true; m.frustumCulled = false; scene.add(m); this.meshes.push(m); return { ...t, m }; });
+    const quellen = verkehrsModell() ? ['echt'] : MODELLE; const proModell = Math.ceil(anzahl / quellen.length);
+    quellen.forEach((modell, mi) => {
+      const b = backe(modell); const inst = b.teile.map((t) => { const m = new THREE.InstancedMesh(t.geo, t.mat, proModell); m.userData.dynamisch = true; m.castShadow = t.lack || /Glass|Tire/.test(t.mat.name || ''); m.receiveShadow = true; m.frustumCulled = false; scene.add(m); this.meshes.push(m); return { ...t, m }; });
       for (let k = 0; k < proModell && this.autos.length < anzahl; k++) {
         const farbe = new THREE.Color(KATALOG.farben[Math.floor(this.rnd() * KATALOG.farben.length)]);
         inst.filter((t) => t.lack).forEach((t) => t.m.setColorAt(k, farbe));
