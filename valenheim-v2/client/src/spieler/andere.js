@@ -59,7 +59,8 @@ export class AndereSpieler {
       }
       r.position.set(x, y - FUSS, z); r.rotation.y = h; o.body.setNextKinematicTranslation({ x, y, z });
       const fern = r.position.distanceToSquared(kamera.position);
-      o.schild.visible = fern < 60 * 60; r.visible = fern < 300 * 300;
+      o.schild.visible = fern < 60 * 60; r.visible = fern < 180 * 180;
+      const schatten = fern < 35 * 35; if (schatten !== o.schatten) { o.schatten = schatten; r.traverse((m) => { if (m.isMesh && m !== o.schild) m.castShadow = schatten; }); }
       if (r.visible) o.fig.animate(dt, o.tempo > 0.4 ? o.tempo : 0, Math.abs(vy / Math.max(dt, 1e-3)) > 3);
       // Puffer kürzen
       while (b.length > 2 && b[1].t < jetzt) b.shift();

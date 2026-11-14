@@ -1,5 +1,6 @@
 // VALENHEIM 2.0 – Automodelle (aus v1 weiterentwickelt): 6 Modelle, Tuning sichtbar, echtes Kennzeichen
 import * as THREE from 'three';
+import { verschmelze } from '../core/verschmelzen.js';
 import KATALOG from '../../../shared/katalog.json';
 
 export { KATALOG };
@@ -119,6 +120,7 @@ export function baueAuto(look) {
     const leiste = new THREE.Mesh(new THREE.BoxGeometry(T.W - 0.3, 0.03, T.L - 0.8), new THREE.MeshBasicMaterial({ color: NEON[tu.neon] })); leiste.position.y = T.r * 0.55 - tief; root.add(leiste);
   }
   root.userData = { type, T, wheels, body, M };
+  verschmelze(root);
   return root;
 }
 export function entsorge(root) { root.traverse((o) => { if (o.isMesh && o.material?.blending === THREE.AdditiveBlending && o.material !== mats.beam) { o.material.dispose(); o.geometry.dispose(); } }); }

@@ -14,7 +14,9 @@ Neuaufbau als Open-World-Lebenssimulation. Läuft **getrennt** vom alten Spiel (
 | 7 Parken | Dein Auto bleibt stehen, wo du es abstellst – auch nach dem Abmelden oder einem Server-Neustart | ✅ (Immobilien folgen) |
 | 8 Berufe | Lieferfahrer für Michelles Döner, Louis' Burger, Levys Tankstelle: Ziel + Lohn vom Server, Trinkgeld bei schneller Lieferung, Schummelschutz | ✅ |
 | Extra | Minikarte (dreht mit der Kamera): Straßen, Spieler, dein Auto, Autohaus, Jobs, Lieferziel | ✅ |
-| 9–12 | NPCs, Regierung/Story, Interaktion, Tests | geplant |
+| 9 NPCs | Straßenverkehr (Rechtsverkehr, Abbiegen, bremst vor Spielern/Autos, mit Kollision) und Passanten auf den Gehwegen – instanziert, damit es auf dem Handy flüssig bleibt | ✅ |
+| Extra | Leistung: Figuren/Autos/Autohaus verschmolzen (weniger Zeichenaufrufe), Touch-Layout für iPhone hoch + quer | ✅ |
+| 10–12 | Regierung/Story, Interaktion, Tests | geplant |
 
 Schutz gegen Schummeln: Geld, Preise, Kauf, Tuning, Kennzeichen, Tempo und Position prüft immer der Server.
 Kaufen/Tunen geht nur, wenn der Server dich wirklich bei Janniks Autohaus sieht.

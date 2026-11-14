@@ -19,6 +19,7 @@ export default function Minikarte({ gameRef, groesse = 170 }) {
       // Zonen (Autohaus gold, Jobs grün)
       const punkt = (x, z, farbe, r = 7) => { g.fillStyle = farbe; g.beginPath(); g.arc(x, z, r / s * 0.5, 0, Math.PI * 2); g.fill(); };
       for (const z of k.zonen) if (z.art === 'autohaus') punkt(z.x, z.z, '#d4af37', 9 * dpr); else if (z.art === 'job') punkt(z.x, z.z, '#3cff8f', 6 * dpr);
+      g.fillStyle = '#8a93a8'; for (const v of k.verkehr) g.fillRect(v.x - 5, v.z - 5, 10, 10);
       if (k.auto) { g.fillStyle = '#2a7bff'; g.fillRect(k.auto.x - 3, k.auto.z - 5, 6, 10); }
       for (const o of k.andere) punkt(o.x, o.z, o.f ? '#ff9f43' : '#ffffff', 5 * dpr);
       g.restore();

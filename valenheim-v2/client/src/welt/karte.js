@@ -63,9 +63,10 @@ export async function baueValenheim(scene, RAPIER, physik, { onFortschritt } = {
     if (Math.max(sx, sy, sz) > 260 || Math.min(sx, sz) < 0.08 || sy < 0.08) return; // Sammel-Meshes / flache Schilder überspringen
     _c.applyMatrix4(o.matrixWorld); box(_c.x, _c.y, _c.z, sx, sy, sz, { x: _q.x, y: _q.y, z: _q.z, w: _q.w });
   });
+  autohaus.optimieren();
   onFortschritt?.('Fertig', 1);
   return {
     world, rep, sonder, autohaus, zonen: autohaus.zonen, kollisionen: n,
-    update(t, camera) { U.time.value = t; world.update?.(t, camera); rep?.update?.(t); autohaus.update(t); },
+    update(t, camera) { U.time.value = t; world.update?.(t, camera); rep?.update?.(t); autohaus.update(t, camera); },
   };
 }

@@ -17,6 +17,8 @@ import { AndereSpieler } from '../spieler/andere.js';
 import { Auto } from '../fahrzeuge/auto.js';
 import { setAutoNacht } from '../fahrzeuge/modelle.js';
 import { baueJobPunkte } from '../welt/jobs.js';
+import { Verkehr } from '../fahrzeuge/verkehr.js';
+import { Passanten } from '../spieler/passanten.js';
 
 const GEHEN = 4.4, RENNEN = 7.4, SPRUNG = 5.6, SCHWERKRAFT = 18;
 const KAPSEL = { halb: 0.55, r: 0.35 }; // Gesamthöhe 1,8 m
@@ -83,7 +85,10 @@ export class Game {
       this.gelaende = baueTestgelaende(this.scene, RAPIER, this.world); this.exposure = 0.5;
     } else {
       const karte = await baueValenheim(this.scene, RAPIER, this.world, { onFortschritt });
-      this.gelaende = karte; this.jobPunkte = baueJobPunkte(this.scene); this.zonen = [...(karte.zonen || []), ...this.jobPunkte.zonen]; this.sun = karte.world.sun; this.hemi = karte.world.hemi;
+      this.gelaende = karte; this.jobPunkte = baueJobPunkte(this.scene);
+      // Phase 9: Leben in der Stadt (Menge je nach Grafikstufe)
+      const viel = { niedrig: [8, 12], mittel: [14, 22], hoch: [20, 34] }[this.stufe] || [12, 20];
+      this.verkehr = new Verkehr(this.scene, RAPIER, this.world, { anzahl: viel[0] }); this.passanten = new Passanten(this.scene, { anzahl: viel[1] }); this.zonen = [...(karte.zonen || []), ...this.jobPunkte.zonen]; this.sun = karte.world.sun; this.hemi = karte.world.hemi;
       this.sunDir = WELT_U.sunDir.value.clone();
       this.exposure = karte.world.exposure || 1.1; this.kollisionen = karte.kollisionen;
       this.details = new Detailsteuerung(this.scene);
@@ -241,7 +246,7 @@ export class Game {
   karte() {
     const p = this.faehrt && this.meinAuto ? this.meinAuto.pos : this.body.translation();
     return { x: p.x, z: p.z, yaw: this.yaw, heading: this.heading, andere: [...this.andere.map.values()].map((o) => ({ x: o.fig.root.position.x, z: o.fig.root.position.z, f: o.f })),
-      auto: this.meinAuto && !this.faehrt ? { x: this.meinAuto.pos.x, z: this.meinAuto.pos.z } : null, ziel: this.job?.ziel || null, zonen: this.zonen };
+      auto: this.meinAuto && !this.faehrt ? { x: this.meinAuto.pos.x, z: this.meinAuto.pos.z } : null, ziel: this.job?.ziel || null, zonen: this.zonen, verkehr: this.verkehr?.karte() || [] };
   }
 
   spielerListe() { return [{ id: this.ich, name: this.name, du: true }, ...this.andere.namen()]; }
@@ -265,6 +270,11 @@ export class Game {
     if (this.input.consume('handy')) this.onOeffne?.('handy');
     this.aktionT = (this.aktionT || 0) + dt; if (this.aktionT > 0.15) { this.aktionT = 0; this.aktionPruefen(); }
     this.andere.update(dt, this.camera);
+    if (this.verkehr) {
+      const p = this.body.translation(); const h = [{ x: p.x, z: p.z }]; if (this.meinAuto) h.push({ x: this.meinAuto.pos.x, z: this.meinAuto.pos.z });
+      for (const o of this.andere.map.values()) { h.push({ x: o.fig.root.position.x, z: o.fig.root.position.z }); if (o.wagen) h.push({ x: o.wagen.pos.x, z: o.wagen.pos.z }); }
+      this.verkehr.update(dt, h, this.camera); this.passanten.update(dt, this.camera);
+    }
     this.world.timestep = dt; this.world.step();
     this.gelaende.update(this.t, this.camera); this.jobPunkte?.update(this.t);
     this.details?.update(dt, this.camera.position);

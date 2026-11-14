@@ -2,6 +2,7 @@
 // Alle sichtbaren Teile bekommen automatisch Kollision (karte.js); Glas bekommt unsichtbare Wände.
 import * as THREE from 'three';
 import { baueAuto, KATALOG } from '../fahrzeuge/modelle.js';
+import { verschmelze } from '../core/verschmelzen.js';
 
 const A = KATALOG.autohaus;
 function schildTex(zeilen, { w = 1024, h = 160, bg = '#0b1530', fg = '#ffffff', akzent = '#d4af37', gross = 92 } = {}) {
@@ -90,6 +91,7 @@ export function baueAutohaus(scene, { slab = 0.22 } = {}) {
   ];
   return {
     gruppe: g, zonen, saeule,
-    update(t) { for (const [i, c] of teller.entries()) c.rotation.y = 0.6 + i + t * 0.25; ringMat.opacity = 0.55 + Math.sin(t * 3) * 0.3; r1.scale.setScalar(1 + Math.sin(t * 2) * 0.05); r2.scale.copy(r1.scale); },
+    optimieren() { return verschmelze(g, { tief: false }); }, // nach dem Erzeugen der Kollision aufrufen
+    update(t, cam) { const nah = !cam || Math.hypot(cam.position.x - A.x, cam.position.z - A.z) < 120; for (const [i, c] of teller.entries()) { c.visible = nah; c.rotation.y = 0.6 + i + t * 0.25; } ringMat.opacity = 0.55 + Math.sin(t * 3) * 0.3; r1.scale.setScalar(1 + Math.sin(t * 2) * 0.05); r2.scale.copy(r1.scale); },
   };
 }

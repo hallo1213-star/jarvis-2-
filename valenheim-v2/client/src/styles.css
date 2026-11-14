@@ -205,3 +205,22 @@ input[type=range] { accent-color: var(--gold); width: 180px; }
 .auftrag b { font-size: 14px; } .auftrag small { color: var(--mute); font-size: 12px; }
 @media (pointer: coarse) { .minikarte { left: auto; right: calc(12px + var(--sr)); bottom: auto; top: calc(230px + var(--st)); } .auftrag { top: calc(60px + var(--st)); max-width: 60vw; } }
 @media (pointer: fine) { .chat { bottom: calc(240px + var(--sb)); } }
+
+/* ---------- Touch-Layout (iPhone/iPad) aufgeräumt ---------- */
+.overlay { z-index: 20; }
+.minikarte { z-index: 2; }
+.knopf--chat { right: calc(120px + var(--sr)); top: calc(66px + var(--st)); }
+@media (pointer: coarse) {
+  .minikarte { right: auto; left: calc(12px + var(--sl)); top: calc(104px + var(--st)); bottom: auto; }
+  .chat { top: calc(214px + var(--st)); width: min(300px, 46vw); }
+  .chat__z { font-size: 12px; padding: 4px 8px; }
+  .auftrag { top: calc(10px + var(--st)); max-width: 44vw; padding: 6px 10px; }
+  .auftrag b { font-size: 12px; } .auftrag small { font-size: 10.5px; }
+  .aktion { bottom: calc(110px + var(--sb)); font-size: 13px; padding: 8px 12px; }
+  .tacho { top: auto; bottom: calc(110px + var(--sb)); right: calc(20px + var(--sr)); }
+}
+@media (pointer: coarse) and (max-height: 500px) { .hud--ro { top: calc(118px + var(--st)) !important; } .hud--ro .chip { padding: 5px 9px; font-size: 11px; } .chat { top: calc(214px + var(--st)); max-height: 30vh; overflow: hidden; } }
+@media (pointer: coarse) and (orientation: portrait) {
+  .auftrag { top: auto; bottom: calc(176px + var(--sb)); max-width: calc(100vw - 32px); width: max-content; }
+  .aktion { max-width: calc(100vw - 32px); }
+}

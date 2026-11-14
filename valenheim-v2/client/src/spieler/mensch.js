@@ -1,6 +1,7 @@
 // VALENHEIM 2.0 – Spielfigur mit realistischen Proportionen (ca. 7,5 Kopfhöhen), komplett anpassbar.
 // Aufbau als Gelenk-Hierarchie (Hüfte → Rumpf → Kopf/Arme, Hüfte → Beine) mit prozeduralen Bewegungsabläufen.
 import * as THREE from 'three';
+import { verschmelze } from '../core/verschmelzen.js';
 
 // ---------- Auswahl im Editor (auch serverseitig geprüft: siehe server/src/charakter.js) ----------
 export const HAUT = ['#f6d7c3', '#eac3a5', '#d9a982', '#c68a62', '#a8704a', '#8a5636', '#6b3f26', '#4a2c1b'];
@@ -126,11 +127,12 @@ export class Mensch {
       const sg = L.schuhe === 'boots' ? new THREE.BoxGeometry(0.11, 0.13, 0.27) : new THREE.BoxGeometry(0.1, L.schuhe === 'slipper' ? 0.06 : 0.08, 0.26);
       const fuss = teil(kn, sg, schuh, 0, L.schuhe === 'boots' ? -0.43 : -0.46, 0.045);
       if (L.schuhe === 'sneaker') teil(kn, new THREE.BoxGeometry(0.102, 0.025, 0.262), mat('#f2f2ee', 0.7), 0, -0.495, 0.045);
-      this.beine.push({ hp, kn, s, fuss });
+      fuss.userData.einzeln = true; this.beine.push({ hp, kn, s, fuss });
     }
     if (L.hose === 'rock') teil(this.hips, new THREE.CylinderGeometry(0.17 * S, 0.24 * S, 0.34, 18, 1, true), hose, 0, -0.17, 0, 1, 1, 0.8).material.side = THREE.DoubleSide;
     // Schatten-Fleck (Geräte ohne Schatten)
     const blob = new THREE.Mesh(new THREE.CircleGeometry(0.38, 20).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0, transparent: true, opacity: 0.25, depthWrite: false })); blob.position.y = 0.02; this.body.add(blob);
+    verschmelze(body);
   }
 
   bauKopf(L, haut, haar) {

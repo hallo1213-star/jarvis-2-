@@ -11,7 +11,7 @@ export class Detailsteuerung {
     this.inst = []; this.einzel = []; this.radius = 260; this.t = 0; this.letzte = new THREE.Vector3(1e9, 0, 0);
     scene.updateMatrixWorld(true);
     scene.traverse((o) => {
-      if (!o.isMesh || !o.geometry) return;
+      if (!o.isMesh || !o.geometry || o.userData.dynamisch) return;
       if (o.isInstancedMesh) {
         if (o.count < 40) return;
         const n = o.count; const mats = o.instanceMatrix.array.slice(0, n * 16); const pos = new Float32Array(n * 2);
