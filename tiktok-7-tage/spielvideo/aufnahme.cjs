@@ -15,7 +15,7 @@ const name = process.argv[2]; if (!DAUER[name]) { console.log('Unbekannt:', name
   const r = await (await fetch(B + '/api/auth/register', { method: 'POST', body: JSON.stringify({ name: user, passwort: 'geheim123' }) })).json();
   const H = { Authorization: 'Bearer ' + r.token };
   await fetch(B + '/api/charakter', { method: 'PUT', headers: H, body: JSON.stringify({ aussehen: { koerper: 'm', haut: 3, haarfarbe: 1, oberteil: 'jacke', oberteilFarbe: 0, hose: 'jeans', hoseFarbe: 4, schuhe: 'sneaker', schuheFarbe: 1, groesse: 1 } }) });
-  await fetch(B + '/api/settings', { method: 'PUT', headers: H, body: JSON.stringify({ grafik: 'hoch', kamera: 'verfolger' }) });
+  await fetch(B + '/api/settings', { method: 'PUT', headers: H, body: JSON.stringify({ grafik: 'mittel', kamera: 'verfolger' }) });
   await fetch(B + '/api/me', { headers: H }); await fetch(B + '/api/geld', { headers: H });
   const db = new DatabaseSync(process.env.DB_PATH); db.exec('PRAGMA busy_timeout = 20000'); const p = db.prepare('SELECT id FROM v2_players WHERE username = ?').get(user);
   const [sx, sz] = START[name];
@@ -23,8 +23,8 @@ const name = process.argv[2]; if (!DAUER[name]) { console.log('Unbekannt:', name
   db.prepare('UPDATE v2_konten SET bank = 900000 WHERE player_id = ?').run(p.id); db.close();
 
   const b = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
-  const c = await b.newContext({ viewport: { width: 720, height: 1280 } });
-  await c.addInitScript((t) => { localStorage.setItem('vh2_token', t); localStorage.setItem('vh2_leistung', JSON.stringify({ empfehlung: 'hoch', t: Date.now() })); }, r.token);
+  const c = await b.newContext({ viewport: { width: 540, height: 960 } });
+  await c.addInitScript((t) => { localStorage.setItem('vh2_token', t); localStorage.setItem('vh2_leistung', JSON.stringify({ empfehlung: 'mittel', t: Date.now() })); }, r.token);
   const pg = await c.newPage(); pg.on('pageerror', (e) => console.log('FEHLER', String(e)));
   await pg.goto(B + '/#/spielen');
   await pg.waitForFunction(() => window.VH2?.raum && window.VH2.passanten && window.VH2.scene.environment, null, { timeout: 600000 });
