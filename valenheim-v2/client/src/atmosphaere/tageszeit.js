@@ -27,7 +27,7 @@ export class Tageszeit {
     U.sunCol.value.copy(a.sunColC).lerp(b.sunColC, k); U.sunDir.value.copy(a.dir).lerp(b.dir, k).normalize(); U.litThr.value = L(a.lit, b.lit);
     const w = this.w; w.sun.color.copy(U.sunCol.value); w.sun.intensity = L(a.sunI, b.sunI); w.hemi.intensity = L(a.hemiI, b.hemiI); w.hemi.color.copy(a.hemiC).lerp(b.hemiC, k);
     w.fogFarbe?.copy(a.fogC).lerp(b.fogC, k); this.r.toneMappingExposure = L(a.exposure, b.exposure);
-    const nacht = L(a.nachtwert, b.nachtwert); this.nacht = nacht;
+    const nacht = L(a.nachtwert, b.nachtwert); this.nacht = nacht; if (w.dust) w.dust.visible = nacht > 0.45; // Staub-Glitzer nur nachts (tagsüber wirkt er wie Schnee)
     if (w.glowMat) w.glowMat.emissiveIntensity = nacht * 3.2; if (w.poolMat) w.poolMat.opacity = nacht * 0.16;
     return h;
   }

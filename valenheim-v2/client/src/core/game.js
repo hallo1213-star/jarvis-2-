@@ -1,6 +1,7 @@
 // VALENHEIM 2.0 – Spielkern (Phase 1): Renderer, Licht, Rapier-Physik, Spielfigur, Kamera (Third/First Person), Speichern.
 import * as THREE from 'three';
 import { Sky } from 'three/addons/objects/Sky.js';
+import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
 import RAPIER from '@dimforge/rapier3d-compat';
 import { PROFILE, STUFEN, autoStufe, geraet, zielFps, FpsWaechter } from './quality.js';
 import { Input } from '../spieler/eingabe.js';
@@ -98,7 +99,15 @@ export class Game {
       this.weckTon = () => this.wetter?.ton.resume(); addEventListener('pointerdown', this.weckTon); addEventListener('keydown', this.weckTon);
     }
     // Umgebungslicht für Spiegelungen (Glas, Autos) – in der Video-Stadt nicht (dort wie in den Videos beleuchtet)
-    if (this.welt === 'valenheim') { this.renderer.toneMappingExposure = this.exposure; return; }
+    if (this.welt === 'valenheim') {
+      this.renderer.toneMappingExposure = this.exposure;
+      // Echtes Himmelslicht (HDRI, Poly Haven CC0) für Spiegelungen – lädt im Hintergrund
+      new HDRLoader().load('/hdri/himmel_1k.hdr', (hdr) => {
+        if (this.beendet) return; const pm = new THREE.PMREMGenerator(this.renderer); hdr.mapping = THREE.EquirectangularReflectionMapping;
+        this.scene.environment = pm.fromEquirectangular(hdr).texture; this.scene.environmentIntensity = 0.35; hdr.dispose(); pm.dispose();
+      });
+      return;
+    }
     const pm = new THREE.PMREMGenerator(this.renderer); const env = new THREE.Scene(); const s2 = new Sky(); s2.scale.setScalar(1000); s2.material.uniforms.sunPosition.value.copy(this.sunDir); env.add(s2);
     this.scene.environment = pm.fromScene(env, 0, 0.1, 2000).texture; this.scene.environmentIntensity = 0.3; pm.dispose();
     this.renderer.toneMappingExposure = this.exposure;
@@ -282,7 +291,7 @@ export class Game {
     this.gelaende.update(this.t, this.camera); this.jobPunkte?.update(this.t);
     this.details?.update(dt, this.camera.position);
     if (this.tageszeit) {
-      const uhr = this.tageszeit.update(); this.ampeln.update(); setAutoNacht(this.tageszeit.nacht || 0);
+      const uhr = this.tageszeit.update(); this.ampeln.update(); setAutoNacht(this.tageszeit.nacht || 0); this.scene.environmentIntensity = 0.06 + 0.34 * (1 - (this.tageszeit.nacht || 0));
       this.wetter.update(dt, this.camera.position, this.welt === 'valenheim' ? PROFILE[this.stufe].nebelStadt : PROFILE[this.stufe].nebel, this.tageszeit.nacht);
       this.uhrT = (this.uhrT || 0) + dt; if (this.uhrT > 1) { this.uhrT = 0; this.onStatus?.({ uhr, wetter: WETTER_NAME[this.wetter.art] }); }
     }

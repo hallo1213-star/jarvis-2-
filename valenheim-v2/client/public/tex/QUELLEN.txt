@@ -1,0 +1,4 @@
+Texturen, Himmel und Blatt-/Rinden-Bilder: Poly Haven (https://polyhaven.com), Lizenz CC0 (gemeinfrei, kostenlos, keine Namensnennung nötig).
+asphalt=asphalt_02, gehweg=concrete_pavement_02, pflaster=cobblestone_floor_08, schotter=gravel_road, erde=forrest_ground_01,
+putz=grey_plaster_02, beige=beige_wall_001, ziegel=red_brick_03, beton=concrete_wall_008, dach=concrete_layers_02, gras=leafy_grass,
+blaetter.png + rinde.jpg = aus tree_small_02 zusammengesetzt, hdri/himmel_1k.hdr = kloofendal_48d_partly_cloudy_puresky.

@@ -2,6 +2,27 @@
 // VALENHEIM – prozedurale 3D-Stadt. Gleicher Seed => identische Stadt in jeder Folge.
 import * as THREE from 'three';
 import { makeRng, hash1 } from './rng.js';
+import { baumGeometrie, baumMaterialien, BAUM_ZEIT } from './baum.js';
+
+// ---- Echte Foto-Texturen (Poly Haven, CC0) – nur im Spiel. Laden im Hintergrund, Shader nutzen sie sofort.
+const TEX_NAMEN = ['asphalt', 'gehweg', 'pflaster', 'schotter', 'erde', 'putz', 'beige', 'ziegel', 'beton', 'dach'];
+export const TEXU = {};
+{
+  const ld = typeof document !== 'undefined' ? new THREE.TextureLoader() : null;
+  const leer = new THREE.DataTexture(new Uint8Array([128, 128, 255, 255]), 1, 1); leer.needsUpdate = true;
+  for (const n of TEX_NAMEN) for (const art of ['farbe', 'normal']) {
+    const key = 'uT_' + n + (art === 'normal' ? 'N' : '');
+    const t = ld ? ld.load(`/tex/${n}_${art}.jpg`) : leer; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8;
+    if (art === 'farbe') t.colorSpace = THREE.SRGBColorSpace;
+    TEXU[key] = { value: t };
+  }
+}
+const TEXDECL = (namen) => namen.map((n) => `uniform sampler2D uT_${n}; uniform sampler2D uT_${n}N;`).join('\n');
+// Kachel-Unterdrückung: zwei leicht verschobene Abtastungen mischen, damit keine Wiederholung sichtbar ist
+const TEXFN = /* glsl */`
+vec3 txc(sampler2D t, vec2 uv){ vec3 a = texture2D(t, uv).rgb; vec3 b = texture2D(t, uv*0.37 + vec2(0.31,0.73)).rgb; float m = smoothstep(0.35, 0.65, vnoise(uv*0.21)); return mix(a, b, m*0.5); }
+vec3 txn(sampler2D t, vec2 uv){ return texture2D(t, uv).xyz*2.0 - 1.0; }
+`;
 
 export const P = 74;          // Raster (Block + Straße)
 export const HB = 28;         // halbe Blockgröße inkl. Gehweg
@@ -65,8 +86,9 @@ float vnoise(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
 float fbm(vec2 p){ float a=0.5, s=0.0; for(int i=0;i<5;i++){ s+=a*vnoise(p); p=p*2.03+vec2(1.7,9.2); a*=0.5; } return s; }
 `;
 
-function patchStandard(mat, { vertexDecl = '', vertexBody = '', fragDecl = '', colorBody = '', roughBody = '', emisBody = '' }) {
+function patchStandard(mat, { vertexDecl = '', vertexBody = '', fragDecl = '', colorBody = '', roughBody = '', emisBody = '', texturen = [] }) {
   mat.onBeforeCompile = (sh) => {
+    for (const n of texturen) { sh.uniforms['uT_' + n] = TEXU['uT_' + n]; sh.uniforms['uT_' + n + 'N'] = TEXU['uT_' + n + 'N']; }
     Object.assign(sh.uniforms, { uMarkR: U.markR, uLitThr: U.litThr, uTime: U.time, uSkyTop: U.skyTop, uSkyHor: U.skyHor, uSunCol: U.sunCol, uSunDir: U.sunDir, uBlockMap: U.blockMap, uAlarm: U.alarm });
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', `#include <common>\nvarying vec3 vWP; varying vec3 vWN;\n${vertexDecl}`)
@@ -85,8 +107,11 @@ function patchStandard(mat, { vertexDecl = '', vertexBody = '', fragDecl = '', c
         uniform sampler2D uBlockMap;
         varying vec3 vWP; varying vec3 vWN;
         ${NOISE}
+        ${TEXDECL(texturen)}
+        ${texturen.length ? TEXFN : ''}
         ${fragDecl}`)
-      .replace('#include <color_fragment>', `#include <color_fragment>\nfloat xRough = roughness; vec3 xEmis = vec3(0.0);\n${colorBody}`)
+      .replace('#include <color_fragment>', `#include <color_fragment>\nfloat xRough = roughness; vec3 xEmis = vec3(0.0); vec3 xWN = vec3(0.0);\n${colorBody}`)
+      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\nif (dot(xWN, xWN) > 0.01) normal = normalize((viewMatrix * vec4(normalize(xWN), 0.0)).xyz);')
       .replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>\nroughnessFactor = xRough;\n${roughBody}`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>\ntotalEmissiveRadiance += xEmis;\n${emisBody}`);
   };
@@ -98,6 +123,7 @@ function patchStandard(mat, { vertexDecl = '', vertexBody = '', fragDecl = '', c
 function buildingMaterial() {
   const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.88, metalness: 0.0, name: 'bau' });
   return patchStandard(mat, {
+    texturen: ['putz', 'beige', 'ziegel', 'beton', 'dach'],
     vertexDecl: 'attribute vec3 aColor; attribute vec4 aParams; varying vec3 vCol; varying vec4 vPar;',
     vertexBody: 'vCol = aColor; vPar = aParams;',
     fragDecl: 'varying vec3 vCol; varying vec4 vPar;',
@@ -112,7 +138,17 @@ function buildingMaterial() {
         float fl = floor(by / fh), fv = fract(by / fh);
         float cu = floor(u / ws), fu = fract(u / ws);
         float dirt = fbm(vec2(u*0.12, by*0.035) + bId*3.1);
-        fac *= 0.78 + 0.34*dirt;
+        // Echte Fassade: je nach Haus Putz, Beige, Ziegel oder Sichtbeton (Foto-Textur + Relief)
+        float wahl = h21(vec2(bId, 7.3)); vec2 fuv = vec2(u, by) / 3.2; vec3 ftex; vec3 fnor;
+        if (bKind < 0.5) { ftex = txc(uT_beton, fuv); fnor = txn(uT_betonN, fuv); fac = fac * ftex * 2.6; }
+        else if (bKind < 1.5 && wahl < 0.35) { fuv = vec2(u, by) / 2.0; ftex = txc(uT_ziegel, fuv); fnor = txn(uT_ziegelN, fuv); fac = mix(ftex * 1.1, fac * ftex * 3.0, 0.25); }
+        else if (wahl < 0.65) { ftex = txc(uT_putz, fuv); fnor = txn(uT_putzN, fuv); fac = fac * ftex * 3.2; }
+        else if (wahl < 0.85) { ftex = txc(uT_beige, fuv); fnor = txn(uT_beigeN, fuv); fac = fac * ftex * 2.6; }
+        else { ftex = txc(uT_beton, fuv); fnor = txn(uT_betonN, fuv); fac = fac * ftex * 2.6; }
+        vec3 tng3 = vec3(tng.x, 0.0, tng.y);
+        float relief = 1.0 - smoothstep(60.0, 260.0, length(vWP - cameraPosition));
+        xWN = normalize(tng3 * fnor.x * relief + vec3(0.0, 1.0, 0.0) * fnor.y * relief + bN * max(fnor.z, 0.3));
+        fac *= 0.85 + 0.25*dirt;
         fac *= mix(0.42, 1.0, smoothstep(0.0, 10.0, by));
         float streak = vnoise(vec2(u*1.7, bId)) * smoothstep(0.0, 1.0, fract(-by/fh*0.5));
         fac *= 1.0 - 0.12*streak;
@@ -154,12 +190,12 @@ function buildingMaterial() {
             ge += vec3(1.0, 0.6, 0.3) * 0.85 * fl2 * (0.5 + 0.5*fract(hh*91.0)) * lit;
           } else if (hh < 0.035) { gcol = mix(vec3(0.0), gcol, lod); ge *= mix(0.15, 1.0, lod); }
           fac = mix(fac, gcol, win);
-          xRough = mix(xRough, 0.2, win);
+          xRough = mix(xRough, 0.2, win); xWN = normalize(mix(xWN, bN, win));
           xEmis += ge * win;
         }
       } else if (bN.y > 0.5) {
-        fac *= 0.5 + 0.25*vnoise(vWP.xz*0.25);
-        xRough = 0.95;
+        vec2 duv = vWP.xz / 6.0; fac = txc(uT_dach, duv) * (0.55 + 0.25*vnoise(vWP.xz*0.25)); vec3 dn = txn(uT_dachN, duv);
+        xWN = normalize(vec3(dn.x, dn.z, dn.y)); xRough = 0.95;
       }
       diffuseColor.rgb = fac;
     `,
@@ -170,6 +206,7 @@ function buildingMaterial() {
 function groundMaterial() {
   const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.92, metalness: 0, name: 'boden' });
   return patchStandard(mat, {
+    texturen: ['asphalt', 'gehweg', 'pflaster', 'schotter', 'erde'],
     colorBody: /* glsl */`
       const float P = ${P.toFixed(1)}; const float HB = ${HB.toFixed(1)};
       vec2 w = vWP.xz;
@@ -178,61 +215,59 @@ function groundMaterial() {
       ivec2 tc = ivec2(clamp(bi + 16.0, 0.0, 31.0));
       float code = floor(texelFetch(uBlockMap, tc, 0).r * 255.0 + 0.5);
       vec3 bN = normalize(vWN);
-      vec3 col; float n = fbm(w*0.35);
+      vec3 col; float n = fbm(w*0.35); vec3 tn = vec3(0.0, 0.0, 1.0);
       float edge = HB - max(abs(f.x), abs(f.y));   // Abstand zur Bordsteinkante (im Block)
+      float fern = smoothstep(120.0, 420.0, length(vWP - cameraPosition)); // in der Ferne weniger Relief
       if (vWP.y > 0.04) {
-        if (abs(bN.y) < 0.5) { col = vec3(0.30,0.29,0.28) * (0.8+0.3*n); }
-        else if (code == 1.0) {
-          vec2 tp = fract(w/2.4); vec2 ti = floor(w/2.4);
-          float g = step(0.035,tp.x)*step(0.035,tp.y);
-          col = mix(vec3(0.13), vec3(0.34,0.32,0.30)*(0.82+0.3*h21(ti)), g);
+        if (abs(bN.y) < 0.5) { col = txc(uT_gehweg, vec2(dot(w, vec2(-bN.z, bN.x)), vWP.y)/1.2) * 0.75; }
+        else if (code == 1.0) {               // Stadtplatz: Kopfsteinpflaster mit Ringen
+          vec2 uv = w/1.8; col = txc(uT_pflaster, uv) * 0.6; tn = txn(uT_pflasterN, uv);
           float r = length(w);
-          col = mix(col, vec3(0.42,0.40,0.37), smoothstep(0.3,0.0,abs(r-10.0))*0.9);
-          col = mix(col, vec3(0.20,0.20,0.21), step(abs(r-15.5),0.6)*0.8);
-          col = mix(col, vec3(0.42,0.40,0.37), smoothstep(0.25,0.0,abs(r-21.0))*0.8);
-          col *= 0.85 + 0.25*n;
-          xRough = 0.75 - 0.25*smoothstep(0.55,0.75,fbm(w*0.08));
-        } else if (edge < 4.2) {
-          vec2 tp = fract(w/1.5); float g = step(0.05,tp.x)*step(0.05,tp.y);
-          col = mix(vec3(0.15), vec3(0.30,0.295,0.29)*(0.85+0.3*h21(floor(w/1.5))), g);
-          col = mix(col, vec3(0.38,0.37,0.36), step(edge,0.35));
-          col *= 0.8 + 0.35*n;
-        } else if (code == 2.0) {   // Bauplatz: Schotter/Erde
-          col = mix(vec3(0.16,0.13,0.10), vec3(0.27,0.24,0.20), fbm(w*0.6)) * (0.8+0.3*h21(floor(w*3.0)));
-          col = mix(col, vec3(0.08,0.07,0.06), smoothstep(0.55,0.7,fbm(w*0.15+3.0))*0.7);
-        } else if (code == 3.0 || code == 6.0) { // Park / Innenhof
-          col = mix(vec3(0.06,0.09,0.035), vec3(0.16,0.17,0.07), fbm(w*0.25));
-          col = mix(col, vec3(0.22,0.18,0.12), smoothstep(0.6,0.75,fbm(w*0.5))*0.6);
-        } else if (code == 4.0) {
-          col = vec3(0.075,0.078,0.085)*(0.8+0.4*n);
-          vec2 pk = fract(w/vec2(3.0,6.0)); col = mix(col, vec3(0.5), step(pk.x,0.04)*step(0.2,pk.y)*0.6);
-        } else {
-          col = vec3(0.12,0.12,0.12)*(0.7+0.5*n);
+          col = mix(col, col*1.35, smoothstep(0.35,0.0,abs(r-10.0)));
+          col = mix(col, txc(uT_gehweg, w/3.0)*0.55, step(abs(r-15.5),0.6)*0.8);
+          col = mix(col, col*1.3, smoothstep(0.3,0.0,abs(r-21.0)));
+          xRough = 0.8 - 0.3*smoothstep(0.55,0.75,fbm(w*0.08));
+        } else if (edge < 4.2) {              // Gehweg (Betonplatten) + Bordstein
+          vec2 uv = w/3.0; col = txc(uT_gehweg, uv) * 0.82; tn = txn(uT_gehwegN, uv);
+          col = mix(col, vec3(0.42,0.41,0.40)*(0.85+0.2*n), step(edge,0.35));
+          col *= 0.88 + 0.2*n; xRough = 0.85;
+        } else if (code == 2.0) {             // Bauplatz: Erde/Schotter
+          vec2 uv = w/4.0; col = txc(uT_schotter, uv) * 0.8; tn = txn(uT_schotterN, uv);
+          col = mix(col, col*0.55, smoothstep(0.55,0.7,fbm(w*0.15+3.0))*0.7); xRough = 0.95;
+        } else if (code == 3.0 || code == 6.0) { // Park / Innenhof: Rasen
+          vec2 uv = w/3.5; col = txc(uT_erde, uv) * vec3(0.85, 0.95, 0.75); tn = txn(uT_erdeN, uv);
+          col *= 0.8 + 0.35*fbm(w*0.08); xRough = 0.95;
+        } else if (code == 4.0) {             // Parkplatz
+          vec2 uv = w/5.0; col = txc(uT_asphalt, uv) * 0.9; tn = txn(uT_asphaltN, uv);
+          vec2 pk = fract(w/vec2(3.0,6.0)); col = mix(col, vec3(0.55), step(pk.x,0.04)*step(0.2,pk.y)*0.7);
+        } else {                              // Innenbereich der Blöcke
+          vec2 uv = w/3.0; col = txc(uT_gehweg, uv) * 0.6; tn = txn(uT_gehwegN, uv);
         }
-      } else {
-        col = vec3(0.052,0.055,0.062) * (0.75 + 0.55*n);
-        col *= 0.9 + 0.2*h21(floor(w*4.0));
-        float crack = smoothstep(0.02,0.0,abs(fbm(w*0.21)-0.5)) * 0.5;
-        col *= 1.0 - crack;
+      } else {                                // Straße: echter Asphalt
+        vec2 uv = w/5.5; col = txc(uT_asphalt, uv) * 0.78; tn = txn(uT_asphaltN, uv);
+        col *= 0.85 + 0.3*fbm(w*0.04);
         bool rZ = abs(f.x) > HB, rX = abs(f.y) > HB;
-        vec3 paint = vec3(0.55,0.54,0.5) * (0.55 + 0.45*smoothstep(0.3,0.7,fbm(w*1.3)));
+        vec3 paint = vec3(0.62,0.61,0.57) * (0.6 + 0.4*smoothstep(0.3,0.7,fbm(w*1.3)));
+        float pm = 0.0;
         if (abs(bi.x) <= uMarkR && abs(bi.y) <= uMarkR) {
           if (rZ && !rX) {
             float c = P*0.5 - abs(f.x);
-            if (c < 0.13 && fract(w.y/7.0) < 0.5 && abs(f.y) < HB-6.5) col = mix(col, paint, 0.9);
-            if (abs(c-7.7) < 0.1 && abs(f.y) < HB-6.0) col = mix(col, paint, 0.75);
-            if (abs(f.y) > HB-5.6 && abs(f.y) < HB-1.2 && fract(f.x/1.3) < 0.5 && c > 0.6) col = mix(col, paint, 0.95);
+            if (c < 0.13 && fract(w.y/7.0) < 0.5 && abs(f.y) < HB-6.5) pm = 0.9;
+            if (abs(c-7.7) < 0.1 && abs(f.y) < HB-6.0) pm = 0.75;
+            if (abs(f.y) > HB-5.6 && abs(f.y) < HB-1.2 && fract(f.x/1.3) < 0.5 && c > 0.6) pm = 0.95;
           } else if (rX && !rZ) {
             float c = P*0.5 - abs(f.y);
-            if (c < 0.13 && fract(w.x/7.0) < 0.5 && abs(f.x) < HB-6.5) col = mix(col, paint, 0.9);
-            if (abs(c-7.7) < 0.1 && abs(f.x) < HB-6.0) col = mix(col, paint, 0.75);
-            if (abs(f.x) > HB-5.6 && abs(f.x) < HB-1.2 && fract(f.y/1.3) < 0.5 && c > 0.6) col = mix(col, paint, 0.95);
+            if (c < 0.13 && fract(w.x/7.0) < 0.5 && abs(f.x) < HB-6.5) pm = 0.9;
+            if (abs(c-7.7) < 0.1 && abs(f.x) < HB-6.0) pm = 0.75;
+            if (abs(f.x) > HB-5.6 && abs(f.x) < HB-1.2 && fract(f.y/1.3) < 0.5 && c > 0.6) pm = 0.95;
           }
         }
+        col = mix(col, paint, pm); tn = mix(tn, vec3(0.0,0.0,1.0), pm);
         float wet = smoothstep(0.62, 0.7, fbm(w*0.045 + 11.0));
-        xRough = mix(0.92, 0.18, wet);
-        col *= mix(1.0, 0.55, wet);
+        xRough = mix(0.9, 0.12, wet);
+        col *= mix(1.0, 0.5, wet); tn = mix(tn, vec3(0.0,0.0,1.0), wet*0.85);
       }
+      if (bN.y > 0.5) { tn.xy *= 0.9 * (1.0 - fern); xWN = normalize(vec3(tn.x, tn.z, tn.y)); }
       diffuseColor.rgb = col;
     `,
   });
@@ -771,7 +806,9 @@ export function buildWorld(scene, { seed = 7071, licht = 'standard', zusatz = []
     const poolMat = new THREE.MeshBasicMaterial({ color: 0xffb060, transparent: true, opacity: L.laternen ? 0.16 : 0, blending: THREE.AdditiveBlending, depthWrite: false }); poolMatRef = poolMat;
     scene.add(instanced(new THREE.CircleGeometry(4.5, 20).rotateX(-Math.PI / 2).translate(1.65, 0.05, 0), poolMat, lamps.map((l) => ({ ...l, y: SLAB })), { shadow: false, receive: false }));
   }
-  scene.add(instanced(treeGeometry(), treeMat, trees.filter((p) => !inZusatz(p.x, p.z)), { colorFn: (p) => p.c }));
+  // Realistische Bäume (Stamm + Foto-Laubkrone), Farbton leicht variiert
+  { const bg = baumGeometrie(), bm = baumMaterialien(); const liste = trees.filter((p) => !inZusatz(p.x, p.z)); const TON = [0xffffff, 0xe6efd2, 0xf3f0d6, 0xd9e6c4, 0xfff4dc];
+    scene.add(instanced(bg.stamm, bm.stamm, liste)); scene.add(instanced(bg.krone, bm.krone, liste, { colorFn: (p, i) => TON[i % TON.length] })); }
   scene.add(instanced(carGeometry(), carMat, carsF.map((c) => ({ ...c, y: 0 })), { colorFn: (p) => p.c }));
   scene.add(instanced(benchGeometry(), propMat, benches.filter((p) => !inZusatz(p.x, p.z))));
   scene.add(instanced(trafficLightGeometry(), propMat, lights));
@@ -798,7 +835,7 @@ export function buildWorld(scene, { seed = 7071, licht = 'standard', zusatz = []
     setLotFree(name, frei) { for (const o of lotObjs[name] || []) o.visible = frei; },
     lotPos(name) { const [i, j] = BAUPLAETZE[name]; return new THREE.Vector3(i * P, SLAB, j * P); },
     update(t, camera) {
-      U.time.value = t;
+      U.time.value = t; BAUM_ZEIT.value = t;
       market.update(t);
       beaconMat.emissiveIntensity = (Math.sin(t * 3.2) > 0.55 ? 4.5 : 0.25);
       dust.material.uniforms.uCam.value.copy(camera.position);

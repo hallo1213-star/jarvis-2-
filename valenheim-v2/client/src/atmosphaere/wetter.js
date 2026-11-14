@@ -39,7 +39,7 @@ export class Wetter {
     this.ton = new Ton(); this.ton.aktiv(ton);
   }
   update(dt, cam, basisNebel, nacht) {
-    this.art = wetterJetzt(); const z = ARTEN[this.art]; const f = Math.min(1, dt * 0.25);
+    this.art = this.manuell ?? wetterJetzt(); const z = ARTEN[this.art]; const f = Math.min(1, dt * 0.25);
     for (const k of ['regen', 'nebel', 'dunkel']) this.k[k] += ((z[k] ?? 0) - this.k[k]) * f;
     if (this.scene.fog) this.scene.fog.density = basisNebel * this.k.nebel;
     this.r.toneMappingExposure *= 1 - this.k.dunkel * 0.45;
