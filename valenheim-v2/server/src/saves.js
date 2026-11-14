@@ -18,8 +18,8 @@ export function cleanSettings(input, base = {}) {
 export async function getSave(playerId) {
   const s = await one('SELECT * FROM v2_saves WHERE player_id = ?', [playerId]);
   const pos = s ? JSON.parse(s.pos || '{}') : {}; const settings = s ? JSON.parse(s.settings || '{}') : {};
-  const charakter = s ? JSON.parse(s.charakter || '{}') : {};
-  return { charakter: { aussehen: charakter.aussehen || null, outfits: charakter.outfits || [] }, pos: Number.isFinite(pos.x) ? pos : { ...DEFAULT_POS }, settings: cleanSettings(settings, { grafik: 'auto', kamera: 'verfolger', ton: true, empfindlichkeit: 1, yInvertiert: false }), updated: s?.updated_at || 0 };
+  const charakter = s ? JSON.parse(s.charakter || '{}') : {}; const geparkt = s ? JSON.parse(s.geparkt || '{}') : {};
+  return { charakter: { aussehen: charakter.aussehen || null, outfits: charakter.outfits || [] }, pos: Number.isFinite(pos.x) ? pos : { ...DEFAULT_POS }, settings: cleanSettings(settings, { grafik: 'auto', kamera: 'verfolger', ton: true, empfindlichkeit: 1, yInvertiert: false }), geparkt: geparkt.id ? geparkt : null, updated: s?.updated_at || 0 };
 }
 export async function saveSettings(playerId, input) {
   const cur = await getSave(playerId); const settings = cleanSettings(input, cur.settings);
@@ -35,4 +35,10 @@ export async function saveCharakter(playerId, input) {
   const c = pruefeCharakter(input);
   await q('UPDATE v2_saves SET charakter = ?, updated_at = ? WHERE player_id = ?', [JSON.stringify(c), Date.now(), playerId]);
   return c;
+}
+
+// Phase 7: Wo steht mein Auto? (id + Position) – null = in der Garage
+export async function saveGeparkt(playerId, a) {
+  const v = a ? { id: a.id, x: +a.x.toFixed(2), y: +a.y.toFixed(2), z: +a.z.toFixed(2), h: +a.h.toFixed(3) } : {};
+  await q('UPDATE v2_saves SET geparkt = ?, updated_at = ? WHERE player_id = ?', [JSON.stringify(v), Date.now(), playerId]);
 }

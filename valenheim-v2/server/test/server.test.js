@@ -154,3 +154,45 @@ test('Phase 6: Auto ausparken, schnell fahren nur im eigenen Auto', async () => 
   ws.send(JSON.stringify({ t: 'pos', x: p.x + 9, y: p.y, z: p.z, h: 0, f: 1 })); await sleep(150);
   assert.equal(msgs.filter((m) => m.t === 'korrektur').length, n); ws.close();
 });
+
+test('Phase 8: Lieferjob nur an der Firma, Lohn nur am Ziel, Blitz-Lieferung wird abgelehnt', async () => {
+  const t = (await api('POST', '/api/auth/register', { name: 'Liefer8', passwort: 'passwort1' })).data.token;
+  const { ws, msgs } = await wsConnect(t); const warte = () => sleep(200); const letzte = () => msgs.filter((m) => m.t === 'job').at(-1);
+  ws.send(JSON.stringify({ t: 'job_start', firma: 'doener' })); await warte(); assert.match(letzte().fehler, /Michelles Döner/);
+  // zur Firma laufen (in kleinen, erlaubten Schritten)
+  const { firmaPos } = await import('../../shared/jobs.js'); const K = JSON.parse((await import('node:fs')).readFileSync(new URL('../../shared/katalog.json', import.meta.url)));
+  const fp = firmaPos(K.jobs, 'doener'); let p = { ...msgs.find((m) => m.t === 'willkommen').pos };
+  const geh = async (zx, zz) => { while (Math.hypot(zx - p.x, zz - p.z) > 0.5) { const d = Math.hypot(zx - p.x, zz - p.z), s = Math.min(1.2, d); p.x += (zx - p.x) / d * s; p.z += (zz - p.z) / d * s; ws.send(JSON.stringify({ t: 'pos', x: p.x, y: p.y, z: p.z, h: 0 })); await sleep(110); } };
+  await geh(fp.x, fp.z);
+  ws.send(JSON.stringify({ t: 'job_start', firma: 'doener' })); await warte(); const job = letzte().job; assert.ok(job && job.lohn > 120 && job.d > 150, JSON.stringify(letzte()));
+  ws.send(JSON.stringify({ t: 'job_liefern' })); await warte(); assert.match(letzte().fehler, /noch nicht/);
+  assert.equal(msgs.filter((m) => m.t === 'korrektur').length, 0); ws.close();
+});
+
+test('Phase 7: geparktes Auto steht nach dem Neu-Anmelden noch da', async () => {
+  const t = (await api('POST', '/api/auth/register', { name: 'Parker7', passwort: 'passwort1' })).data.token;
+  const fz = (await api('POST', '/api/fahrzeuge/kaufen', { modell: 'kompakt', farbe: 5 }, t)).data.fahrzeug;
+  const A = await wsConnect(t); const p = A.msgs.find((m) => m.t === 'willkommen').pos; assert.equal(A.msgs[0].meinAuto, null);
+  A.ws.send(JSON.stringify({ t: 'auto_raus', id: fz.id, x: p.x + 4, y: p.y, z: p.z, h: 1 })); await sleep(200); A.ws.close(); await sleep(400);
+  const B = await wsConnect(t); const w = B.msgs.find((m) => m.t === 'willkommen');
+  assert.equal(w.meinAuto.id, fz.id); assert.equal(w.meinAuto.x, +(p.x + 4).toFixed(2)); assert.equal(w.meinAuto.kennzeichen, fz.kennzeichen);
+  B.ws.send(JSON.stringify({ t: 'auto_weg' })); await sleep(150); B.ws.close(); await sleep(400);
+  const C = await wsConnect(t); assert.equal(C.msgs.find((m) => m.t === 'willkommen').meinAuto, null); C.ws.close();
+});
+
+test('Phase 8: komplette Lieferung mit dem Auto wird bezahlt (bar)', { timeout: 90_000 }, async () => {
+  const t = (await api('POST', '/api/auth/register', { name: 'Kurier8', passwort: 'passwort1' })).data.token;
+  const fz = (await api('POST', '/api/fahrzeuge/kaufen', { modell: 'kompakt', farbe: 1 }, t)).data.fahrzeug;
+  const { ws, msgs } = await wsConnect(t); const letzte = () => msgs.filter((m) => m.t === 'job').at(-1);
+  const { firmaPos } = await import('../../shared/jobs.js'); const K = JSON.parse((await import('node:fs')).readFileSync(new URL('../../shared/katalog.json', import.meta.url)));
+  let p = { ...msgs.find((m) => m.t === 'willkommen').pos }; let f = 0;
+  const fahr = async (zx, zz, schritt) => { while (Math.hypot(zx - p.x, zz - p.z) > 0.5) { const d = Math.hypot(zx - p.x, zz - p.z), s = Math.min(schritt, d); p.x += (zx - p.x) / d * s; p.z += (zz - p.z) / d * s; ws.send(JSON.stringify({ t: 'pos', x: p.x, y: p.y, z: p.z, h: 0, ...(f ? { f: 1 } : {}) })); await sleep(105); } };
+  const fp = firmaPos(K.jobs, 'burger'); await fahr(fp.x, fp.z, 1.2);
+  ws.send(JSON.stringify({ t: 'job_start', firma: 'burger' })); await sleep(200); const job = letzte().job; assert.ok(job, JSON.stringify(letzte()));
+  ws.send(JSON.stringify({ t: 'auto_raus', id: fz.id, x: p.x + 2, y: p.y, z: p.z, h: 0 })); await sleep(200);
+  await fahr(p.x + 2, p.z, 1); f = 1; await fahr(job.ziel.x, job.ziel.z, 3);
+  ws.send(JSON.stringify({ t: 'job_liefern' })); await sleep(300);
+  const r = letzte(); assert.equal(r.lohn, job.lohn, JSON.stringify(r)); assert.equal(r.job, null);
+  const geld = msgs.filter((m) => m.t === 'geld').at(-1); assert.equal(geld.konto.bargeld, 1500 + r.lohn + r.bonus);
+  assert.equal(msgs.filter((m) => m.t === 'korrektur').length, 0); ws.close();
+});

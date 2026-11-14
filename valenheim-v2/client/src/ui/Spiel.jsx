@@ -3,6 +3,8 @@ import { Emblem } from './Logo.jsx';
 import { PROFILE } from '../core/quality.js';
 import { api, raumWahl } from '../lib/api.js';
 import { Autohaus, Werkstatt, Handy, euro } from './Laden.jsx';
+import Minikarte from './Minikarte.jsx';
+import { KATALOG } from '../fahrzeuge/modelle.js';
 
 // Spielansicht Phase 1: Testgelände, HUD, Pausenmenü, Touch-Bedienung
 export default function Spiel({ konto, onEnde }) {
@@ -77,6 +79,8 @@ export default function Spiel({ konto, onEnde }) {
             : <button className="knopf knopf--sprung" onTouchStart={(e) => { e.preventDefault(); if (gameRef.current) gameRef.current.input.jump = true; }}>SPRUNG</button>}
         </>)}
         {hinweis && <div key={hinweis.k} className="toast">{hinweis.text}</div>}
+        <Minikarte gameRef={gameRef} groesse={touch ? 120 : 170} />
+        {st.job && <div className="auftrag"><small>{st.job.name} · Lieferung</small><b>{st.job.ware} → {st.job.adresse}</b><small>{st.job.d} m · Lohn {euro(st.job.lohn)} · Trinkgeld, wenn du in {Math.floor(st.job.frist / 60)}:{String(st.job.frist % 60).padStart(2, '0')} da bist</small></div>}
         {st.aktion && !fenster && <button className="aktion" onClick={() => gameRef.current?.aktionAusfuehren()}><kbd>E</kbd> {st.aktion.text}</button>}
         {st.faehrt && <div className="tacho"><b>{st.kmh || 0}</b><small>km/h</small></div>}
         <button className="knopf knopf--handy" onClick={() => setFenster('handy')} aria-label="Handy (H)" title="Handy (H)">📱</button>
@@ -101,6 +105,14 @@ export default function Spiel({ konto, onEnde }) {
       )}
 
       {fenster === 'handy' && <Handy konto={st.konto} aktuell={st.meinAuto} onZu={() => setFenster(null)} onHolen={(a) => gameRef.current?.autoHolen(a)} onWeg={() => gameRef.current?.autoWegbringen()} />}
+      {fenster?.startsWith('job:') && (() => { const key = fenster.slice(4); const F = KATALOG.jobs.firmen[key]; return (
+        <div className="overlay" onClick={(e) => e.target === e.currentTarget && setFenster(null)}><div className="card stack" style={{ width: 'min(420px, 100%)' }}>
+          <div className="eyebrow">Beruf · Lieferfahrer</div><h2 className="h2">{F.name}</h2>
+          <p className="sub">Bring {F.ware}s zu Kunden in ganz Valenheim. Je weiter, desto mehr Lohn (ca. 190–440 €) – bist du schnell, gibt es {KATALOG.jobs.bonus_prozent} % Trinkgeld. Bezahlt wird in bar.</p>
+          {st.job ? <button className="btn btn--ghost" onClick={() => { gameRef.current?.sende({ t: 'job_ende' }); setFenster(null); }}>AKTUELLE LIEFERUNG ABBRECHEN</button>
+            : <button className="btn btn--gold" onClick={() => { gameRef.current?.sende({ t: 'job_start', firma: key }); setFenster(null); }}>LIEFERUNG ANNEHMEN</button>}
+          <p className="hinweis">Tipp: Mit dem Auto geht es viel schneller. Dein Auto holst du übers Handy (H → Garage).</p>
+        </div></div>); })()}
       {fenster === 'autohaus' && <Autohaus konto={st.konto} onZu={() => setFenster(null)} onGekauft={(a) => { setFenster(null); gameRef.current?.autoHolen(a); setHinweis({ text: `Glückwunsch zum ${a.kennzeichen}! Dein Auto steht vor dir.`, k: Date.now() }); }} />}
       {fenster === 'werkstatt' && <Werkstatt konto={st.konto} aktuell={st.meinAuto} onZu={() => setFenster(null)} onGetunt={(a) => gameRef.current?.autoAktualisieren(a)} />}
 

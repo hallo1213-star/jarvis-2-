@@ -58,6 +58,7 @@ const MIGRATIONEN = {
     `CREATE TABLE IF NOT EXISTS v2_fahrzeuge (id TEXT PRIMARY KEY, player_id TEXT NOT NULL, modell TEXT NOT NULL, farbe INTEGER NOT NULL, kennzeichen TEXT NOT NULL UNIQUE, tuning TEXT NOT NULL DEFAULT '{}', gekauft BIGINT NOT NULL)`,
     'CREATE INDEX IF NOT EXISTS v2_idx_fahrzeuge ON v2_fahrzeuge(player_id)',
   ],
+  4: ["ALTER TABLE v2_saves ADD COLUMN geparkt TEXT NOT NULL DEFAULT '{}'"],
 };
 let version = Number((await one("SELECT value FROM v2_meta WHERE key = 'schema'")).value);
 for (const [v, befehle] of Object.entries(MIGRATIONEN)) {

@@ -11,7 +11,10 @@ Neuaufbau als Open-World-Lebenssimulation. Läuft **getrennt** vom alten Spiel (
 | 4 Multiplayer | Öffentliche Server (je 12 Spieler, neue öffnen automatisch), private Server mit 6-stelligem Code, andere Spieler mit ihrem Aussehen, Chat mit Filter + Spamschutz, Spielerliste (Tab) | ✅ |
 | 5 Bank/Handy | Bargeld + Konto, Ein-/Auszahlen, Überweisen an Spieler, Umsätze, Bürgergeld alle 10 Min online, Handy (H) | ✅ |
 | 6 Fahrzeuge | **Janniks Autohaus** (Showroom am Bauplatz B15, goldene Lichtsäule), 6 Modelle, Fahren mit Kollision, Wunschkennzeichen, Tuning (Lack, Felgen, Tieferlegung, Motor, Spoiler, Neon, Tönung), Autos der anderen sichtbar | ✅ |
-| 7–12 | Immobilien/Garagen, Berufe, NPCs, Regierung/Story, Interaktion, Tests | geplant |
+| 7 Parken | Dein Auto bleibt stehen, wo du es abstellst – auch nach dem Abmelden oder einem Server-Neustart | ✅ (Immobilien folgen) |
+| 8 Berufe | Lieferfahrer für Michelles Döner, Louis' Burger, Levys Tankstelle: Ziel + Lohn vom Server, Trinkgeld bei schneller Lieferung, Schummelschutz | ✅ |
+| Extra | Minikarte (dreht mit der Kamera): Straßen, Spieler, dein Auto, Autohaus, Jobs, Lieferziel | ✅ |
+| 9–12 | NPCs, Regierung/Story, Interaktion, Tests | geplant |
 
 Schutz gegen Schummeln: Geld, Preise, Kauf, Tuning, Kennzeichen, Tempo und Position prüft immer der Server.
 Kaufen/Tunen geht nur, wenn der Server dich wirklich bei Janniks Autohaus sieht.
@@ -21,7 +24,7 @@ PC: `WASD` laufen/fahren · `Shift` rennen · `Leertaste` springen/Handbremse ·
 Handy/Tablet: Joystick links, rechts wischen zum Umsehen, Knöpfe für Rennen/Sprung (im Auto: Bremse), 📱, 💬, Aktionsknopf unten.
 
 ## Tests
-`cd server && node --test test/*.test.js` – 11 Tests mit echter Postgres-Engine (Konto, Speicher, Charakter, Räume, Chat-Filter, Bank inkl. gleichzeitiger Abbuchungen, Autokauf, Kennzeichen, Tuning, Tempo im Auto).
+`cd server && node --test test/*.test.js` – 14 Tests mit echter Postgres-Engine (Konto, Speicher, Charakter, Räume, Chat-Filter, Bank inkl. gleichzeitiger Abbuchungen, Autokauf, Kennzeichen, Tuning, Tempo im Auto, Parken, Lieferjobs).
 
 ## Lokal
 ```bash

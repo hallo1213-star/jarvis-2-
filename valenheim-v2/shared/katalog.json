@@ -1,25 +1,235 @@
 {
   "_info": "Fahrzeuge + Tuning für VALENHEIM 2.0. Preise in Euro. Server prüft alles hiergegen.",
-  "autohaus": { "name": "JANNIKS AUTOHAUS", "x": 74, "z": -74, "radius": 34, "werkstatt": [60, -58], "theke": [86, -74] },
-  "start": { "bargeld": 1500, "bank": 25000 },
-  "gehalt": { "betrag": 250, "minuten": 10, "text": "Bürgergeld der Republik Valenheim" },
-  "farben": ["#9a1b1b", "#c4161c", "#1b3a6b", "#2563eb", "#e8e8e8", "#f5f5f0", "#202226", "#0b0b0d", "#7d7f82", "#2f4b33", "#3fbf5f", "#c9b48a", "#d4af37", "#b56a1d", "#ff7a00", "#5d2a6e", "#ff3ea5", "#1d6f7a", "#00c8e0", "#ffd400"],
+  "autohaus": {
+    "name": "JANNIKS AUTOHAUS",
+    "x": 74,
+    "z": -74,
+    "radius": 34,
+    "werkstatt": [
+      60,
+      -58
+    ],
+    "theke": [
+      86,
+      -74
+    ]
+  },
+  "start": {
+    "bargeld": 1500,
+    "bank": 25000
+  },
+  "gehalt": {
+    "betrag": 250,
+    "minuten": 10,
+    "text": "Bürgergeld der Republik Valenheim"
+  },
+  "farben": [
+    "#9a1b1b",
+    "#c4161c",
+    "#1b3a6b",
+    "#2563eb",
+    "#e8e8e8",
+    "#f5f5f0",
+    "#202226",
+    "#0b0b0d",
+    "#7d7f82",
+    "#2f4b33",
+    "#3fbf5f",
+    "#c9b48a",
+    "#d4af37",
+    "#b56a1d",
+    "#ff7a00",
+    "#5d2a6e",
+    "#ff3ea5",
+    "#1d6f7a",
+    "#00c8e0",
+    "#ffd400"
+  ],
   "modelle": {
-    "kompakt":   { "name": "Valen Spark",     "typ": "kompakt",   "preis": 18000,  "kmh": 165, "beschleunigung": 9,  "plaetze": 4 },
-    "kombi":     { "name": "Valen Tourer",    "typ": "kombi",     "preis": 34000,  "kmh": 190, "beschleunigung": 10, "plaetze": 5 },
-    "limousine": { "name": "Valen Senator",   "typ": "limousine", "preis": 48000,  "kmh": 215, "beschleunigung": 11, "plaetze": 5 },
-    "suv":       { "name": "Valen Atlas",     "typ": "suv",       "preis": 72000,  "kmh": 200, "beschleunigung": 10.5, "plaetze": 5 },
-    "sport":     { "name": "Valen Viper GT",  "typ": "sport",     "preis": 145000, "kmh": 265, "beschleunigung": 15, "plaetze": 2 },
-    "super":     { "name": "Valen Phantom R", "typ": "super",     "preis": 390000, "kmh": 320, "beschleunigung": 19, "plaetze": 2 }
+    "kompakt": {
+      "name": "Valen Spark",
+      "typ": "kompakt",
+      "preis": 18000,
+      "kmh": 165,
+      "beschleunigung": 9,
+      "plaetze": 4
+    },
+    "kombi": {
+      "name": "Valen Tourer",
+      "typ": "kombi",
+      "preis": 34000,
+      "kmh": 190,
+      "beschleunigung": 10,
+      "plaetze": 5
+    },
+    "limousine": {
+      "name": "Valen Senator",
+      "typ": "limousine",
+      "preis": 48000,
+      "kmh": 215,
+      "beschleunigung": 11,
+      "plaetze": 5
+    },
+    "suv": {
+      "name": "Valen Atlas",
+      "typ": "suv",
+      "preis": 72000,
+      "kmh": 200,
+      "beschleunigung": 10.5,
+      "plaetze": 5
+    },
+    "sport": {
+      "name": "Valen Viper GT",
+      "typ": "sport",
+      "preis": 145000,
+      "kmh": 265,
+      "beschleunigung": 15,
+      "plaetze": 2
+    },
+    "super": {
+      "name": "Valen Phantom R",
+      "typ": "super",
+      "preis": 390000,
+      "kmh": 320,
+      "beschleunigung": 19,
+      "plaetze": 2
+    }
   },
   "tuning": {
-    "farbe":   { "name": "Lackierung",     "preis": 1500 },
-    "felgen":  { "name": "Felgen",         "stufen": ["Serie", "Sport", "Chrom", "Schwarz matt", "Gold"], "preise": [0, 2000, 3500, 2500, 6000] },
-    "tiefer":  { "name": "Tieferlegung",   "stufen": ["Serie", "-3 cm", "-6 cm"], "preise": [0, 1500, 3000] },
-    "motor":   { "name": "Motor",          "stufen": ["Serie", "Stufe 1", "Stufe 2", "Stufe 3"], "preise": [0, 8000, 18000, 35000] },
-    "spoiler": { "name": "Heckspoiler",    "stufen": ["Kein", "Lippe", "GT-Flügel"], "preise": [0, 2500, 6500] },
-    "neon":    { "name": "Unterbodenlicht", "stufen": ["Aus", "Blau", "Rot", "Grün", "Lila", "Weiß"], "preise": [0, 3000, 3000, 3000, 3000, 3000] },
-    "toenung": { "name": "Scheibentönung", "stufen": ["Keine", "Leicht", "Limo"], "preise": [0, 900, 1800] }
+    "farbe": {
+      "name": "Lackierung",
+      "preis": 1500
+    },
+    "felgen": {
+      "name": "Felgen",
+      "stufen": [
+        "Serie",
+        "Sport",
+        "Chrom",
+        "Schwarz matt",
+        "Gold"
+      ],
+      "preise": [
+        0,
+        2000,
+        3500,
+        2500,
+        6000
+      ]
+    },
+    "tiefer": {
+      "name": "Tieferlegung",
+      "stufen": [
+        "Serie",
+        "-3 cm",
+        "-6 cm"
+      ],
+      "preise": [
+        0,
+        1500,
+        3000
+      ]
+    },
+    "motor": {
+      "name": "Motor",
+      "stufen": [
+        "Serie",
+        "Stufe 1",
+        "Stufe 2",
+        "Stufe 3"
+      ],
+      "preise": [
+        0,
+        8000,
+        18000,
+        35000
+      ]
+    },
+    "spoiler": {
+      "name": "Heckspoiler",
+      "stufen": [
+        "Kein",
+        "Lippe",
+        "GT-Flügel"
+      ],
+      "preise": [
+        0,
+        2500,
+        6500
+      ]
+    },
+    "neon": {
+      "name": "Unterbodenlicht",
+      "stufen": [
+        "Aus",
+        "Blau",
+        "Rot",
+        "Grün",
+        "Lila",
+        "Weiß"
+      ],
+      "preise": [
+        0,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000
+      ]
+    },
+    "toenung": {
+      "name": "Scheibentönung",
+      "stufen": [
+        "Keine",
+        "Leicht",
+        "Limo"
+      ],
+      "preise": [
+        0,
+        900,
+        1800
+      ]
+    }
   },
-  "kennzeichen": { "preis": 2500, "max_fahrzeuge": 10 }
+  "kennzeichen": {
+    "preis": 2500,
+    "max_fahrzeuge": 10
+  },
+  "jobs": {
+    "_info": "Phase 8: Lieferfahrer. Start an der Firma (Bauplatz), Ziel = zufällige Adresse auf einem Gehweg. Lohn = basis + pro_meter * Entfernung (+ Bonus, wenn schnell).",
+    "raster": 74,
+    "halbblock": 28,
+    "bereich": 5,
+    "basis": 120,
+    "pro_meter": 0.45,
+    "bonus_prozent": 30,
+    "min_tempo": 45,
+    "pause_s": 5,
+    "firmen": {
+      "doener": {
+        "name": "Michelles Döner",
+        "platz": [
+          1,
+          0
+        ],
+        "ware": "Döner-Bestellung"
+      },
+      "burger": {
+        "name": "Louis' Burger",
+        "platz": [
+          0,
+          2
+        ],
+        "ware": "Burger-Menü"
+      },
+      "tanke": {
+        "name": "Levys Tankstelle",
+        "platz": [
+          2,
+          2
+        ],
+        "ware": "Paket"
+      }
+    }
+  }
 }

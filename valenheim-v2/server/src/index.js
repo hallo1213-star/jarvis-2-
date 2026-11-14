@@ -11,6 +11,7 @@ import * as RAUM from './raeume.js';
 import * as GELD from './geld.js';
 import * as FZ from './fahrzeuge.js';
 import { KATALOG } from './katalog.js';
+import * as BERUF from './berufe.js';
 
 process.on('unhandledRejection', (e) => console.error('Unbehandelter Fehler:', e));
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -135,6 +136,7 @@ const server = http.createServer(async (req, res) => {
 
 // ---------- Echtzeit (Phase 4): Räume, andere Spieler, Chat ----------
 const clients = new Map(); // playerId -> client
+const geparkt = new Map(); // playerId -> letzte Parkposition (schneller als die DB bei kurzem Neuverbinden)
 const MAX_SPEED = 13, MAX_AUTO = 100, BOUNDS = 2200;
 const info = (c) => ({ id: c.id, name: c.name, look: c.look, pos: c.pos, auto: c.auto || null, f: c.faehrt ? 1 : 0 });
 const wss = new WebSocketServer({ server, path: '/ws', maxPayload: 4096 });
@@ -147,16 +149,18 @@ wss.on('connection', (ws) => {
       if (m.t !== 'hallo' || ws.busy) return; ws.busy = true;
       const p = await AUTH.playerFromToken(String(m.token || '')); if (!p) return ws.close(4003, 'ungültig');
       clearTimeout(timer);
-      const old = clients.get(p.id); if (old) { old.ws.send(JSON.stringify({ t: 'doppelt' })); old.ws.close(4005, 'doppelt'); const r0 = old.raum; RAUM.verlassen(old); if (r0) RAUM.anAlle(r0, { t: 'weg', id: old.id, name: old.name }); }
+      const old = clients.get(p.id); if (old) { old.ws.send(JSON.stringify({ t: 'doppelt' })); old.ws.close(4005, 'doppelt'); const r0 = old.raum; RAUM.verlassen(old); geparkt.set(old.id, old.auto ? { id: old.auto.id, x: old.auto.x, y: old.auto.y, z: old.auto.z, h: old.auto.h } : null); if (r0) RAUM.anAlle(r0, { t: 'weg', id: old.id, name: old.name }); }
       const f = RAUM.finde({ raum: m.raum, code: m.code });
       if (f.fehler) { ws.send(JSON.stringify({ t: 'abgelehnt', grund: f.fehler })); return ws.close(4010, 'voll'); }
       const sv = await SAVE.getSave(p.id);
       c = { id: p.id, name: p.username, ws, look: sv.charakter?.aussehen || null, pos: { ...sv.pos, welt: sv.pos.welt || 'valenheim' }, lastT: Date.now(), dirty: false, raum: null };
       const konto = await GELD.konto(p.id);
+      const park = geparkt.has(p.id) ? geparkt.get(p.id) : sv.geparkt;
+      if (park?.id) { const fz = await FZ.eins(p.id, park.id); if (fz) c.auto = { ...FZ.aussehen(fz), x: park.x, y: park.y, z: park.z, h: park.h }; }
       if (ws.readyState !== 1) return;
       clients.set(p.id, c); RAUM.betreten(f.raum, c);
       const r = f.raum;
-      ws.send(JSON.stringify({ t: 'willkommen', du: c.id, konto, pos: c.pos, online: clients.size, raum: { id: r.id, name: r.name, privat: r.privat, code: r.privat ? r.code : null, max: RAUM.MAX_SPIELER }, andere: [...r.spieler.values()].filter((o) => o !== c).map(info) }));
+      ws.send(JSON.stringify({ t: 'willkommen', du: c.id, konto, meinAuto: c.auto || null, pos: c.pos, online: clients.size, raum: { id: r.id, name: r.name, privat: r.privat, code: r.privat ? r.code : null, max: RAUM.MAX_SPIELER }, andere: [...r.spieler.values()].filter((o) => o !== c).map(info) }));
       RAUM.anAlle(r, { t: 'neu', ...info(c) }, c);
       return;
     }
@@ -185,6 +189,11 @@ wss.on('connection', (ws) => {
       if (c.raum) RAUM.anAlle(c.raum, { t: 'auto', spieler: c.id, auto: c.auto, f: 0 });
     } else if (m.t === 'auto_weg') {
       c.auto = null; c.faehrt = false; if (c.raum) RAUM.anAlle(c.raum, { t: 'auto', spieler: c.id, auto: null, f: 0 });
+    } else if (m.t === 'job_start' || m.t === 'job_liefern' || m.t === 'job_ende') {
+      if (limited('job:' + c.id, 20)) return;
+      const r = m.t === 'job_start' ? BERUF.starten(c, String(m.firma || '')) : m.t === 'job_liefern' ? await BERUF.liefern(c) : BERUF.abbrechen(c);
+      ws.send(JSON.stringify({ t: 'job', ...r, job: c.job || null }));
+      if (r.konto) ws.send(JSON.stringify({ t: 'geld', konto: r.konto, text: `+${(r.lohn + r.bonus).toLocaleString('de-DE')} € Lohn${r.bonus ? ' inkl. Trinkgeld' : ''}` }));
     } else if (m.t === 'look') {
       // Aussehen neu vom Server laden (nach Änderung im Editor) – nie vom Client übernehmen
       if (limited('look:' + c.id, 6)) return;
@@ -198,6 +207,8 @@ wss.on('connection', (ws) => {
       clients.delete(c.id); const r = c.raum; RAUM.verlassen(c);
       if (r) RAUM.anAlle(r, { t: 'weg', id: c.id, name: c.name });
       if (c.dirty) await SAVE.savePos(c.id, c.pos).catch(console.error);
+      const park = c.auto ? { id: c.auto.id, x: c.auto.x, y: c.auto.y, z: c.auto.z, h: c.auto.h } : null; geparkt.set(c.id, park);
+      await SAVE.saveGeparkt(c.id, park).catch(console.error);
     }
   });
   ws.on('error', () => {});
@@ -219,5 +230,5 @@ setInterval(() => AUTH.cleanupSessions().catch(() => {}), 6 * 3600_000).unref();
 server.listen(PORT, () => console.log(`VALENHEIM 2.0 läuft auf http://localhost:${PORT} (Datenbank: ${DB.backend})`));
 
 // Sauber beenden: offene Positionen speichern
-async function shutdown() { for (const c of clients.values()) if (c.dirty) await SAVE.savePos(c.id, c.pos).catch(() => {}); await DB.close(); process.exit(0); }
+async function shutdown() { for (const c of clients.values()) { if (c.dirty) await SAVE.savePos(c.id, c.pos).catch(() => {}); await SAVE.saveGeparkt(c.id, c.auto || null).catch(() => {}); } await DB.close(); process.exit(0); }
 process.on('SIGTERM', shutdown); process.on('SIGINT', shutdown);

@@ -16,6 +16,7 @@ import { getToken } from '../lib/api.js';
 import { AndereSpieler } from '../spieler/andere.js';
 import { Auto } from '../fahrzeuge/auto.js';
 import { setAutoNacht } from '../fahrzeuge/modelle.js';
+import { baueJobPunkte } from '../welt/jobs.js';
 
 const GEHEN = 4.4, RENNEN = 7.4, SPRUNG = 5.6, SCHWERKRAFT = 18;
 const KAPSEL = { halb: 0.55, r: 0.35 }; // Gesamthöhe 1,8 m
@@ -82,7 +83,7 @@ export class Game {
       this.gelaende = baueTestgelaende(this.scene, RAPIER, this.world); this.exposure = 0.5;
     } else {
       const karte = await baueValenheim(this.scene, RAPIER, this.world, { onFortschritt });
-      this.gelaende = karte; this.zonen = karte.zonen || []; this.sun = karte.world.sun; this.hemi = karte.world.hemi;
+      this.gelaende = karte; this.jobPunkte = baueJobPunkte(this.scene); this.zonen = [...(karte.zonen || []), ...this.jobPunkte.zonen]; this.sun = karte.world.sun; this.hemi = karte.world.hemi;
       this.sunDir = WELT_U.sunDir.value.clone();
       this.exposure = karte.world.exposure || 1.1; this.kollisionen = karte.kollisionen;
       this.details = new Detailsteuerung(this.scene);
@@ -120,7 +121,13 @@ export class Game {
     ws.onmessage = (e) => {
       const m = JSON.parse(e.data);
       if (m.t === 'willkommen') {
-        this.ich = m.du; this.raum = m.raum; this.konto = m.konto; this.onStatus?.({ konto: m.konto }); this.raumWunsch = m.raum.privat ? { code: m.raum.code } : { raum: m.raum.id };
+        this.ich = m.du; this.raum = m.raum; this.konto = m.konto; this.onStatus?.({ konto: m.konto });
+        // Phase 7: geparktes Auto steht wieder da
+        if (m.meinAuto && !this.meinAuto) {
+          const a = m.meinAuto; const look = { id: a.id, modell: a.modell, farbe: a.farbe, kennzeichen: a.kennzeichen, tuning: a.tuning };
+          this.meinAuto = new Auto(this.scene, RAPIER, this.world, look, { x: a.x, y: a.y - 0.9, z: a.z, h: a.h }, { lokal: true }); this.meinAutoInfo = look;
+          this.onStatus?.({ meinAuto: a.id });
+        } this.raumWunsch = m.raum.privat ? { code: m.raum.code } : { raum: m.raum.id };
         this.andere.alleWeg(); for (const o of m.andere) this.andere.setze(o);
         // Steht schon jemand genau hier (z. B. am Startpunkt)? Dann ein paar Meter daneben erscheinen.
         const ich = this.body.translation();
@@ -138,6 +145,12 @@ export class Game {
       if (m.t === 's') this.andere.snapshot(m.p, this.ich);
       if (m.t === 'chat') this.onChat?.(m);
       if (m.t === 'geld') { this.konto = m.konto; this.onStatus?.({ konto: m.konto }); if (m.text) this.onHinweis?.(m.text); }
+      if (m.t === 'job') {
+        this.job = m.job; this.jobPunkte?.setzeZiel(m.job?.ziel); this.onStatus?.({ job: m.job });
+        if (m.fehler) this.onHinweis?.(m.fehler);
+        else if (m.lohn) this.onHinweis?.(`Geliefert in ${m.sekunden} s! +${m.lohn + m.bonus} € ${m.bonus ? '(mit Trinkgeld)' : ''}`);
+        else if (m.job) this.onHinweis?.(`${m.job.ware} nach ${m.job.adresse} (${m.job.d} m) – folge der grünen Säule.`);
+      }
       if (m.t === 'auto' && m.spieler !== this.ich) this.andere.auto(m.spieler, m.auto, m.f);
       if (m.t === 'abgelehnt') { this.ende = true; this.onAbgelehnt?.(m.grund); }
       if (m.t === 'korrektur') { if (this.faehrt) this.aussteigen(true); this.body.setTranslation(m.pos, true); this.velY = 0; }
@@ -176,14 +189,18 @@ export class Game {
   // Was kann man hier gerade tun? (Hinweis unten in der Mitte, E / Antippen)
   aktionPruefen() {
     const p = this.body.translation(); let a = null;
-    if (this.faehrt) a = { art: 'aussteigen', text: 'Aussteigen' };
+    if (this.job && Math.hypot(p.x - this.job.ziel.x, p.z - this.job.ziel.z) < 7) a = { art: 'liefern', text: `${this.job.ware} übergeben` };
+    else if (this.faehrt) a = { art: 'aussteigen', text: 'Aussteigen' };
     else if (this.meinAuto && this.meinAuto.abstand(p) < this.meinAuto.T.L / 2 + 1.6) a = { art: 'einsteigen', text: `Einsteigen – ${this.meinAuto.M.name}` };
-    else for (const z of this.zonen || []) if (Math.hypot(p.x - z.x, p.z - z.z) < z.r) { a = { art: z.art, text: z.text }; break; }
+    else for (const z of this.zonen || []) if (Math.hypot(p.x - z.x, p.z - z.z) < z.r) { a = { ...z }; break; }
     if ((a?.text || null) !== (this.aktion?.text || null)) { this.aktion = a; this.onStatus?.({ aktion: a }); }
   }
   aktionAusfuehren() {
     const a = this.aktion; if (!a) return;
-    if (a.art === 'einsteigen') this.einsteigen(); else if (a.art === 'aussteigen') this.aussteigen(); else this.onOeffne?.(a.art);
+    if (a.art === 'einsteigen') this.einsteigen(); else if (a.art === 'aussteigen') this.aussteigen();
+    else if (a.art === 'liefern') this.sende({ t: 'job_liefern' });
+    else if (a.art === 'job') this.onOeffne?.('job:' + a.firma);
+    else this.onOeffne?.(a.art);
   }
 
   fahren(dt) {
@@ -219,6 +236,14 @@ export class Game {
     this.kmhT = (this.kmhT || 0) + dt; if (this.kmhT > 0.1) { this.kmhT = 0; this.onStatus?.({ kmh: Math.round(a.kmh()) }); }
   }
 
+  sende(m) { if (this.ws?.readyState === 1) this.ws.send(JSON.stringify(m)); }
+  // Daten für die Minikarte
+  karte() {
+    const p = this.faehrt && this.meinAuto ? this.meinAuto.pos : this.body.translation();
+    return { x: p.x, z: p.z, yaw: this.yaw, heading: this.heading, andere: [...this.andere.map.values()].map((o) => ({ x: o.fig.root.position.x, z: o.fig.root.position.z, f: o.f })),
+      auto: this.meinAuto && !this.faehrt ? { x: this.meinAuto.pos.x, z: this.meinAuto.pos.z } : null, ziel: this.job?.ziel || null, zonen: this.zonen };
+  }
+
   spielerListe() { return [{ id: this.ich, name: this.name, du: true }, ...this.andere.namen()]; }
   chat(text) { if (this.ws?.readyState === 1 && text.trim()) this.ws.send(JSON.stringify({ t: 'chat', text: text.slice(0, 140) })); }
 
@@ -241,7 +266,7 @@ export class Game {
     this.aktionT = (this.aktionT || 0) + dt; if (this.aktionT > 0.15) { this.aktionT = 0; this.aktionPruefen(); }
     this.andere.update(dt, this.camera);
     this.world.timestep = dt; this.world.step();
-    this.gelaende.update(this.t, this.camera);
+    this.gelaende.update(this.t, this.camera); this.jobPunkte?.update(this.t);
     this.details?.update(dt, this.camera.position);
     if (this.tageszeit) {
       const uhr = this.tageszeit.update(); this.ampeln.update(); setAutoNacht(this.tageszeit.nacht || 0);
