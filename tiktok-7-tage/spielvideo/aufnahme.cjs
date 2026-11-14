@@ -53,8 +53,8 @@ const name = process.argv[2]; if (!DAUER[name]) { console.log('Unbekannt:', name
       g.kameraHook = (gg) => { const p = gg.figur.root.position; const k = gg.t / T.__len; kam(p.x + 3.6 - k * 0.8, p.y + 1.5, p.z - 2.6 + k * 0.6, p.x - 0.4, p.y + 1.05, p.z + 0.3); };
     }
     if (name === 'leute') { // Straßenecke: Verkehr fährt vorbei, Passanten laufen
-      verkehrHier([[0, 0, 0, 0.0], [1, 0, 2, 0.25], [-1, 0, 0, 0.5], [0, -1, 1, 0.1], [0, 1, 3, 0.4]]); leuteHier(37, 0);
-      g.figur.root.visible = false; g.kameraHook = (gg) => { gg.figur.root.visible = false; const k = gg.t / T.__len; kam(lerp(26, 30, k), 1.7, 28.5, 50, 1.0, 37); };
+      verkehrHier([[-2, 0, 0, 0.55], [-1, 0, 0, 0.1], [1, 0, 2, 0.55], [0, 0, 2, 0.05], [-3, 0, 0, 0.7]]); leuteHier(0, 0); g.passanten.leute.forEach((p, i) => { p.s = 2 * 26.2 * 2 + (i - 4) * 2.2; p.dir = i % 2 ? 1 : -1; });
+      g.figur.root.visible = false; g.kameraHook = (gg) => { gg.figur.root.visible = false; const k = gg.t / T.__len; kam(lerp(40, 37, k), 1.45, 28.4, -10, 1.1, 38.5); };
     }
     if (name === 'autohaus') { // Showroom: Kamera fährt um den Phantom R
       g.tageszeit.manuell = 15.5; g.heading = -PI / 2;
