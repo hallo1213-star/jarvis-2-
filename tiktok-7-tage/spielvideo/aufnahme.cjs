@@ -20,7 +20,7 @@ const name = process.argv[2]; if (!DAUER[name]) { console.log('Unbekannt:', name
   const db = new DatabaseSync(process.env.DB_PATH); db.exec('PRAGMA busy_timeout = 20000'); const p = db.prepare('SELECT id FROM v2_players WHERE username = ?').get(user);
   const [sx, sz] = START[name];
   db.prepare('UPDATE v2_saves SET pos = ? WHERE player_id = ?').run(JSON.stringify({ x: sx, y: 1.4, z: sz, h: 0, welt: 'valenheim' }), p.id);
-  db.prepare('UPDATE v2_konten SET bank = 900000 WHERE player_id = ?').run(p.id); db.close();
+  if (name === 'autohaus' || name === 'fahren') db.prepare('UPDATE v2_konten SET bank = 900000 WHERE player_id = ?').run(p.id); db.close();
 
   const b = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
   const c = await b.newContext({ viewport: { width: 540, height: 960 } });
@@ -65,7 +65,7 @@ const name = process.argv[2]; if (!DAUER[name]) { console.log('Unbekannt:', name
       g.kameraHook = (gg) => { const a = gg.meinAuto; if (!a) return; const h = a.heading; kam(a.pos.x - Math.sin(h) * 7.2 + Math.cos(h) * 1.2, a.pos.y + 1.7, a.pos.z - Math.cos(h) * 7.2 - Math.sin(h) * 1.2, a.pos.x + Math.sin(h) * 6, a.pos.y + 0.8, a.pos.z + Math.cos(h) * 6); };
     }
     if (name === 'leben') { // Spieler tanzt, HUD + Minikarte sichtbar, dann Handy
-      g.tageszeit.manuell = 13; leuteHier(7, 20); T.__hud(true); g.yaw = g.heading; g.pitch = 0.12; g.abstand = 3.6; g.figur.zeige('tanzen');
+      g.tageszeit.manuell = 13; leuteHier(7, 20); T.__hud(true); document.querySelectorAll('.hilfe').forEach((e) => { e.style.visibility = 'hidden'; }); g.yaw = g.heading; g.pitch = 0.12; g.abstand = 3.6; g.figur.zeige('tanzen');
     }
     if (name === 'nacht') { // Nacht, Regen, Laternen, Autos mit Licht
       g.tageszeit.manuell = 22.5; g.wetter.manuell = 'gewitter'; verkehrHier([[-1, 0, 1, 0.2], [-1, 0, 3, 0.5]]); leuteHier(-33, 26);
