@@ -10,9 +10,11 @@ import audio as A  # Klangbausteine aus der Serie (prozedural, lizenzfrei)
 HIER = Path(__file__).resolve().parent; BUILD = HIER / 'build'; SR = A.SR; FPS = 24
 L = json.load(open(BUILD / 'laengen.json')); TEXT = {s['id']: s['text'].replace('zwei Punkt null', '2.0').replace('zwölf', '12') for s in json.load(open(HIER / 'text.json'))}
 DAUER = {'intro': L['intro'] + 0.9, 'strasse': L['strasse'] + 0.8, 'leute': L['leute'] + 0.8, 'autohaus': L['autohaus'] + 0.9, 'fahren': 3.6, 'leben': L['leben'] + 0.8, 'nacht': L['nacht'] + 1.0, 'ende': L['ende'] + 1.4}
-FOLGE = ['intro', 'strasse', 'leute', 'autohaus', 'fahren', 'leben', 'nacht', 'ende']
+FOLGE = ['gestern', 'intro', 'strasse', 'leute', 'autohaus', 'fahren', 'leben', 'nacht', 'ende']
+# Einstieg „Gestern …“: Abendaufnahme rückwärts (Kamera senkt sich in die Stadt)
+def bilder(k): return sorted((BUILD / 'bilder' / 'ende').glob('*.jpg'), reverse=True) if k == 'gestern' else sorted((BUILD / 'bilder' / k).glob('*.jpg'))
 # tatsächliche Bildanzahl je Einstellung
-N = {k: len(list((BUILD / 'bilder' / k).glob('*.jpg'))) for k in FOLGE}
+N = {k: len(bilder(k)) for k in FOLGE}
 START = {}; t = 0.0
 for k in FOLGE: START[k] = t; t += N[k] / FPS
 T = t; print('Länge', round(T, 2), 's', N)
@@ -66,7 +68,7 @@ for k in FOLGE:
     for g in gruppen:
         a = t0 + dauer * pos / n; pos += len(g); e = t0 + dauer * pos / n
         ass.append(f'Dialogue: 0,{ts(a)},{ts(e + 0.05)},Text,,0,0,0,,{{\\fad(60,0)}}{" ".join(g).upper()}')
-ass.append(f'Dialogue: 1,{ts(0.15)},{ts(START["strasse"] - 0.1)},Titel,,0,0,0,,{{\\fad(250,200)\\pos(540,560)}}VALENHEIM 2.0')
+ass.append(f'Dialogue: 1,{ts(START["intro"] + 0.15)},{ts(START["strasse"] - 0.1)},Titel,,0,0,0,,{{\\fad(250,200)\\pos(540,560)}}VALENHEIM 2.0')
 ass.append(f'Dialogue: 1,{ts(START["ende"] + 0.4)},{ts(T)},Titel,,0,0,0,,{{\\fad(300,0)\\pos(540,700)}}VALENHEIM 2.0')
 ass.append(f'Dialogue: 1,{ts(START["ende"] + 1.0)},{ts(T)},Unter,,0,0,0,,{{\\fad(300,0)\\pos(540,860)}}BALD ONLINE · FOLG MIR!')
 (BUILD / 'untertitel.ass').write_text('\n'.join(ass), encoding='utf-8')
@@ -75,7 +77,7 @@ ass.append(f'Dialogue: 1,{ts(START["ende"] + 1.0)},{ts(T)},Unter,,0,0,0,,{{\\fad
 liste = BUILD / 'bilder.txt'
 with open(liste, 'w') as f:
     for k in FOLGE:
-        for p in sorted((BUILD / 'bilder' / k).glob('*.jpg')): f.write(f"file '{p}'\nduration {1 / FPS}\n")
+        for p in bilder(k): f.write(f"file '{p}'\nduration {1 / FPS}\n")
 aus = HIER.parent / 'ausgabe' / 'valenheim-2-0.mp4'
 cmd = ['ffmpeg', '-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', str(liste), '-i', str(BUILD / 'ton.wav'),
        '-vf', f"fps={FPS},scale=1080:1920:flags=lanczos,eq=contrast=1.06:saturation=1.12,unsharp=5:5:0.5,ass={BUILD / 'untertitel.ass'}:fontsdir={HIER / 'schrift'}",
