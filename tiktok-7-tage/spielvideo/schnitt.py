@@ -70,7 +70,7 @@ for k in FOLGE:
         ass.append(f'Dialogue: 0,{ts(a)},{ts(e + 0.05)},Text,,0,0,0,,{{\\fad(60,0)}}{" ".join(g).upper()}')
 ass.append(f'Dialogue: 1,{ts(START["intro"] + 0.15)},{ts(START["strasse"] - 0.1)},Titel,,0,0,0,,{{\\fad(250,200)\\pos(540,560)}}VALENHEIM 2.0')
 ass.append(f'Dialogue: 1,{ts(START["ende"] + 0.4)},{ts(T)},Titel,,0,0,0,,{{\\fad(300,0)\\pos(540,700)}}VALENHEIM 2.0')
-ass.append(f'Dialogue: 1,{ts(START["ende"] + 1.0)},{ts(T)},Unter,,0,0,0,,{{\\fad(300,0)\\pos(540,860)}}BALD ONLINE · FOLG MIR!')
+ass.append(f'Dialogue: 1,{ts(START["ende"] + 1.0)},{ts(T)},Unter,,0,0,0,,{{\\fad(300,0)\\pos(540,860)}}JETZT ONLINE · LINK IM KOMMENTAR!')
 (BUILD / 'untertitel.ass').write_text('\n'.join(ass), encoding='utf-8')
 
 # ---------- Video ----------
@@ -78,7 +78,8 @@ liste = BUILD / 'bilder.txt'
 with open(liste, 'w') as f:
     for k in FOLGE:
         for p in bilder(k): f.write(f"file '{p}'\nduration {1 / FPS}\n")
-aus = HIER.parent / 'ausgabe' / 'valenheim-2-0.mp4'
+import os
+aus = HIER.parent / 'ausgabe' / os.environ.get('AUSGABE', 'valenheim-2-0.mp4')
 cmd = ['ffmpeg', '-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', str(liste), '-i', str(BUILD / 'ton.wav'),
        '-vf', f"fps={FPS},scale=1080:1920:flags=lanczos,eq=contrast=1.06:saturation=1.12,unsharp=5:5:0.5,ass={BUILD / 'untertitel.ass'}:fontsdir={HIER / 'schrift'}",
        '-c:v', 'libx264', '-preset', 'slow', '-crf', '23', '-maxrate', '9M', '-bufsize', '18M', '-pix_fmt', 'yuv420p', '-r', str(FPS), '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', str(aus)]
