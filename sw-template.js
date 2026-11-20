@@ -60,6 +60,8 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return
   const url = new URL(request.url)
   if (url.origin !== self.location.origin) return
+  // Video Studio: live API data and large videos always come from the network
+  if (url.pathname.includes('/api/') || url.pathname.includes('/media/') || url.pathname.endsWith('/openapi.json')) return
 
   // Audio: cached → serve ranges locally; otherwise stream from network and cache for offline use
   if (url.pathname.includes('/audio/') && url.pathname.endsWith('.mp3')) {

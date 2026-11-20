@@ -30,5 +30,13 @@ export default defineConfig({
   base: './',
   plugins: [react(), aurixServiceWorker()],
   build: { target: ['es2020', 'safari15'], assetsInlineLimit: 0 },
-  server: { host: true },
+  server: {
+    host: true,
+    // Video Studio: forward API + media requests to the local video server (npm run server)
+    proxy: {
+      '/api/video': 'http://127.0.0.1:8787',
+      '/media': 'http://127.0.0.1:8787',
+      '/openapi.json': 'http://127.0.0.1:8787',
+    },
+  },
 })

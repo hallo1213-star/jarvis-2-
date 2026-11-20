@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { House, Compass, Search as SearchIcon, Library as LibraryIcon, Heart, History, Plus, Smile } from 'lucide-react'
+import { House, Compass, Search as SearchIcon, Library as LibraryIcon, Heart, History, Plus, Smile, Clapperboard } from 'lucide-react'
 import { RouterProvider, Link, useRouter } from './router.jsx'
 import { LibraryProvider, useLibrary } from './store/LibraryContext.jsx'
 import { PlayerProvider, usePlayer } from './store/PlayerContext.jsx'
@@ -16,6 +16,7 @@ import { AlbumPage, ArtistPage, MoodPage, MoodsPage } from './views/Collections.
 import Settings from './views/Settings.jsx'
 import { AudiusArtistPage, GenrePage, TrendingPage } from './views/Audius.jsx'
 import NotFound from './views/NotFound.jsx'
+import VideoStudio from './views/VideoStudio.jsx'
 
 const TABS = [
   { to: '/', label: 'Start', icon: House, match: (p) => p === '/' || p.startsWith('/album') || p.startsWith('/artist') },
@@ -41,6 +42,7 @@ function View() {
     case 'artist': return <ArtistPage id={b} />
     case 'album': return <AlbumPage id={b} />
     case 'settings': return <Settings />
+    case 'studio': return <VideoStudio jobId={b} />
     case 'audius':
       if (b === 'trending') return <TrendingPage />
       if (b === 'genre' && parts[2]) return <GenrePage genre={parts[2]} />
@@ -75,6 +77,7 @@ function Sidebar() {
     { to: '/favorites', label: 'Favoriten', icon: Heart },
     { to: '/recent', label: 'Zuletzt gehört', icon: History },
     { to: '/moods', label: 'Stimmungen', icon: Smile },
+    { to: '/studio', label: 'Video Studio', icon: Clapperboard },
   ]
   return (
     <aside className="sidebar">

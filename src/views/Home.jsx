@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Search, Plus, Settings, Sparkles } from 'lucide-react'
+import { Search, Plus, Settings, Sparkles, Clapperboard } from 'lucide-react'
 import { ALBUMS, ARTISTS, MOODS, TRACKS } from '../data/catalog.js'
 import { getTrack } from '../data/tracks.js'
 import { useLibrary } from '../store/LibraryContext.jsx'
@@ -66,9 +66,12 @@ export default function Home() {
     <div className="page home">
       <header className="home-top">
         <Logo size={30} />
-        <Link to="/settings" className="avatar" aria-label="Profil & Einstellungen">
-          {name ? name[0].toUpperCase() : <Settings size={18} />}
-        </Link>
+        <div className="home-top-actions">
+          <Link to="/studio" className="avatar studio-link" aria-label="Video Studio"><Clapperboard size={18} /></Link>
+          <Link to="/settings" className="avatar" aria-label="Profil & Einstellungen">
+            {name ? name[0].toUpperCase() : <Settings size={18} />}
+          </Link>
+        </div>
       </header>
 
       <div className="greeting">

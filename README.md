@@ -15,6 +15,21 @@ Premium-Musik-Streaming als Progressive Web App. Mobile-first, optimiert für Sa
 - **Desktop:** Seitenleiste, Player-Leiste, Tastatur (Leertaste, ←/→ spulen, Shift+←/→ Titel, M stumm)
 - Alle Daten bleiben lokal (LocalStorage)
 
+## Video Studio (KI-Videos)
+
+Neu: **Video Studio** (`#/studio`, Seitenleiste bzw. Kamera-Symbol auf der Startseite) – echte KI-Videos aus Text oder Bild
+(Kling, Veo, Wan, LTX über fal.ai/Replicate), 9:16 & 16:9, mehrere Szenen, Fortschritt, Vorschau, Download, automatische Speicherung.
+Aufträge kommen aus der App, aus **ChatGPT** („Erstelle mir ein Video über …“) oder aus **Claude Code** (`/video …`);
+kostenpflichtige Generierungen starten erst nach deiner Bestätigung in der App.
+
+```bash
+cp .env.example .env   # FAL_KEY eintragen
+npm run server         # Video-Server (Port 8787) – zusätzlich zu npm run dev
+```
+
+Einrichtung, Kosten und ChatGPT-Anbindung: **[docs/VIDEO_STUDIO.md](docs/VIDEO_STUDIO.md)**.
+Hinweis: GitHub Pages hostet nur die statische App – der Video-Server muss separat laufen (lokal, Tunnel oder Hosting).
+
 ## Musik & Rechte
 
 **Audius-Katalog (live):** Trends, Genres, Suche und Künstlerseiten kommen über die offizielle, kostenlose Audius-API (`api.audius.co`, kein Schlüssel nötig). Audius ist eine offene Plattform, auf der Künstler ihre Songs selbst hochladen und zum freien Streamen freigeben – die Rechte bleiben bei den Künstlern. AURIX spielt nur frei streambare Titel (keine kostenpflichtigen/gesperrten) und zeigt die Quelle („via Audius“) an. Genutzte Titel werden lokal gemerkt, damit Favoriten und Playlists erhalten bleiben.

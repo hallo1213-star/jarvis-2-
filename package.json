@@ -9,7 +9,11 @@
     "build": "vite build",
     "preview": "vite preview --host",
     "generate:music": "python3 scripts/generate_music.py",
-    "generate:assets": "node scripts/generate_assets.mjs"
+    "generate:assets": "node scripts/generate_assets.mjs",
+    "server": "node server/index.js",
+    "server:dev": "node --watch server/index.js",
+    "start": "npm run build && node server/index.js",
+    "video": "node scripts/video.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.70.0",
